@@ -27,7 +27,7 @@
 **Import**
 
 ```
-from evargs import EvArgs, EvArgsException, EvValidateException
+from evargs import EvArgs
 ```
 
 **Basic**
@@ -36,11 +36,11 @@ from evargs import EvArgs, EvArgsException, EvValidateException
 evargs = EvArgs()
 
 evargs.initialize({
-		'a': {'type': bool},
-		'b': {'type': 'bool'},  # 'bool' = bool
-		'c': {'type': int},
-		'd': {'type': float, 'default': 3.14},
-		'e': {'type': str},
+	'a': {'type': bool},
+	'b': {'type': 'bool'},  # 'bool' = bool
+	'c': {'type': int},
+	'd': {'type': float, 'default': 3.14},
+	'e': {'type': str}
 }) 
 
 evargs.parse('a= 1 ;b=True;c=10;d=;e=H2O')
@@ -67,11 +67,11 @@ H2O True
 evargs = EvArgs()
 
 evargs.initialize({
-		'a': {'type': int, 'list': True},
-		'b': {'type': int, 'multiple': True},
-		'c': {'type': lambda v: v.upper()},
-		'd': {'type': lambda v: v.upper(), 'post_apply_param': lambda vals: '-'.join(vals)},
-		'e': {'type': int, 'validate': ['range', 1, 10]}
+  'a': {'type': int, 'list': True},
+  'b': {'type': int, 'multiple': True},
+  'c': {'type': lambda v: v.upper()},
+  'd': {'type': lambda v: v.upper(), 'post_apply_param': lambda vals: '-'.join(vals)},
+  'e': {'type': int, 'validate': ['range', 1, 10]}
 })
 
 evargs.parse('a=25,80,443; b>= 1; b<6; c=tcp; d=X,Y,z ;e=5;')
@@ -98,9 +98,11 @@ Result:
 
 ## Overview
 
-There are 3 way usages in `evargs`.
+There are 3 way usages in `evargs`. The behavior of "value-casting and validation" based on `rules` is common to 3 way.
 
 ### a. Parsing expression & Evaluation
+
+Parsing the expression, and evaluate the value.
 
 ```
 Expression:
@@ -113,6 +115,8 @@ evargs.evaluate('a', 100) --> False
 
 ### b. Parsing expression & Get the value
 
+Parsing the expression, and get the value.
+
 ```
 Expression:
 "a = 1;"
@@ -121,7 +125,9 @@ Get:
 a = evargs.get('a')
 ```
 
-### c. Put the value & Get the value
+### c. Putting the value & Get the value
+
+Putting the value, and get the value. The value is processed by rules, therefore it is not a simple setting.
 
 ```
 Put:
@@ -140,7 +146,7 @@ The following are the rule options.
 |--------------------|--------------------|-------------------------------------------------------------------------------------------------|
 | `list`            | `bool`            | Whether the parameter is a list value.                                                         |
 | `multiple`        | `bool`            | Allows multiple condition values.                                                              |
-| `type`            | `type`,`callable` | Set cast type (e.g., `int`, `str`, `bool`, `bool_strict`, `float`, `complex`, `str`, `expression`, `callable function`).            |
+| `type`            | `str`,`callable` | Set cast type (e.g., `int`, `str`, `bool`, `bool_strict`, `float`, `complex`, `str`, `expression`, `callable function`).            |
 | `require`         | `bool`            | Whether the parameter is required.                                                             |
 | `default`         | `any`             | Set the default value if the value is not provided.                                            |
 | `choices`         | `list`            | Restrict the parameter to a set of predefined values.                                          |
@@ -159,58 +165,58 @@ The following are the rule options.
 
 ```
 evargs.initialize({
-		'a': {'type': str, 'list': True},
-		'b': {'type': int, 'multiple': True},
-		'c': {'pre_apply': lambda v: v.upper()},
+  'a': {'type': str, 'list': True},
+  'b': {'type': int, 'multiple': True},
+  'c': {'pre_apply': lambda v: v.upper()},
 })
 ```
 
 ```
 evargs.set_rules({
-		'a': {'type': str, 'list': True},
-		'b': {'type': int, 'multiple': True},
-		'c': {'pre_apply': lambda v: v.upper()},
+  'a': {'type': str, 'list': True},
+  'b': {'type': int, 'multiple': True},
+  'c': {'pre_apply': lambda v: v.upper()},
 })
 ```
 
 
 ## Primary methods
 
-| **Method Name**       | **Arguments**                                                                                     | **Description**                                                                 |
-|------------------------|--------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
-| `initialize`          | `rules, default_rule=None, flexible=False, require_all=False, ignore_unknown=False` | Initializes rules, default rule, and set options.                 |
-| `set_options`         | `flexible=False, require_all=False, ignore_unknown=False`                | Set options.              |
-| `set_default`         | `default_rule=None`                                                                      | Set the default rule.       |
-| `set_rules`           | `rules`                                                                                   | Set the rules.                                                 |
-| `set_rule`            | `name, rule`                                                                          | Set a rule.                                                    |
-| `parse`               | `assigns`                                                                                   | Parse the expression.                                   |
-| `evaluate`            | `name, v`                                                                              | Evaluate a parameter.                                  |
-| `get`                 | `name, index=-1`                                                                     | Get the value of a parameter by name and index.        |
+| **Method**       | **Arguments**                                            | **Description**                                                                 |
+|------------------------|---------------------------------------------------|--------------------------------------------------------------------------------------|
+| `initialize`          | `(rules, default_rule=None, flexible=False, require_all=False, ignore_unknown=False)`  | Initializes rules, default rule, and set options.                 |
+| `set_options`         | `(flexible=False, require_all=False, ignore_unknown=False)`                | Set options.              |
+| `set_default`         | `(default_rule=None)`                                                                      | Set the default rule.       |
+| `set_rules`           | `(rules)`                                                                                   | Set the rules.                                                 |
+| `set_rule`            | `(name, rule)`                                                                          | Set a rule.                                                    |
+| `parse`               | `(assigns)`                                                                                   | Parse the expression.                                   |
+| `evaluate`            | `(name, v)`                                                                              | Evaluate a parameter.                                  |
+| `get`                 | `(name, index=-1)`                                                                     | Get the value of a parameter by name and index.        |
 | `get_values`          | -                                                                                             | Get the values of parameters.                                |
-| `put`                 | `name, value, operator=Operator.EQUAL, reset=False`                     | Put the value.                                             |
-| `put_values`          | `values, operator=Operator.EQUAL, reset=False`                              | Put the values of parameters.                  |
-| `reset`               | `name`                                                                                      | Reset the value.                                       |
-| `reset_params`               | -                                                                                      | Reset the values of parameters.                 |
-| `count_params`               | -                                                                                      | Get parameter's length.                 |
+| `put`                 | `(name, value, operator=Operator.EQUAL, reset=False)`                     | Put the value.                                             |
+| `put_values`          | `(values, operator=Operator.EQUAL, reset=False)`                              | Put the values of parameters.                  |
+| `reset`                | `(name)`                                                                                      | Reset the value.                                       |
+| `reset_params`    | -                                                                                      | Reset the values of parameters.                 |
+| `count_params     | -                                                                                      | Get parameter's length.                 |
 
 
 ## Introduction of options
 
-**`flexible=True`**
+### `flexible=True`
 
 It can be operated even if the rule is not defined.
 
-Example usage: Specifying `flexible=True` and `default_rule={...}`. 
+e.g. specifying `flexible=True` and `default_rule={...}`. 
 
-**`require_all=True`**
+### `require_all=True`
 
 All parameters defined in rules must have values assigned. The behavior is equivalent to specifying 'required=True' for each rule.
 
-**`ignore_unknown=True`**
+### `ignore_unknown=True`
 
 Ignoring and excluding the unknown parameter. The error does not occur if the unknown parameter is assigned.
 
-**`default_rule={...}`**
+### `default_rule={...}`
 
 Default rule for all parameters. e.g. `{'type': int, 'default': -1}`
 
@@ -221,16 +227,16 @@ There are many examples in `./tests/`.
 
 | File | Description |
 |-----------|-------------|
-| [test_general.py](./tests/test_general.py) | General tests for `EvArgs`, including flexible rules, required parameters, and error handling. |
-| [test_get_put.py](./tests/test_get_put.py) | Tests for `get` and `put` methods. |
-| [test_rule_validate.py](./tests/test_rule_validate.py) | Tests for rule validation, including `choices`, `validate`, and custom validation methods. |
-| [test_rule_type.py](./tests/test_rule_type.py) | Tests for type handling in rules, such as `int`, `float`, `bool`, `str`, `complex`, and custom types. |
-| [test_rule_require_default.py](./tests/test_rule_require_default.py) | Tests for `require` and `default` options. |
-| [test_rule_pre_post.py](./tests/test_rule_pre_post.py) | Tests for `pre_apply` and `post_apply` for value transformations. |
-| [test_rule_multiple.py](./tests/test_rule_multiple.py) | Tests for `multiple` option in rules. |
-| [test_rule_evaluate.py](./tests/test_rule_evaluate.py) | Tests for `evaluate` and `evaluate_param` options, including logical operations and custom evaluations. |
-| [test_value_caster.py](./tests/test_value_caster.py) | Tests for `ValueCaster` methods. |
-| [test_validator.py](./tests/test_validator.py) | Tests for `Validator` methods. |
+| [test_general.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_general.py) | General tests for `EvArgs`, including flexible rules, required parameters, and error handling. |
+| [test_get_put.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_get_put.py) | Tests for `get` and `put` methods. |
+| [test_rule_validate.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_rule_validate.py) | Tests for rule validation, including `choices`, `validate`, and custom validation methods. |
+| [test_rule_type.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_rule_type.py) | Tests for type handling in rules, such as `int`, `float`, `bool`, `str`, `complex`, and custom types. |
+| [test_rule_require_default.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_rule_require_default.py) | Tests for `require` and `default` options. |
+| [test_rule_pre_post.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_rule_pre_post.py) | Tests for `pre_apply` and `post_apply` for value transformations. |
+| [test_rule_multiple.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_rule_multiple.py) | Tests for `multiple` option in rules. |
+| [test_rule_evaluate.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_rule_evaluate.py) | Tests for `evaluate` and `evaluate_param` options, including logical operations and custom evaluations. |
+| [test_value_caster.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_value_caster.py) | Tests for `ValueCaster` methods. |
+| [test_validator.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_validator.py) | Tests for `Validator` methods. |
 
 
 ## Dependencies
