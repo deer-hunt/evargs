@@ -242,7 +242,14 @@ Ignoring and excluding the unknown parameter. The error does not occur if the un
 Default rule for all parameters. e.g. `{'type': int, 'default': -1}`
 
 
-## Test code examples
+## Sample programs
+
+- [basic.py](https://github.com/deer-hunt/evargs/tree/main/examples/basic.py)
+- [calculate_metals.py](https://github.com/deer-hunt/evargs/tree/main/examples/calculate_metals.py)
+- [various_rules.py](https://github.com/deer-hunt/evargs/tree/main/examples/various_rules.py)
+
+
+## Test code & Examples
 
 There are many examples in `./tests/`.
 
