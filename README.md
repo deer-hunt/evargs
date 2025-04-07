@@ -22,6 +22,29 @@
 "evargs" is a lightweight python module for easy expression parsing and value-casting, validating by rules, and it provide flexible configuration and custom validation method.
 </div>
 
+## Installation
+
+**PyPI**
+
+```bash
+$ pip install evargs
+or
+$ pip3 install evargs
+```
+
+**Conda**
+
+```
+$ conda install conda-forge::evargs
+```
+
+
+## Requirements
+
+- ```python``` and ```pip``` command
+- Python 3.5 or later version.
+
+
 ## Usage
 
 **Basic**
@@ -39,7 +62,7 @@ evargs.initialize({
   'e': {'type': str}
 }) 
 
-evargs.parse('a= 1 ;b=True;c=10;d=;e=H2O')
+evargs.parse('a=1;b=True;c=10;d=;e=H2O')
 
 print(evargs.get('a'), evargs.evaluate('a', True))
 print(evargs.get('b'), evargs.evaluate('b', True))
@@ -225,16 +248,16 @@ There are many examples in `./tests/`.
 
 | File | Description |
 |-----------|-------------|
-| [test_general.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_general.py) | General tests for `EvArgs`, including flexible rules, required parameters, and error handling. |
-| [test_get_put.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_get_put.py) | Tests for `get` and `put` methods. |
-| [test_rule_validate.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_rule_validate.py) | Tests for rule validation, including `choices`, `validate`, and custom validation methods. |
-| [test_rule_type.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_rule_type.py) | Tests for type handling in rules, such as `int`, `float`, `bool`, `str`, `complex`, and custom types. |
-| [test_rule_require_default.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_rule_require_default.py) | Tests for `require` and `default` options. |
-| [test_rule_pre_post.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_rule_pre_post.py) | Tests for `pre_apply` and `post_apply` for value transformations. |
-| [test_rule_multiple.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_rule_multiple.py) | Tests for `multiple` option in rules. |
-| [test_rule_evaluate.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_rule_evaluate.py) | Tests for `evaluate` and `evaluate_param` options, including logical operations and custom evaluations. |
-| [test_value_caster.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_value_caster.py) | Tests for `ValueCaster` methods. |
-| [test_validator.py](https://github.com/deer-hunt/evargs/blob/master/tests/test_validator.py) | Tests for `Validator` methods. |
+| [test_general.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_general.py) | General tests for `EvArgs`, including flexible rules, required parameters, and error handling. |
+| [test_get_put.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_get_put.py) | Tests for `get` and `put` methods. |
+| [test_rule_validate.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validate.py) | Tests for rule validation, including `choices`, `validate`, and custom validation methods. |
+| [test_rule_type.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type.py) | Tests for type handling in rules, such as `int`, `float`, `bool`, `str`, `complex`, and custom types. |
+| [test_rule_require_default.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_require_default.py) | Tests for `require` and `default` options. |
+| [test_rule_pre_post.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_pre_post.py) | Tests for `pre_apply` and `post_apply` for value transformations. |
+| [test_rule_multiple.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_multiple.py) | Tests for `multiple` option in rules. |
+| [test_rule_evaluate.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_evaluate.py) | Tests for `evaluate` and `evaluate_param` options, including logical operations and custom evaluations. |
+| [test_value_caster.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_value_caster.py) | Tests for `ValueCaster` methods. |
+| [test_validator.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_validator.py) | Tests for `Validator` methods. |
 
 
 ## Dependencies
