@@ -24,23 +24,19 @@
 
 ## Usage
 
-**Import**
-
-```
-from evargs import EvArgs
-```
-
 **Basic**
 
 ```
+from evargs import EvArgs
+
 evargs = EvArgs()
 
 evargs.initialize({
-	'a': {'type': bool},
-	'b': {'type': 'bool'},  # 'bool' = bool
-	'c': {'type': int},
-	'd': {'type': float, 'default': 3.14},
-	'e': {'type': str}
+  'a': {'type': bool},
+  'b': {'type': 'bool'},  # 'bool' = bool
+  'c': {'type': int},
+  'd': {'type': float, 'default': 3.14},
+  'e': {'type': str}
 }) 
 
 evargs.parse('a= 1 ;b=True;c=10;d=;e=H2O')
@@ -64,6 +60,8 @@ H2O True
 **Various rules**
 
 ```
+from evargs import EvArgs
+
 evargs = EvArgs()
 
 evargs.initialize({
@@ -142,7 +140,7 @@ a = evargs.get('a')
 
 The following are the rule options.
 
-| Option             | Type               | Description                                                                                     |
+| Option name             | Type               | Description                                                                                     |
 |--------------------|--------------------|-------------------------------------------------------------------------------------------------|
 | `list`            | `bool`            | Whether the parameter is a list value.                                                         |
 | `multiple`        | `bool`            | Allows multiple condition values.                                                              |
