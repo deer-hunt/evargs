@@ -22,7 +22,7 @@ class TestRulePrePost:
             'e': {'type': int, 'pre_apply': lambda v: v.strip('<> ')},
         })
 
-        assigns = 'a=1;b=;c=1,2,3;d=1;d=2;e=<33>'
+        assigns = 'a=1;b=;c=1,2,3;d=1;d=2;e="<33>"'
 
         evargs.parse(assigns)
 

@@ -1,4 +1,4 @@
-# evargs
+# EvArgs
 
 <div>
 
@@ -19,7 +19,7 @@
 </div>
 
 <div>
-"evargs" is a lightweight python module for easy expression parsing and value-casting, validating by rules, and it provide flexible configuration and custom validation method.
+"EvArgs" is a lightweight python module for easy expression parsing and value-casting, validating by rules, and it provide flexible configuration and custom validation method.
 </div>
 
 ## Installation
@@ -126,10 +126,10 @@ There are 3 way usages in `evargs`. The behavior of "value-casting and validatio
 Parsing the expression, and evaluate the value.
 
 ```
-Expression:
+[Expression]
 "a >= 1; a<=10"
 
-Evaluation:
+[Evaluation]
 evargs.evaluate('a', 4) --> True
 evargs.evaluate('a', 100) --> False
 ```
@@ -139,10 +139,10 @@ evargs.evaluate('a', 100) --> False
 Parsing the expression, and get the value.
 
 ```
-Expression:
+[Expression]
 "a = 1;"
 
-Get:
+[Get]
 a = evargs.get('a')
 ```
 
@@ -151,10 +151,10 @@ a = evargs.get('a')
 Putting the value, and get the value. The value is processed by rules, therefore it is not a simple setting.
 
 ```
-Put:
+[Put]
 evargs.put('a', 1)
 
-Get:
+[Get]
 a = evargs.get('a')
 ```
 
@@ -221,7 +221,7 @@ evargs.set_rules({
 | `count_params     | -                                                                                      | Get parameter's length.                 |
 
 
-## Introduction of options
+## Description of options
 
 ### `flexible=True`
 
@@ -255,7 +255,8 @@ There are many examples in `./tests/`.
 
 | File | Description |
 |-----------|-------------|
-| [test_general.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_general.py) | General tests for `EvArgs`, including flexible rules, required parameters, and error handling. |
+| [test_general.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_general.py) | General tests for `EvArgs`. |
+| [test_options.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_options.py) | Tests for options of `flexible`, `require_all`, `ignore_unknown`, and `set_options`. |
 | [test_get_put.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_get_put.py) | Tests for `get` and `put` methods. |
 | [test_rule_validate.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validate.py) | Tests for rule validation, including `choices`, `validate`, and custom validation methods. |
 | [test_rule_type.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type.py) | Tests for type handling in rules, such as `int`, `float`, `bool`, `str`, `complex`, and custom types. |

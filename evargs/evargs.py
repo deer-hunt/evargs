@@ -129,7 +129,10 @@ class EvArgs:
                     values.append(tok.string)
             elif tok.type == tokenize.OP:
                 if Operator.is_evaluate(tok.string):
-                    operator = Operator.parse_operator(tok.string)
+                    if operator == 0:
+                        operator = Operator.parse_operator(tok.string)
+                    else:
+                        self._raise_parse_error('Illegal operator; {}'.format(name))
                 elif tok.string == Operator.LIST_SPLIT:
                     value_list = True
                 elif tok.string == Operator.VALUE_SPLIT:
