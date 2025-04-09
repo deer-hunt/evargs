@@ -4,6 +4,7 @@ import pytest
 import re
 
 
+# Document: https://github.com/deer-hunt/evargs/
 class TestValidator:
     @pytest.fixture(autouse=True)
     def setup(self):
@@ -39,11 +40,11 @@ class TestValidator:
         with pytest.raises(EvValidateException):
             self.validator.validate_standard_ascii('test2', 'abc123ñ')
 
-    def test_validate_ascii_numeric(self):
-        self.validator.validate_ascii_numeric('test1', '123')
+    def test_validate_char_numeric(self):
+        self.validator.validate_char_numeric('test1', '123')
 
         with pytest.raises(EvValidateException):
-            self.validator.validate_ascii_numeric('test2', 'abc123')
+            self.validator.validate_char_numeric('test2', 'abc123')
 
     def test_validate_regex(self):
         self.validator.validate_regex('test1', 'abc123', r'^[a-z0-9]+$')

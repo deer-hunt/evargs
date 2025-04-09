@@ -19,8 +19,9 @@
 </div>
 
 <div>
-"EvArgs" is a lightweight python module for easy expression parsing and value-casting, validating by rules, and it provide flexible configuration and custom validation method.
+"EvArgs" is a lightweight python module for easy expression parsing and value-casting, validating by rules, and it provides flexible configuration and custom validation method.
 </div>
+
 
 ## Installation
 
@@ -159,7 +160,7 @@ a = evargs.get('a')
 ```
 
 
-## Rule Options
+## Rules
 
 The following are the rule options.
 
@@ -167,11 +168,11 @@ The following are the rule options.
 |--------------------|--------------------|-------------------------------------------------------------------------------------------------|
 | `list`            | `bool`            | Whether the parameter is a list value.                                                         |
 | `multiple`        | `bool`            | Allows multiple condition values.                                                              |
-| `type`            | `str`,`callable` | Set cast type (e.g., `int`, `str`, `bool`, `bool_strict`, `float`, `complex`, `str`, `expression`, `callable function`).            |
+| `type`            | `str`,`callable` | Set cast type (e.g., `int`, `str`, `bool`, `bool_strict`, `float`, ...). Refer to `Value casting`.            |
 | `require`         | `bool`            | Whether the parameter is required.                                                             |
 | `default`         | `any`             | Set the default value if the value is not provided.                                            |
 | `choices`         | `list`            | Restrict the parameter to a set of predefined values.                                          |
-| `validate`        | `str`,`list`,`callable` | Validation name, list of arguments, or a custom validation method.                            |
+| `validate`        | `str`,`list`,`callable` | Validation name, list of arguments, or a custom validation method.  Refer to `Value Validation`.                            |
 | `pre_apply`       | `callable`        | Pre-processing method for the value before applying.                                   |
 | `post_apply`      | `callable`        | Post-processing method for the value after applying.                                   |
 | `pre_apply_param` | `callable`        | Pre-processing method for the parameter before applying.                                |
@@ -200,6 +201,66 @@ evargs.set_rules({
 })
 ```
 
+## Value Casting
+
+| **Type**         | **Description**                                                                   |
+|-------------------|-------------------------------------------------------------------------|
+| `int`, int            | Casting to int.                                   |
+| `float`, float          | Casting to float.                              |
+| `bool`, bool           | Casting to bool.                             |
+| `bool_strict`    | Casting to bool or None.                        |
+| `complex`, `"complex"`        | Casting to complex.          |
+|  `str`, `'str'`    | Casting to str.                                                                        |
+| `expression`     | Evaluating mathematical expressions. e.g., `2 * (3 + 4)`.            |
+| `raw`            | The casting process is not be executed.                                        |
+| `callable`       | Custom callable function for casting. e.g. lambda v: v.upper()        |
+
+**Related**
+
+- [test_rule_type.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type.py)
+- [ValueCaster class](https://deer-hunt.github.io/evargs/modules/value-helper.html#evargs.value_caster.ValueCaster)
+
+
+## Value Validation
+
+In the value validation, `required` option is available to checking for the value existence and `choices` option is available to restricting the value. Additionally, you can use the following validation rules or custom function in `validate` option.
+
+**Validations**
+
+| **name**    | **Value Type**       | **Arguments**                                                                                     | **Description**                                                                                     |
+|-------------------------|----------------------|--------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| `size`         | `str`               | `size: int`                                                                   | The string length is exactly `size`.                                                       |
+| `between`      | `str`               | `min_size: int, max_size: int`                                     | The string length is between `min_size` and `max_size`.                                     |
+| `alphabet`     | `str`               | -                                                                             | Alphabetic characters.                                             |
+| `alphanumeric` | `str`               | -                                                                             | Alphanumeric characters.                                           |
+| `ascii`        | `str`               | -                                                                             　　| ASCII characters.                                                  |
+| `printable_ascii` | `str`            | -                                                                             | Printable ASCII characters.                                        |
+| `standard_ascii` | `str`             | -                                                                             | Standard ASCII characters. |
+| `char_numeric` | `str`              | -                                                                             | Numeric characters.                                          |
+| `regex`        | `str`               | `regex: str, [regex option]`                                             | The string matches the regular expression. |
+| `range`        | `int`, `float`      | `min_v, max_v`                                                           | The numeric value is within range `min_v` to `max_v`.                                   |
+| `unsigned`     | `int`, `float`      | -                                                                              | Unsigned number.                                                         |
+| `even`         | `int`               | -                                                                              　　|  Even int.                                                              |
+| `odd`          | `int`               | -                                                                              　　| Odd int.                                                             |
+
+**e.g.**
+
+```
+evargs.initialize({
+  'a': {'type': str, 'validate': ['size', 3]},
+  'b': {'type': str, 'validate': ['between', 4, 10]},
+  'c': {'type': str, 'validate': 'alphabet'},
+  'd': {'type': int, 'validate': ['range', None, 100]},
+  'e': {'type': str, 'validate': ['regex', r'^ABC\d+XYZ$', re.I]},
+  'f': {'type': int, 'validate': lambda n, v: True if v >= 0 else False}
+})
+```
+
+**Related**
+
+- [test_rule_validate.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validate.py)
+- [Validator class](https://deer-hunt.github.io/evargs/modules/value-helper.html#module-evargs.validator)
+
 
 ## Primary methods
 
@@ -219,6 +280,10 @@ evargs.set_rules({
 | `reset`                | `(name)`                                                                                      | Reset the value.                                       |
 | `reset_params`    | -                                                                                      | Reset the values of parameters.                 |
 | `count_params     | -                                                                                      | Get parameter's length.                 |
+
+**Related**
+
+- [EvArgs class's doc](https://deer-hunt.github.io/evargs/modules/evargs.html)
 
 
 ## Description of options
@@ -267,6 +332,13 @@ There are many examples in `./tests/`.
 | [test_value_caster.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_value_caster.py) | Tests for `ValueCaster` methods. |
 | [test_validator.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_validator.py) | Tests for `Validator` methods. |
 
+
+## Class docs
+
+- [EvArgs class](https://deer-hunt.github.io/evargs/modules/evargs.html)
+- [Validator class](https://deer-hunt.github.io/evargs/modules/value-helper.html#module-evargs.validator)
+- [ValueCaster class](https://deer-hunt.github.io/evargs/modules/value-helper.html#evargs.value_caster.ValueCaster)
+- [EvArgsException class / EvValidateException class](https://deer-hunt.github.io/evargs/modules/evargs.html#module-evargs.exception)
 
 ## Dependencies
 

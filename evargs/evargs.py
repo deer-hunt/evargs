@@ -3,30 +3,26 @@ import re
 import tokenize
 
 from evargs.exception import EvArgsException, EvValidateException
-from evargs.module import Param, ParamItem, Operator
+from evargs.modules import Param, ParamItem, Operator
 from evargs.validator import Validator
 from evargs.value_caster import ValueCaster
 
 '''
-Rule options:
-- list: Whether the parameter is list value.
-- multiple: Allows multiple condition values.
-- type: Set cast type. e.g. int, str, bool, ... or method.
-- require: Whether the parameter is required.
-- default: Set the default value if the value is not provided.
-- choices: Restrict the parameter to a set of choices values.
-- validate: Validation name or Validation method.
-- pre_apply: Pre method for the value unit before applying.
-- post_apply: Post method for the value unit after applying.
-- pre_apply_param: Pre method for the value parameters before applying.
-- post_apply_param: Post method for the value parameters after applying.
-- evaluate: Evaluation method for the value unit.
-- evaluate_param: Evaluation method for the value parameters.
-- multiple_or: Whether logical OR operation for multiple condition values..
-- list_or: Whether logical OR operation for list values. `list_or` adjust automatically by operator if the value is None.
-- prevent_error: Prevent errors during processing.
+[EvArgs]
 
-Ex:
+Document:
+https://github.com/deer-hunt/evargs/
+
+Class Doc:
+https://deer-hunt.github.io/evargs/modules/evargs.html
+
+Tests:
+https://github.com/deer-hunt/evargs/blob/main/tests/
+
+Rules description:
+https://github.com/deer-hunt/evargs/#rules
+
+Example:
 ev_parser = EvaluationParser({
     'a': {'type': int, 'multiple': True},
     'b': {'type': int, 'default': 2},
@@ -68,7 +64,7 @@ class EvArgs:
     def get_validator(self) -> Validator:
         return Validator()
 
-    def get_value_caster(self) -> ValueCaster:
+    def get_value_caster(self) -> type:
         return ValueCaster
 
     def initialize(self, rules: dict, default_rule: dict = None, flexible: bool = False, require_all: bool = False, ignore_unknown: bool = False):

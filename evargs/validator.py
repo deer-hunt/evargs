@@ -34,7 +34,7 @@ class Validator:
         if not (re.search(r'^[\x20-\x7E\x09\x0A\x0D]+$', v, flags=re.I)):
             self.raise_error('Require standard ASCII chars.({})'.format(name))
 
-    def validate_ascii_numeric(self, name: str, v: str):
+    def validate_char_numeric(self, name: str, v: str):
         if not (re.search(r'^[0-9]+$', v, flags=re.I)):
             self.raise_error('Require numeric chars.({})'.format(name))
 
@@ -44,7 +44,11 @@ class Validator:
         if not (re.search(regex, str(v), flags=flags)):
             self.raise_error('Require regex matched chars.({}; "{}")'.format(name, regex))
 
-    # int
+    # int, float
+    def validate_range(self, name: str, v: any, min_v, max_v):
+        if not ((min_v is None or min_v <= v) and (max_v is None or v <= max_v)):
+            self.raise_error('Require number in range.({}; "{} - {}")'.format(name, min_v, max_v))
+
     def validate_unsigned(self, name: str, v: any):
         if not (isinstance(v, (int, float, complex)) and v >= 0):
             self.raise_error('Require unsigned value.({})'.format(name))
@@ -56,10 +60,6 @@ class Validator:
     def validate_odd(self, name: str, v: any):
         if not (isinstance(v, int) and v % 2 == 1):
             self.raise_error('Require odd number.({})'.format(name))
-
-    def validate_range(self, name: str, v: any, min_v, max_v):
-        if not ((min_v is None or min_v <= v) and (max_v is None or v <= max_v)):
-            self.raise_error('Require number in range.({}; "{} - {}")'.format(name, min_v, max_v))
 
     def raise_error(self, msg, code=EvValidateException.ERROR_GENERAL):
         raise EvValidateException(msg, code)
