@@ -1,0 +1,49 @@
+evargs package
+==============
+
+.. include:: top.rst
+
+Github code
+---------------------------
+
+- `EvArgs class <https://github.com/deer-hunt/evargs/blob/main/evargs/evargs.py>`_
+- `EvArgsException, EvValidateException class <https://github.com/deer-hunt/evargs/blob/main/evargs/exception.py>`_
+
+Example code
+---------------------------
+
+.. code-block:: shell
+
+   from evargs import EvArgs
+
+   evargs = EvArgs()
+
+   evargs.initialize({
+      'a': {'type': int},
+      'b': {'type': str},
+      'c': {'type': int, 'list': True},
+   })
+
+   evargs.parse('a=1;b=abc;c=1,2,3;')
+
+   assert evargs.get('a') == 1
+   assert evargs.get('b') == 'abc'
+   assert evargs.get('c') == [1, 2, 3]
+
+More example codes are `here <https://github.com/deer-hunt/evargs/blob/main/tests/>`_ .
+
+evargs module
+--------------------
+
+.. automodule:: evargs.evargs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+exception module
+-----------------------
+
+.. automodule:: evargs.exception
+   :members:
+   :undoc-members:
+   :show-inheritance:

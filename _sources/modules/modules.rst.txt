@@ -1,0 +1,29 @@
+evargs package
+==============
+
+.. include:: top.rst
+
+Github code
+---------------------------
+
+- `Param, ParamItem class <https://github.com/deer-hunt/evargs/blob/main/evargs/modules.py>`_
+
+Modules
+--------------------
+
+.. automodule:: evargs.modules
+
+.. autoclass:: evargs.Param
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: evargs.ParamItem
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: evargs.Operator
+   :members:
+   :undoc-members:
+   :show-inheritance:

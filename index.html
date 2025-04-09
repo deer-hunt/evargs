@@ -1,0 +1,155 @@
+
+
+<!doctype html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to EvArgs &#8212; evargs  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/bizstyle.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <!--[if lt IE 9]>
+    <script src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">evargs  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Welcome to EvArgs</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-evargs">
+<h1>Welcome to EvArgs<a class="headerlink" href="#welcome-to-evargs" title="Permalink to this headline">¶</a></h1>
+<p>“EvArgs” is a lightweight python module for easy expression parsing and value-casting, validating by rules, and it provide flexible configuration and custom validation method.</p>
+<div class="section" id="github">
+<h2>Github<a class="headerlink" href="#github" title="Permalink to this headline">¶</a></h2>
+<p>The latest version and documentation may be found on GitHub. The Github URL is the following.</p>
+<p><a class="reference external" href="https://github.com/deer-hunt/evargs/">EvArgs Github</a></p>
+</div>
+<div class="section" id="install">
+<h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>evargs
+or
+$<span class="w"> </span>pip3<span class="w"> </span>install<span class="w"> </span>evargs
+</pre></div>
+</div>
+</div>
+<div class="section" id="features-and-documentation">
+<h2>Features and documentation<a class="headerlink" href="#features-and-documentation" title="Permalink to this headline">¶</a></h2>
+<p>“EvArgs” provides the following features.</p>
+<ul class="simple">
+<li><p>It can specify the condition or value-assignment using a simple expression. e.g. <cite>a=1;b&gt;5</cite></p></li>
+<li><p>Evaluate assigned values. e.g <cite>evargs.evaluate(‘a’, 1)</cite></p></li>
+<li><p>Put values. It’s available to using <cite>put</cite> is without parsing the expression.</p></li>
+<li><p>Value casting - str, int, float, complex…</p></li>
+<li><p>Value validation - unsigned, number range, alphabet, regex, any other…</p></li>
+<li><p>Applying Pre-processing method and Post-processing method.</p></li>
+<li><p>Get assigned values.</p></li>
+<li><p>Set default rule.</p></li>
+<li><p>Other support methods for value-assignment.</p></li>
+</ul>
+<p>And you can see detail features and usage in <a class="reference external" href="https://github.com/deer-hunt/evargs/">EvArgs documentation</a></p>
+</div>
+<div class="section" id="modules-and-classes-reference">
+<h2>Modules and Classes reference<a class="headerlink" href="#modules-and-classes-reference" title="Permalink to this headline">¶</a></h2>
+<p>The following is the documentation for the module and class. <a class="reference external" href="https://github.com/deer-hunt/evargs/">Github source</a></p>
+<p><a class="reference external" href="https://deer-hunt.github.io/evargs/modules/evargs.html">EvArgs class document</a></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>evargs<span class="w"> </span>import<span class="w"> </span>EvArgs
+
+<span class="nv">evargs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>EvArgs<span class="o">()</span>
+
+evargs.initialize<span class="o">({</span>
+<span class="w">  </span><span class="s1">&#39;a&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;type&#39;</span>:<span class="w"> </span>bool<span class="o">}</span>,
+<span class="w">  </span><span class="s1">&#39;b&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;type&#39;</span>:<span class="w"> </span>int<span class="o">}</span>,
+<span class="w">  </span><span class="s1">&#39;c&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;type&#39;</span>:<span class="w"> </span>float,<span class="w"> </span><span class="s1">&#39;default&#39;</span>:<span class="w"> </span><span class="m">3</span>.14<span class="o">}</span>,
+<span class="w">  </span><span class="s1">&#39;e&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;type&#39;</span>:<span class="w"> </span>str<span class="o">}</span>
+<span class="o">})</span>
+
+evargs.parse<span class="o">(</span><span class="s1">&#39;a=True;b=10;c=H2O&#39;</span><span class="o">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="#">Table of Contents</a></h3>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script><div class="custom-sidebar">
+	<h3>Others</h3>
+	<ul>
+		<li><a href="https://deer-hunt.github.io/evargs/py-modindex.html">Module Index</a></li>
+		<li><a href="https://deer-hunt.github.io/evargs/genindex.html">Classes and Methods docs</a></li>
+		<li>&nbsp;</li>
+		<li><a href="https://github.com/deer-hunt/evargs" target="_blank">GitHub</a></li>
+	</ul>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">evargs  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Welcome to EvArgs</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2025, deer-hunt.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+  </body>
+</html>

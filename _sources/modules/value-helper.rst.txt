@@ -1,0 +1,27 @@
+evargs package
+==============
+
+.. include:: top.rst
+
+Github code
+---------------------------
+
+- `Validator class <https://github.com/deer-hunt/evargs/blob/main/evargs/validator.py>`_
+- `ValueCaster class <https://github.com/deer-hunt/evargs/blob/main/evargs/value_caster.py>`_
+
+
+validator module
+-----------------------
+
+.. automodule:: evargs.validator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+value\_caster module
+---------------------------
+
+.. automodule:: evargs.value_caster
+   :members:
+   :undoc-members:
+   :show-inheritance:

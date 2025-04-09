@@ -1,0 +1,80 @@
+.. evargs documentation master file, created by
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to EvArgs
+==================================
+
+"EvArgs" is a lightweight python module for easy expression parsing and value-casting, validating by rules, and it provide flexible configuration and custom validation method.
+
+Github
+---------------------------------------
+
+The latest version and documentation may be found on GitHub. The Github URL is the following.
+
+`EvArgs Github <https://github.com/deer-hunt/evargs/>`_
+
+Install
+---------------------------------------
+
+.. code-block:: shell
+
+   $ pip install evargs
+   or
+   $ pip3 install evargs
+
+
+Features and documentation
+---------------------------------------
+
+"EvArgs" provides the following features.
+
+- It can specify the condition or value-assignment using a simple expression. e.g. `a=1;b>5`
+- Evaluate assigned values. e.g `evargs.evaluate('a', 1)`
+- Put values. It's available to using `put` is without parsing the expression.
+- Value casting - str, int, float, complex...
+- Value validation - unsigned, number range, alphabet, regex, any other...
+- Applying Pre-processing method and Post-processing method.
+- Get assigned values.
+- Set default rule.
+- Other support methods for value-assignment.
+
+And you can see detail features and usage in `EvArgs documentation <https://github.com/deer-hunt/evargs/>`_
+
+
+Modules and Classes reference
+---------------------------------------
+
+The following is the documentation for the module and class. `Github source <https://github.com/deer-hunt/evargs/>`_
+
+`EvArgs class document <https://deer-hunt.github.io/evargs/modules/evargs.html>`_
+
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
+
+Usage
+---------------------------------------
+
+.. code-block:: shell
+
+   from evargs import EvArgs
+
+   evargs = EvArgs()
+
+   evargs.initialize({
+     'a': {'type': bool},
+     'b': {'type': int},
+     'c': {'type': float, 'default': 3.14},
+     'e': {'type': str}
+   })
+
+   evargs.parse('a=True;b=10;c=H2O')
+
+
+
+.. sidebar:: Links
+   - `GitHub <https://github.com/username/repository>`_
+   - `Documentation <https://your-docs-url>`_
