@@ -2,7 +2,7 @@
 
 ## [0.9.3](https://github.com/deer-hunt/evargs/releases/tag/v0.9.3) (2025-04-13)
 
-- Add "make help" feature.
+- Add "make help", "multiple validation".
 - Fixed bugs.
 - Changed minor updates.
 

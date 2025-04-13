@@ -278,29 +278,35 @@ class EvArgs:
         validation = rule.get('validation')
 
         if validation:
-            args = []
-
-            if isinstance(validation, (list, tuple)):
-                [validation, *args] = validation
-
-            if isinstance(validation, str):
-                validation_fn = getattr(self.validator, 'validate_' + validation, None)
-
-                if not validation_fn:
-                    raise EvArgsException('Validation method is not found.({})'.format(validation), EvArgsException.ERROR_PROCESS)
-
-                self._validate_exec(validation_fn, name, value, args)
-            else:
-                error = self._validate_exec(validation, name, value, args)
-
-                if not error:
-                    self.validator.raise_error('Validation error.({})'.format(name))
+            self._validate(validation, name, value)
 
         choices = rule.get('choices')
 
         if choices:
             if value not in choices:
                 self.validator.raise_error('Out of choices.({}; {})'.format(name, value), EvValidateException.ERROR_OUT_CHOICES)
+
+    def _validate(self, validation: any, name: str, value: any):
+        args = []
+
+        if isinstance(validation, (list, tuple)) and isinstance(validation[0], str):
+            [validation, *args] = validation
+
+        if isinstance(validation, str):
+            validation_fn = getattr(self.validator, 'validate_' + validation, None)
+
+            if not validation_fn:
+                raise EvArgsException('Validation method is not found.({})'.format(validation), EvArgsException.ERROR_PROCESS)
+
+            self._validate_exec(validation_fn, name, value, args)
+        elif isinstance(validation, list):
+            for v in validation:
+                self._validate(v, name, value)
+        else:
+            error = self._validate_exec(validation, name, value, args)
+
+            if not error:
+                self.validator.raise_error('Validation error.({})'.format(name))
 
     def _validate_exec(self, fn: callable, name: str, value: any, args: list):
         error = False

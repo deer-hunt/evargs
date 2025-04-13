@@ -40,9 +40,9 @@ class TestRuleValidate:
 
         # range
         evargs.initialize({
-            'a': {'type': int, 'validation': ['range', None, 200]},
+            'a': {'type': int, 'validation': ('range', None, 200)},
             'b': {'type': int, 'validation': ['range', 100, None]},
-            'c': {'type': float, 'validation': ['range', 0, 200]},
+            'c': {'type': float, 'validation': [('unsigned',), ('range', 1, 200)]},
         }).parse('a=123;b=200;c=199.9')
 
         assert evargs.get('a') == 123
@@ -71,6 +71,7 @@ class TestRuleValidate:
         # alphabet
         evargs.initialize({
             'a': {'type': str, 'validation': 'alphabet'},
+            'b': {'type': str, 'validation': [tuple(['alphabet']), ('between', 4, None)]},
         }).parse('a=AbcD;')
 
         assert evargs.get('a') == 'AbcD'
@@ -111,6 +112,23 @@ class TestRuleValidate:
             evargs.initialize({
                 'a': {'type': str, 'validation': ['regex', r'^XYZ.+$']},
             }).parse('a=123XYZ')
+
+    def test_multiple_validation(self):
+        evargs = EvArgs()
+
+        evargs.initialize({
+            'a': {'type': str, 'validation': [('size', 4), ('alphabet',)]},
+            'b': {'type': int, 'validation': [('range', 1, 50), ('odd',)]},
+            'c': {'type': str, 'validation': [('between', 5, 10), tuple(['regex', '^[a-z]+$'])]},
+        }).parse('a=ABCD;b=3;c=acdefg')
+
+        assert evargs.get('a') == 'ABCD'
+        assert evargs.get('b') == 3
+        assert evargs.get('c') == 'acdefg'
+
+        # Exception
+        with pytest.raises(EvValidateException):
+            evargs.parse('a=ABC;')
 
     def test_validate_method(self):
         evargs = EvArgs()

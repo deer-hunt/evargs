@@ -113,6 +113,7 @@ Result:
 - Put values. It's available to using `put` is without parsing the expression.
 - Value casting - str, int, float, complex...
 - Value validation - unsigned, number range, alphabet, regex, any other...
+- Applying multiple validations.
 - Applying Pre-processing method and Post-processing method. 
 - Get assigned values.
 - Set default rule.
@@ -174,7 +175,7 @@ The following are the rule options.
 | `require`         | `bool`            | Whether the parameter is required.                                                             |
 | `default`         | `any`             | Set the default value if the value is not provided.                                            |
 | `choices`         | `list`            | Restrict the parameter to a set of predefined values.                                          |
-| `validation`        | `str`,`list`,`callable` | Validation name, list of arguments, or a custom validation method.  Refer to `Value Validation`.                            |
+| `validation`        | `str`,`list`,`callable` | Validation name, list of arguments, or a custom validation method. It also available for multiple validations.  Refer to `Value Validation`.                            |
 | `pre_apply`       | `callable`        | Pre-processing method for the value before applying.                                   |
 | `post_apply`      | `callable`        | Post-processing method for the value after applying.                                   |
 | `pre_apply_param` | `callable`        | Pre-processing method for the parameter before applying.                                |
@@ -245,6 +246,19 @@ In the value validation, `require` option is available to checking for the value
 | `even`         | `int`               | -                                                                              　　|  Even int.                                                              |
 | `odd`          | `int`               | -                                                                              　　| Odd int.                                                             |
 
+**Format**
+
+```
+# Single validation
+'validation': 'validation_name'  # No parameter - str
+'validation': ('validation_name', param1, param2...) - tuple
+'validation': ['validation_name', param1, param2...] - list
+
+# Multiple validation
+'validation': [('validation_name',), ('validation_name', 4)] - list -> tuple, tuple
+'validation': [tuple(['validation_name']), ('validation_name', 4)] - list -> tuple, tuple
+```
+
 **e.g.**
 
 ```
@@ -254,7 +268,8 @@ evargs.initialize({
   'c': {'type': str, 'validation': 'alphabet'},
   'd': {'type': int, 'validation': ['range', None, 100]},
   'e': {'type': str, 'validation': ['regex', r'^ABC\d+XYZ$', re.I]},
-  'f': {'type': int, 'validation': lambda n, v: True if v >= 0 else False}
+  'f': {'type': int, 'validation': lambda n, v: True if v >= 0 else False},
+  'g': {'type': str, 'validation': [('size', 4), ('alphabet',)]}
 })
 ```
 
@@ -332,10 +347,10 @@ desc = evargs.make_help()
 help_formatter = evargs.get_help_formatter()
 
 help_formatter.set_columns({
-		'name': 'Name',
-		'require': '*',
-		'type': 'Type',
-		'help': 'Desc'
+  'name': 'Name',
+  'require': '*',
+  'type': 'Type',
+  'help': 'Desc'
 })
 ```
 

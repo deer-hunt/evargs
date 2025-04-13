@@ -45,25 +45,25 @@ class TestGeneral:
         evargs = EvArgs()
 
         evargs.initialize({
-            'gold': {'type': int, 'help': 'This parameter set the default value. Default value is 5.', 'default': 5},
-            'silver': {'type': int, 'help': 'This parameter is required. Max int value is 5.', 'require': True, 'validation': ['range', None, 5]},
-            'bronze': {'type': str, 'help': 'This parameter accepts a list of strings. Length is 1 - 5.', 'list': True, 'validation': ['between', 1, 5]},
-            'platinum': {'type': int, 'help': 'This parameter can accept multiple parameters.', 'multiple': True, 'validation': lambda v: v * 2},
+            'ethane': {'type': int, 'help': 'This parameter set the default value. Default value is 5.', 'default': 5},
+            'methanol': {'type': int, 'help': 'This parameter is required. Max int value is 5.', 'require': True, 'validation': ['range', None, 5]},
+            'butane': {'type': str, 'help': 'This parameter accepts a list of strings. Length is 1 - 5.', 'list': True, 'validation': ['between', 1, 5]},
+            'propane': {'type': int, 'help': 'This parameter can accept multiple parameters.', 'multiple': True, 'validation': lambda v: v * 2},
         })
 
-        desc = evargs.make_help(params=['gold'])
+        desc = evargs.make_help(params=['methanol'])
 
-        assert re.search(r'gold', desc)
-        assert not re.search(r'silver', desc)
+        assert re.search(r'methanol', desc)
+        assert not re.search(r'butane', desc)
 
     def test_skip_headers(self):
         evargs = EvArgs()
 
         evargs.initialize({
-            'gold': {'type': int, 'help': 'This parameter set the default value. Default value is 5.', 'default': 5},
-            'silver': {'type': int, 'help': 'This parameter is required. Max int value is 5.', 'require': True, 'validation': ['range', None, 5]},
-            'bronze': {'type': str, 'help': 'This parameter accepts a list of strings. Length is 1 - 5.', 'list': True, 'validation': ['between', 1, 5]},
-            'platinum': {'type': int, 'help': 'This parameter can accept multiple parameters.', 'multiple': True, 'validation': lambda v: v * 2},
+            'ethane': {'type': int, 'help': 'This parameter set the default value. Default value is 5.', 'default': 5},
+            'methanol': {'type': int, 'help': 'This parameter is required. Max int value is 5.', 'require': True, 'validation': ['range', None, 5]},
+            'butane': {'type': str, 'help': 'This parameter accepts a list of strings. Length is 1 - 5.', 'list': True, 'validation': ['between', 1, 5]},
+            'propane': {'type': int, 'help': 'This parameter can accept multiple parameters.', 'multiple': True, 'validation': lambda v: v * 2},
         })
 
         desc = evargs.make_help(skip_headers=True)
