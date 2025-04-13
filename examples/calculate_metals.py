@@ -14,9 +14,9 @@ def main():
     evargs = EvArgs()
 
     evargs.initialize({
-        'silver': {'type': int, 'default': 1, 'validate': ['range', 1, 100]},
-        'gold': {'type': int, 'default': 2, 'validate': ['range', 0, 100]},
-        'platinum': {'type': int, 'default': 0, 'validate': ['range', 0, 100]},
+        'silver': {'type': int, 'default': 1, 'validation': ['range', 1, 100]},
+        'gold': {'type': int, 'default': 2, 'validation': ['range', 0, 100]},
+        'platinum': {'type': int, 'default': 0, 'validation': ['range', 0, 100]},
         'msg': {'type': str, 'default': 'Total Metals'}
     })
 

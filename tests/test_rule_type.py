@@ -188,12 +188,12 @@ class TestRuleType:
         evargs.put('a', '2')
         evargs.put('b', b'AAA')
         evargs.put('c', (1, 2, 3))
-        evargs.put('d', {1, 2, 3})
+        evargs.put('d', {'a': 1, 'b': 2, 'c': 3})
 
         assert evargs.get('a') == '2'
         assert evargs.get('b') == b'AAA'
         assert evargs.get('c') == (1, 2, 3)
-        assert evargs.get('d') == {1, 2, 3}
+        assert evargs.get('d') == {'a': 1, 'b': 2, 'c': 3}
         assert evargs.get('e') is None
 
         with pytest.raises(EvValidateException):

@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.3](https://github.com/deer-hunt/evargs/releases/tag/v0.9.3) (2025-04-13)
+
+- Add "make help" feature.
+- Fixed bugs.
+- Changed minor updates.
+
 ## [0.9.2](https://github.com/deer-hunt/evargs/releases/tag/v0.9.2) (2025-04-09)
 
 - Fixed bugs.

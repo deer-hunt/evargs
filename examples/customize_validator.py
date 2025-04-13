@@ -18,8 +18,8 @@ def main():
     evargs = EvArgs(validator)
 
     evargs.initialize({
-        'a': {'type': str, 'validate': 'length248'},
-        'b': {'type': str, 'validate': 'length248'},
+        'a': {'type': str, 'validation': 'length248'},
+        'b': {'type': str, 'validation': 'length248'},
     })
 
     evargs.parse('a=AA; b=12345678;')

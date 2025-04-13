@@ -72,7 +72,7 @@ class TestGetPut:
         assert evargs.get('c', 1) is None
 
         evargs.initialize({
-            'a': {'type': int, 'validate': 'unsigned'},
+            'a': {'type': int, 'validation': 'unsigned'},
         }).parse('a=1;')
 
         with pytest.raises(EvValidateException):

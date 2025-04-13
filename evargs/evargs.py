@@ -6,6 +6,7 @@ from evargs.exception import EvArgsException, EvValidateException
 from evargs.modules import Param, ParamItem, Operator
 from evargs.validator import Validator
 from evargs.value_caster import ValueCaster
+from evargs.help_formatter import HelpFormatter
 
 '''
 [EvArgs]
@@ -36,9 +37,10 @@ ev_parser.parse(value)
 
 class EvArgs:
     RULE = {
+        'help': None,
         'list': False, 'multiple': False,
         'type': None, 'require': False, 'default': None,
-        'choices': None, 'validate': None,
+        'choices': None, 'validation': None,
         'pre_apply': None, 'post_apply': None,
         'pre_apply_param': None, 'post_apply_param': None,
         'evaluate': None, 'evaluate_param': None, 'multiple_or': None, 'list_or': None,
@@ -61,11 +63,28 @@ class EvArgs:
 
         self.value_caster = self.get_value_caster()
 
+        self.help_formatter = None
+
     def get_validator(self) -> Validator:
         return Validator()
 
+    def set_validator(self, validator: Validator):
+        self.validator = validator
+
     def get_value_caster(self) -> type:
         return ValueCaster
+
+    def set_value_caster(self, value_caster: type):
+        self.value_caster = value_caster
+
+    def get_help_formatter(self) -> HelpFormatter:
+        if not self.help_formatter:
+            self.help_formatter = HelpFormatter()
+
+        return self.help_formatter
+
+    def set_help_formatter(self, help_formatter: HelpFormatter):
+        self.help_formatter = help_formatter
 
     def initialize(self, rules: dict, default_rule: dict = None, flexible: bool = False, require_all: bool = False, ignore_unknown: bool = False):
         self.set_default(default_rule)
@@ -256,23 +275,23 @@ class EvArgs:
         return self._build_param(name, rule, operator, value)
 
     def _validate_value(self, rule: dict, name: str, value: any):
-        validate = rule.get('validate')
+        validation = rule.get('validation')
 
-        if validate:
+        if validation:
             args = []
 
-            if isinstance(validate, list):
-                [validate, *args] = validate
+            if isinstance(validation, (list, tuple)):
+                [validation, *args] = validation
 
-            if isinstance(validate, str):
-                validation_fn = getattr(self.validator, 'validate_' + validate, None)
+            if isinstance(validation, str):
+                validation_fn = getattr(self.validator, 'validate_' + validation, None)
 
                 if not validation_fn:
-                    raise EvArgsException('Validation method is not found.({})'.format(validate), EvArgsException.ERROR_PROCESS)
+                    raise EvArgsException('Validation method is not found.({})'.format(validation), EvArgsException.ERROR_PROCESS)
 
                 self._validate_exec(validation_fn, name, value, args)
             else:
-                error = self._validate_exec(validate, name, value, args)
+                error = self._validate_exec(validation, name, value, args)
 
                 if not error:
                     self.validator.raise_error('Validation error.({})'.format(name))
@@ -454,6 +473,14 @@ class EvArgs:
 
     def count_params(self) -> int:
         return len(self.params)
+
+    def make_help(self, params: list = None, append_example: bool = False, skip_headers: bool = False):
+        help_formatter = self.get_help_formatter()
+
+        if append_example:
+            help_formatter.enable_example()
+
+        return help_formatter.make(self.rules, params, skip_headers)
 
     def _raise_parse_error(self, msg: str):
         raise EvArgsException("Parse error.({})".format(msg), EvArgsException.ERROR_PARSE)

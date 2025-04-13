@@ -43,7 +43,7 @@ $ conda install conda-forge::evargs
 ## Requirements
 
 - ```python``` and ```pip``` command
-- Python 3.5 or later version.
+- Python 3.6 or later version.
 
 
 ## Usage
@@ -93,7 +93,7 @@ evargs.initialize({
   'b': {'type': int, 'multiple': True},
   'c': {'type': lambda v: v.upper()},
   'd': {'type': lambda v: v.upper(), 'post_apply_param': lambda vals: '-'.join(vals)},
-  'e': {'type': int, 'validate': ['range', 1, 10]}
+  'e': {'type': int, 'validation': ['range', 1, 10]}
 })
 
 evargs.parse('a=25,80,443; b>= 1; b<6; c=tcp; d=X,Y,z ;e=5;')
@@ -116,11 +116,13 @@ Result:
 - Applying Pre-processing method and Post-processing method. 
 - Get assigned values.
 - Set default rule.
+- Make parameter's description.
 - Other support methods for value-assignment.
+
 
 ## Overview
 
-There are 3 way usages in `evargs`. The behavior of "value-casting and validation" based on `rules` is common to 3 way.
+There are 3 way usages in `EvArgs`. The behavior of "value-casting and validation" based on `rules` is common to 3 way.
 
 ### a. Parsing expression & Evaluation
 
@@ -172,7 +174,7 @@ The following are the rule options.
 | `require`         | `bool`            | Whether the parameter is required.                                                             |
 | `default`         | `any`             | Set the default value if the value is not provided.                                            |
 | `choices`         | `list`            | Restrict the parameter to a set of predefined values.                                          |
-| `validate`        | `str`,`list`,`callable` | Validation name, list of arguments, or a custom validation method.  Refer to `Value Validation`.                            |
+| `validation`        | `str`,`list`,`callable` | Validation name, list of arguments, or a custom validation method.  Refer to `Value Validation`.                            |
 | `pre_apply`       | `callable`        | Pre-processing method for the value before applying.                                   |
 | `post_apply`      | `callable`        | Post-processing method for the value after applying.                                   |
 | `pre_apply_param` | `callable`        | Pre-processing method for the parameter before applying.                                |
@@ -223,7 +225,7 @@ evargs.set_rules({
 
 ## Value Validation
 
-In the value validation, `required` option is available to checking for the value existence and `choices` option is available to restricting the value. Additionally, you can use the following validation rules or custom function in `validate` option.
+In the value validation, `require` option is available to checking for the value existence and `choices` option is available to restricting the value. Additionally, you can use the following validation rules or custom function in `validation` option.
 
 **Validations**
 
@@ -247,18 +249,18 @@ In the value validation, `required` option is available to checking for the valu
 
 ```
 evargs.initialize({
-  'a': {'type': str, 'validate': ['size', 3]},
-  'b': {'type': str, 'validate': ['between', 4, 10]},
-  'c': {'type': str, 'validate': 'alphabet'},
-  'd': {'type': int, 'validate': ['range', None, 100]},
-  'e': {'type': str, 'validate': ['regex', r'^ABC\d+XYZ$', re.I]},
-  'f': {'type': int, 'validate': lambda n, v: True if v >= 0 else False}
+  'a': {'type': str, 'validation': ['size', 3]},
+  'b': {'type': str, 'validation': ['between', 4, 10]},
+  'c': {'type': str, 'validation': 'alphabet'},
+  'd': {'type': int, 'validation': ['range', None, 100]},
+  'e': {'type': str, 'validation': ['regex', r'^ABC\d+XYZ$', re.I]},
+  'f': {'type': int, 'validation': lambda n, v: True if v >= 0 else False}
 })
 ```
 
 **Related**
 
-- [test_rule_validate.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validate.py)
+- [test_rule_validation.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py)
 - [Validator class](https://deer-hunt.github.io/evargs/modules/value-helper.html#module-evargs.validator)
 
 
@@ -279,7 +281,8 @@ evargs.initialize({
 | `put_values`          | `(values, operator=Operator.EQUAL, reset=False)`                              | Put the values of parameters.                  |
 | `reset`                | `(name)`                                                                                      | Reset the value.                                       |
 | `reset_params`    | -                                                                                      | Reset the values of parameters.                 |
-| `count_params     | -                                                                                      | Get parameter's length.                 |
+| `count_params`     | -                                                                                      | Get parameter's length.                 |
+| `make_help`     | `(params=None, append_example=False, skip_headers=False)`     | Make parameter's description. `Refer to Make help`                |
 
 **Related**
 
@@ -296,7 +299,7 @@ e.g. specifying `flexible=True` and `default_rule={...}`.
 
 ### `require_all=True`
 
-All parameters defined in rules must have values assigned. The behavior is equivalent to specifying 'required=True' for each rule.
+All parameters defined in rules must have values assigned. The behavior is equivalent to specifying 'require=True' for each rule.
 
 ### `ignore_unknown=True`
 
@@ -307,14 +310,72 @@ Ignoring and excluding the unknown parameter. The error does not occur if the un
 Default rule for all parameters. e.g. `{'type': int, 'default': -1}`
 
 
-## Sample programs
+## Make help
+
+`make_help` method can make parameter's description. `get_help_formatter` method provide some displaying features.
+
+**e.g.**
+
+```
+desc = evargs.make_help()
+
+ Name              | * | e.g.    | Validation | Description                           
+---------------------------------------------------------------------------------------
+ planet_name       | Y | Jupiter |            | Name of the planet.                   
+ distance_from_sun | N |         | unsigned   | Distance from the Sun in kilometers.  
+ diameter          | N | 6779    | customize  | Diameter of the planet in kilometers. 
+ has_water         | N | 1       |            | Indicates if the planet has water.    
+ surface_color     | N | Black   |            | Main color of the surface.            
+```
+
+```
+help_formatter = evargs.get_help_formatter()
+
+help_formatter.set_columns({
+		'name': 'Name',
+		'require': '*',
+		'type': 'Type',
+		'help': 'Desc'
+})
+```
+
+Also `BaseHelpFormatter` class can also be used independently to adjust and display dict and list data. The example is [here](https://github.com/deer-hunt/evargs/tree/main/examples/show_list_data.py).
+
+```
+# python3 show_list_data.py 
+
+ Compound Name  | Elements                                           | Molecular Formula | Melting Point | Uses          
+--------------------------------------------------------------------------------------------------------------------------
+ Aspirin        | Carbon (C), Hydrogen (H), Oxygen (O)               | C9H8O4            | 135°C         | Pain reliever 
+ Glucose        | Carbon (C), Hydrogen (H), Oxygen (O)               | C6H12O6           | 146°C         | Energy source 
+ Acetaminophen  | Carbon (C), Hydrogen (H), Nitrogen (N), Oxygen (O) | C8H9NO            | 169-172°C     | Pain reliever 
+ Niacin         | Carbon (C), Hydrogen (H), Nitrogen (N)             | C6H5NO2           | 234-236°C     | Nutrient      
+ Salicylic Acid | Carbon (C), Hydrogen (H), Oxygen (O)               | C7H6O3            | 158-160°C     | Preservative  
+```
+
+**Related**
+
+- [test_help.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_help.py)
+- [show_list_data.py](https://github.com/deer-hunt/evargs/tree/main/examples/show_list_data.py)
+- [HelpFormatter class](https://deer-hunt.github.io/evargs/modules/value-helper.html#module-evargs.help_formatter)
+
+
+
+## Examples and Test code
+
+### Examples
+
+There are some examples in `./examples/`.
 
 - [basic.py](https://github.com/deer-hunt/evargs/tree/main/examples/basic.py)
 - [calculate_metals.py](https://github.com/deer-hunt/evargs/tree/main/examples/calculate_metals.py)
 - [various_rules.py](https://github.com/deer-hunt/evargs/tree/main/examples/various_rules.py)
+- [customize_validator.py](https://github.com/deer-hunt/evargs/tree/main/examples/customize_validator.py)
+- [show_help.py](https://github.com/deer-hunt/evargs/tree/main/examples/show_help.py)
+- [show_list_data.py](https://github.com/deer-hunt/evargs/tree/main/examples/show_list_data.py)
 
 
-## Test code & Examples
+###  Test code
 
 There are many examples in `./tests/`.
 
@@ -323,14 +384,16 @@ There are many examples in `./tests/`.
 | [test_general.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_general.py) | General tests for `EvArgs`. |
 | [test_options.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_options.py) | Tests for options of `flexible`, `require_all`, `ignore_unknown`, and `set_options`. |
 | [test_get_put.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_get_put.py) | Tests for `get` and `put` methods. |
-| [test_rule_validate.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validate.py) | Tests for rule validation, including `choices`, `validate`, and custom validation methods. |
+| [test_help.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_help.py) | Tests for showing help. |
+| [test_help_formatter.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_help_formatter.py) | Tests for `HelpFormatter` class. |
+| [test_rule_validation.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) | Tests for rule validation, including `choices`, `validation`, and custom validation methods. |
 | [test_rule_type.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type.py) | Tests for type handling in rules, such as `int`, `float`, `bool`, `str`, `complex`, and custom types. |
 | [test_rule_require_default.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_require_default.py) | Tests for `require` and `default` options. |
 | [test_rule_pre_post.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_pre_post.py) | Tests for `pre_apply` and `post_apply` for value transformations. |
 | [test_rule_multiple.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_multiple.py) | Tests for `multiple` option in rules. |
 | [test_rule_evaluate.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_evaluate.py) | Tests for `evaluate` and `evaluate_param` options, including logical operations and custom evaluations. |
-| [test_value_caster.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_value_caster.py) | Tests for `ValueCaster` methods. |
-| [test_validator.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_validator.py) | Tests for `Validator` methods. |
+| [test_value_caster.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_value_caster.py) | Tests for `ValueCaster` class. |
+| [test_validator.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_validator.py) | Tests for `Validator` class. |
 
 
 ## Class docs

@@ -1,4 +1,5 @@
 from evargs import EvArgs, EvArgsException, EvValidateException
+from evargs.validator import Validator
 import pytest
 import re
 
@@ -32,16 +33,16 @@ class TestRuleValidate:
 
         # unsigned
         evargs.initialize({
-            'a': {'type': int, 'validate': 'unsigned'},
+            'a': {'type': int, 'validation': 'unsigned'},
         }).parse('a=1;')
 
         assert evargs.get('a') == 1
 
         # range
         evargs.initialize({
-            'a': {'type': int, 'validate': ['range', None, 200]},
-            'b': {'type': int, 'validate': ['range', 100, None]},
-            'c': {'type': float, 'validate': ['range', 0, 200]},
+            'a': {'type': int, 'validation': ['range', None, 200]},
+            'b': {'type': int, 'validation': ['range', 100, None]},
+            'c': {'type': float, 'validation': ['range', 0, 200]},
         }).parse('a=123;b=200;c=199.9')
 
         assert evargs.get('a') == 123
@@ -52,13 +53,13 @@ class TestRuleValidate:
 
         # size
         evargs.initialize({
-            'a': {'type': str, 'validate': ['size', 3]},
+            'a': {'type': str, 'validation': ['size', 3]},
         }).parse('a=ABC;')
 
         # between
         evargs.initialize({
-            'a': {'type': str, 'validate': ['between', 4, None]},
-            'b': {'type': str, 'validate': ['between', None, 10]},
+            'a': {'type': str, 'validation': ['between', 4, None]},
+            'b': {'type': str, 'validation': ['between', None, 10]},
         }).parse('a=ABCD;b=ABCDEFGHI')
 
         assert evargs.get('a') == 'ABCD'
@@ -69,20 +70,20 @@ class TestRuleValidate:
 
         # alphabet
         evargs.initialize({
-            'a': {'type': str, 'validate': 'alphabet'},
+            'a': {'type': str, 'validation': 'alphabet'},
         }).parse('a=AbcD;')
 
         assert evargs.get('a') == 'AbcD'
 
         evargs.initialize({
-            'a': {'type': str, 'validate': 'alphanumeric'},
+            'a': {'type': str, 'validation': 'alphanumeric'},
         }).parse('a=Abc123;')
 
         assert evargs.get('a') == 'Abc123'
 
         # printable_ascii
         evargs.initialize({
-            'a': {'type': str, 'validate': 'printable_ascii'},
+            'a': {'type': str, 'validation': 'printable_ascii'},
         }).parse('a="Abc 123";')
 
         assert evargs.get('a') == 'Abc 123'
@@ -92,15 +93,15 @@ class TestRuleValidate:
 
         # regex
         evargs.initialize({
-            'a': {'type': int, 'validate': ['regex', r'^\d{3}$']},
-            'b': {'type': str, 'validate': ['regex', r'^ABC\d{5,10}XYZ$', re.I]},
+            'a': {'type': int, 'validation': ['regex', r'^\d{3}$']},
+            'b': {'type': str, 'validation': ['regex', r'^ABC\d{5,10}XYZ$', re.I]},
         }).parse('a=123;b=AbC12345XyZ')
 
         assert evargs.get('a') == 123
         assert evargs.get('b') == 'AbC12345XyZ'
 
         evargs.initialize({
-            'dna': {'type': str, 'validate': ['regex', r'^[ATGC]+$']},
+            'dna': {'type': str, 'validation': ['regex', r'^[ATGC]+$']},
         }).parse('dna=ATGCGTACGTAGCTAGCTAGCTAGCATCGTAGCTAGCTAGC')
 
         assert evargs.get('dna') == 'ATGCGTACGTAGCTAGCTAGCTAGCATCGTAGCTAGCTAGC'
@@ -108,7 +109,7 @@ class TestRuleValidate:
         # Exception
         with pytest.raises(EvValidateException):
             evargs.initialize({
-                'a': {'type': str, 'validate': ['regex', r'^XYZ.+$']},
+                'a': {'type': str, 'validation': ['regex', r'^XYZ.+$']},
             }).parse('a=123XYZ')
 
     def test_validate_method(self):
@@ -116,7 +117,7 @@ class TestRuleValidate:
 
         # method
         evargs.initialize({
-            'a': {'type': int, 'validate': lambda n, v: True if v >= 0 else False},
+            'a': {'type': int, 'validation': lambda n, v: True if v >= 0 else False},
         }).parse('a=1;')
 
         assert evargs.get('a') == 1
@@ -124,6 +125,30 @@ class TestRuleValidate:
         # Exception
         with pytest.raises(EvValidateException):
             evargs.initialize({
-                'a': {'type': int, 'validate': lambda n, v: True if v >= 0 else False},
-                'b': {'type': int, 'validate': lambda n, v: True if v >= 0 else False},
+                'a': {'type': int, 'validation': lambda n, v: True if v >= 0 else False},
+                'b': {'type': int, 'validation': lambda n, v: True if v >= 0 else False},
             }).parse('a=1;b = - 8;')
+
+
+class MyValidator(Validator):
+    def validate_length_limit(self, name: str, v):
+        if not (len(v) == 8 or len(v) == 24):
+            self.raise_error('Length is not 128,256.')
+
+
+class TestExtendValidator():
+    def test1(self):
+        validator = MyValidator()
+
+        evargs = EvArgs()
+
+        evargs.set_validator(validator)
+
+        # length_limit = MyValidator::validate_length_limit
+        evargs.initialize({
+            'a': {'type': str, 'validation': 'length_limit'},
+        })
+
+        evargs.parse('a=12345678;')
+
+        assert evargs.get('a') == '12345678'
