@@ -416,7 +416,10 @@ There are many examples in `./tests/`.
 - [EvArgs class](https://deer-hunt.github.io/evargs/modules/evargs.html)
 - [Validator class](https://deer-hunt.github.io/evargs/modules/value-helper.html#module-evargs.validator)
 - [ValueCaster class](https://deer-hunt.github.io/evargs/modules/value-helper.html#evargs.value_caster.ValueCaster)
+- [HelpFormatter class](https://deer-hunt.github.io/evargs/modules/value-helper.html#evargs.help_formatter.HelpFormatter)
+- [BaseHelpFormatter class](https://deer-hunt.github.io/evargs/modules/value-helper.html#evargs.help_formatter.BaseHelpFormatter)
 - [EvArgsException class / EvValidateException class](https://deer-hunt.github.io/evargs/modules/evargs.html#module-evargs.exception)
+
 
 ## Dependencies
 
