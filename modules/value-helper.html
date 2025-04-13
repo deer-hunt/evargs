@@ -50,6 +50,8 @@
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/deer-hunt/evargs/blob/main/evargs/validator.py">Validator class</a></p></li>
 <li><p><a class="reference external" href="https://github.com/deer-hunt/evargs/blob/main/evargs/value_caster.py">ValueCaster class</a></p></li>
+<li><p><a class="reference external" href="https://github.com/deer-hunt/evargs/blob/main/evargs/help_formatter.py">HelpFormatter class</a></p></li>
+<li><p><a class="reference external" href="https://github.com/deer-hunt/evargs/blob/main/evargs/help_formatter.py">BaseHelpFormatter class</a></p></li>
 </ul>
 </div>
 <div class="section" id="module-evargs.validator">
@@ -328,6 +330,98 @@
 
 </dd></dl>
 
+</div>
+<div class="section" id="module-evargs.help_formatter">
+<span id="help-formatter-module"></span><h2>help_formatter module<a class="headerlink" href="#module-evargs.help_formatter" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="evargs.help_formatter.HelpFormatter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HelpFormatter</span></span><a class="headerlink" href="#evargs.help_formatter.HelpFormatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#evargs.help_formatter.BaseHelpFormatter" title="evargs.help_formatter.BaseHelpFormatter"><code class="xref py py-class docutils literal notranslate"><span class="pre">evargs.help_formatter.BaseHelpFormatter</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="evargs.help_formatter.HelpFormatter.DEFAULT_COLUMNS">
+<span class="sig-name descname"><span class="pre">DEFAULT_COLUMNS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'default':</span> <span class="pre">'Default',</span> <span class="pre">'help':</span> <span class="pre">'Description',</span> <span class="pre">'name':</span> <span class="pre">'Parameter',</span> <span class="pre">'require':</span> <span class="pre">'Require',</span> <span class="pre">'type':</span> <span class="pre">'Type',</span> <span class="pre">'validation':</span> <span class="pre">'Validation'}</span></em><a class="headerlink" href="#evargs.help_formatter.HelpFormatter.DEFAULT_COLUMNS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evargs.help_formatter.HelpFormatter.enable_example">
+<span class="sig-name descname"><span class="pre">enable_example</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evargs.help_formatter.HelpFormatter.enable_example" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>label</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="evargs.help_formatter.BaseHelpFormatter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseHelpFormatter</span></span><a class="headerlink" href="#evargs.help_formatter.BaseHelpFormatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="evargs.help_formatter.BaseHelpFormatter.make">
+<span class="sig-name descname"><span class="pre">make</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evargs.help_formatter.BaseHelpFormatter.make" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>rows</strong> (<em>Union</em><em>[</em><em>list</em><em>, </em><em>dict</em><em>]</em>) – </p></li>
+<li><p><strong>params</strong> (<em>Optional</em><em>[</em><em>list</em><em>]</em>) – </p></li>
+<li><p><strong>skip_headers</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evargs.help_formatter.BaseHelpFormatter.set_column">
+<span class="sig-name descname"><span class="pre">set_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evargs.help_formatter.BaseHelpFormatter.set_column" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>value</strong> (<em>any</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evargs.help_formatter.BaseHelpFormatter.set_column_max_size">
+<span class="sig-name descname"><span class="pre">set_column_max_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evargs.help_formatter.BaseHelpFormatter.set_column_max_size" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>v</strong> (<em>int</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evargs.help_formatter.BaseHelpFormatter.set_columns">
+<span class="sig-name descname"><span class="pre">set_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evargs.help_formatter.BaseHelpFormatter.set_columns" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>columns</strong> (<em>dict</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<p><cite>BaseHelpFormatter</cite> class can also be used independently to adjust and display dict and list data. The example is <a class="reference external" href="https://github.com/deer-hunt/evargs/tree/main/examples/show_list_data.py">here</a>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># python3 show_list_data.py</span>
+
+<span class="w"> </span>Compound<span class="w"> </span>Name<span class="w">  </span><span class="p">|</span><span class="w"> </span>Elements<span class="w">                                           </span><span class="p">|</span><span class="w"> </span>Molecular<span class="w"> </span>Formula<span class="w"> </span><span class="p">|</span><span class="w"> </span>Melting<span class="w"> </span>Point<span class="w"> </span><span class="p">|</span><span class="w"> </span>Uses
+--------------------------------------------------------------------------------------------------------------------------
+<span class="w"> </span>Aspirin<span class="w">        </span><span class="p">|</span><span class="w"> </span>Carbon<span class="w"> </span><span class="o">(</span>C<span class="o">)</span>,<span class="w"> </span>Hydrogen<span class="w"> </span><span class="o">(</span>H<span class="o">)</span>,<span class="w"> </span>Oxygen<span class="w"> </span><span class="o">(</span>O<span class="o">)</span><span class="w">               </span><span class="p">|</span><span class="w"> </span>C9H8O4<span class="w">            </span><span class="p">|</span><span class="w"> </span><span class="m">135</span>°C<span class="w">         </span><span class="p">|</span><span class="w"> </span>Pain<span class="w"> </span>reliever
+<span class="w"> </span>Glucose<span class="w">        </span><span class="p">|</span><span class="w"> </span>Carbon<span class="w"> </span><span class="o">(</span>C<span class="o">)</span>,<span class="w"> </span>Hydrogen<span class="w"> </span><span class="o">(</span>H<span class="o">)</span>,<span class="w"> </span>Oxygen<span class="w"> </span><span class="o">(</span>O<span class="o">)</span><span class="w">               </span><span class="p">|</span><span class="w"> </span>C6H12O6<span class="w">           </span><span class="p">|</span><span class="w"> </span><span class="m">146</span>°C<span class="w">         </span><span class="p">|</span><span class="w"> </span>Energy<span class="w"> </span><span class="nb">source</span>
+<span class="w"> </span>Acetaminophen<span class="w">  </span><span class="p">|</span><span class="w"> </span>Carbon<span class="w"> </span><span class="o">(</span>C<span class="o">)</span>,<span class="w"> </span>Hydrogen<span class="w"> </span><span class="o">(</span>H<span class="o">)</span>,<span class="w"> </span>Nitrogen<span class="w"> </span><span class="o">(</span>N<span class="o">)</span>,<span class="w"> </span>Oxygen<span class="w"> </span><span class="o">(</span>O<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>C8H9NO<span class="w">            </span><span class="p">|</span><span class="w"> </span><span class="m">169</span>-172°C<span class="w">     </span><span class="p">|</span><span class="w"> </span>Pain<span class="w"> </span>reliever
+<span class="w"> </span>Niacin<span class="w">         </span><span class="p">|</span><span class="w"> </span>Carbon<span class="w"> </span><span class="o">(</span>C<span class="o">)</span>,<span class="w"> </span>Hydrogen<span class="w"> </span><span class="o">(</span>H<span class="o">)</span>,<span class="w"> </span>Nitrogen<span class="w"> </span><span class="o">(</span>N<span class="o">)</span><span class="w">             </span><span class="p">|</span><span class="w"> </span>C6H5NO2<span class="w">           </span><span class="p">|</span><span class="w"> </span><span class="m">234</span>-236°C<span class="w">     </span><span class="p">|</span><span class="w"> </span>Nutrient
+<span class="w"> </span>Salicylic<span class="w"> </span>Acid<span class="w"> </span><span class="p">|</span><span class="w"> </span>Carbon<span class="w"> </span><span class="o">(</span>C<span class="o">)</span>,<span class="w"> </span>Hydrogen<span class="w"> </span><span class="o">(</span>H<span class="o">)</span>,<span class="w"> </span>Oxygen<span class="w"> </span><span class="o">(</span>O<span class="o">)</span><span class="w">               </span><span class="p">|</span><span class="w"> </span>C7H6O3<span class="w">            </span><span class="p">|</span><span class="w"> </span><span class="m">158</span>-160°C<span class="w">     </span><span class="p">|</span><span class="w"> </span>Preservative
+</pre></div>
+</div>
 </div>
 </div>
 

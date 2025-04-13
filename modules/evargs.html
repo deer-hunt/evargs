@@ -86,7 +86,7 @@ assert<span class="w"> </span>evargs.get<span class="o">(</span><span class="s1"
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="evargs.evargs.EvArgs.RULE">
-<span class="sig-name descname"><span class="pre">RULE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'choices':</span> <span class="pre">None,</span> <span class="pre">'default':</span> <span class="pre">None,</span> <span class="pre">'evaluate':</span> <span class="pre">None,</span> <span class="pre">'evaluate_param':</span> <span class="pre">None,</span> <span class="pre">'list':</span> <span class="pre">False,</span> <span class="pre">'list_or':</span> <span class="pre">None,</span> <span class="pre">'multiple':</span> <span class="pre">False,</span> <span class="pre">'multiple_or':</span> <span class="pre">None,</span> <span class="pre">'post_apply':</span> <span class="pre">None,</span> <span class="pre">'post_apply_param':</span> <span class="pre">None,</span> <span class="pre">'pre_apply':</span> <span class="pre">None,</span> <span class="pre">'pre_apply_param':</span> <span class="pre">None,</span> <span class="pre">'prevent_error':</span> <span class="pre">False,</span> <span class="pre">'require':</span> <span class="pre">False,</span> <span class="pre">'type':</span> <span class="pre">None,</span> <span class="pre">'validate':</span> <span class="pre">None}</span></em><a class="headerlink" href="#evargs.evargs.EvArgs.RULE" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">RULE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'choices':</span> <span class="pre">None,</span> <span class="pre">'default':</span> <span class="pre">None,</span> <span class="pre">'evaluate':</span> <span class="pre">None,</span> <span class="pre">'evaluate_param':</span> <span class="pre">None,</span> <span class="pre">'help':</span> <span class="pre">None,</span> <span class="pre">'list':</span> <span class="pre">False,</span> <span class="pre">'list_or':</span> <span class="pre">None,</span> <span class="pre">'multiple':</span> <span class="pre">False,</span> <span class="pre">'multiple_or':</span> <span class="pre">None,</span> <span class="pre">'post_apply':</span> <span class="pre">None,</span> <span class="pre">'post_apply_param':</span> <span class="pre">None,</span> <span class="pre">'pre_apply':</span> <span class="pre">None,</span> <span class="pre">'pre_apply_param':</span> <span class="pre">None,</span> <span class="pre">'prevent_error':</span> <span class="pre">False,</span> <span class="pre">'require':</span> <span class="pre">False,</span> <span class="pre">'type':</span> <span class="pre">None,</span> <span class="pre">'validation':</span> <span class="pre">None}</span></em><a class="headerlink" href="#evargs.evargs.EvArgs.RULE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -127,6 +127,16 @@ assert<span class="w"> </span>evargs.get<span class="o">(</span><span class="s1"
 <li><p><strong>name</strong> (<em>str</em>) – </p></li>
 <li><p><strong>index</strong> (<em>int</em>) – </p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evargs.evargs.EvArgs.get_help_formatter">
+<span class="sig-name descname"><span class="pre">get_help_formatter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#evargs.evargs.EvArgs.get_help_formatter" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="value-helper.html#evargs.help_formatter.HelpFormatter" title="evargs.help_formatter.HelpFormatter"><code class="xref py py-class docutils literal notranslate"><span class="pre">HelpFormatter</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -227,6 +237,20 @@ assert<span class="w"> </span>evargs.get<span class="o">(</span><span class="s1"
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="evargs.evargs.EvArgs.make_help">
+<span class="sig-name descname"><span class="pre">make_help</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">append_example</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_headers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evargs.evargs.EvArgs.make_help" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>params</strong> (<em>Optional</em><em>[</em><em>list</em><em>]</em>) – </p></li>
+<li><p><strong>append_example</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>skip_headers</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="evargs.evargs.EvArgs.parse">
 <span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">assigns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evargs.evargs.EvArgs.parse" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -291,6 +315,16 @@ assert<span class="w"> </span>evargs.get<span class="o">(</span><span class="s1"
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="evargs.evargs.EvArgs.set_help_formatter">
+<span class="sig-name descname"><span class="pre">set_help_formatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">help_formatter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evargs.evargs.EvArgs.set_help_formatter" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>help_formatter</strong> (<a class="reference internal" href="value-helper.html#evargs.help_formatter.HelpFormatter" title="evargs.help_formatter.HelpFormatter"><em>evargs.help_formatter.HelpFormatter</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="evargs.evargs.EvArgs.set_options">
 <span class="sig-name descname"><span class="pre">set_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flexible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_all</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_unknown</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evargs.evargs.EvArgs.set_options" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
@@ -323,6 +357,26 @@ assert<span class="w"> </span>evargs.get<span class="o">(</span><span class="s1"
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>rules</strong> (<em>dict</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evargs.evargs.EvArgs.set_validator">
+<span class="sig-name descname"><span class="pre">set_validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">validator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evargs.evargs.EvArgs.set_validator" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>validator</strong> (<a class="reference internal" href="value-helper.html#evargs.validator.Validator" title="evargs.validator.Validator"><em>evargs.validator.Validator</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="evargs.evargs.EvArgs.set_value_caster">
+<span class="sig-name descname"><span class="pre">set_value_caster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value_caster</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evargs.evargs.EvArgs.set_value_caster" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value_caster</strong> (<em>type</em>) – </p>
 </dd>
 </dl>
 </dd></dl>

@@ -37,6 +37,7 @@ Features and documentation
 - Applying Pre-processing method and Post-processing method.
 - Get assigned values.
 - Set default rule.
+- Make parameter's description.
 - Other support methods for value-assignment.
 
 And you can see detail features and usage in `EvArgs documentation <https://github.com/deer-hunt/evargs/>`_
