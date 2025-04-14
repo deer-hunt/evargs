@@ -4,7 +4,7 @@ import re
 
 
 # Document: https://github.com/deer-hunt/evargs/
-class TestGeneral:
+class TestOptions:
     @pytest.fixture(autouse=True)
     def setup(self):
         pass

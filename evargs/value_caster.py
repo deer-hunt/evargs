@@ -1,20 +1,47 @@
 from distutils.util import strtobool
-import ast
-import operator as op
-from typing import Optional, Union
+from enum import Enum
+from typing import Optional, Type
 
 
 class ValueCaster:
-    @staticmethod
-    def to_int(v: any) -> int:
-        return int(float(v))
+    @classmethod
+    def to_int(cls, v: any, ignore_error: bool = False) -> int:
+        try:
+            value = int(float(v))
+        except (ValueError, TypeError):
+            value = None
 
-    @staticmethod
-    def bool_strict(v: any) -> int:
-        return ValueCaster.to_bool(v, True)
+            if not ignore_error:
+                raise Exception(f'Casting to int failed.({v})')
 
-    @staticmethod
-    def to_bool(v: any, strict: bool = False) -> Optional[bool]:
+        return value
+
+    @classmethod
+    def to_float(cls, v: any, ignore_error: bool = False) -> float:
+        try:
+            value = float(v)
+        except (ValueError, TypeError):
+            value = None
+
+            if not ignore_error:
+                raise Exception(f'Casting to float failed.({v})')
+
+        return value
+
+    @classmethod
+    def to_complex(cls, v: any, ignore_error: bool = False) -> complex:
+        try:
+            value = complex(v)
+        except (ValueError, TypeError):
+            value = None
+
+            if not ignore_error:
+                raise Exception(f'Casting to complex failed.({v})')
+
+        return value
+
+    @classmethod
+    def to_bool(cls, v: any, strict: bool = False) -> Optional[bool]:
         v = str(v).strip()
 
         try:
@@ -26,37 +53,33 @@ class ValueCaster:
 
         return False
 
-    @staticmethod
-    def expression(v: str) -> Union[int, float]:
-        return ExpressionParser.parse(v)
-
-
-class ExpressionParser:
-    OPERATORS = {
-        ast.Add: op.add,
-        ast.Sub: op.sub,
-        ast.Mult: op.mul,
-        ast.Div: op.truediv,
-        ast.Pow: op.pow,
-        ast.BitXor: op.xor,
-        ast.USub: op.neg
-    }
+    @classmethod
+    def bool_strict(cls, v: any) -> int:
+        return cls.to_bool(v, True)
 
     @classmethod
-    def parse(cls, expr: str):
-        parsed = ast.parse(expr, mode='eval')
+    def to_enum(cls, enum_class: Type[Enum], v: any, illegal_value: Enum = None, is_value: bool = True, is_name: bool = False) -> Enum:
+        value = None
 
-        return cls.safe_eval(parsed.body)
+        for v_enum in enum_class:
+            if is_value and v_enum.value == v:
+                value = v_enum
+                break
+            elif is_name and v_enum.name == v:
+                value = v_enum
+                break
+
+        if value is None and illegal_value is not None:
+            value = illegal_value
+
+        return value
 
     @classmethod
-    def safe_eval(cls, node):
-        if isinstance(node, ast.Num):
-            return node.n
-        elif isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
-            return node.value
-        elif isinstance(node, ast.BinOp):
-            return cls.OPERATORS[type(node.op)](cls.safe_eval(node.left), cls.safe_eval(node.right))
-        elif isinstance(node, ast.UnaryOp):
-            return cls.OPERATORS[type(node.op)](cls.safe_eval(node.operand))
-        else:
-            raise TypeError(f"Unsupported type: {type(node)}")
+    def to_enum_loose(cls, enum_class: Type[Enum], v: any, illegal_value: Enum = None, is_value: bool = True, is_name: bool = False) -> Enum:
+        value = cls.to_enum(enum_class, v, illegal_value, is_value, is_name)
+
+        if value is None:
+            v_numeric = cls.to_float(v, ignore_error=True)
+            value = cls.to_enum(enum_class, v_numeric, illegal_value, is_value, is_name)
+
+        return value

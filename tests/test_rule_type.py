@@ -1,6 +1,7 @@
-from evargs import EvArgs, EvArgsException, EvValidateException
 import pytest
-import re
+
+from evargs import EvArgs, EvValidateException
+from evargs.helper import ExpressionParser
 
 
 # Document: https://github.com/deer-hunt/evargs/
@@ -51,6 +52,9 @@ class TestRuleType:
         assert evargs.get('int4') is None
         assert evargs.get('int5', 0) is None
         assert evargs.get('int6', 0) == 1
+
+        with pytest.raises(EvValidateException):
+            evargs.parse('int1a=AAAA')
 
     def test_type_float(self):
         evargs = EvArgs()
@@ -153,25 +157,6 @@ class TestRuleType:
         assert evargs.get('b') == 1 + 5j
         assert evargs.get('c') == 2 + 8j
 
-    def test_type_expression(self):
-        evargs = EvArgs()
-
-        evargs.initialize({
-            'a': {'type': 'expression'},
-            'b': {'type': 'expression'},
-            'c': {'type': 'expression'},
-            'd': {'type': 'expression'},
-        })
-
-        assigns = 'a= 1 + 2 ;b= 2*4;c="1 * 4 + (10 - 4)/2";d=( (1 + 4) * (6 - 4))**2'
-
-        evargs.parse(assigns)
-
-        assert evargs.get('a') == 3
-        assert evargs.get('b') == 8
-        assert evargs.get('c') == 7
-        assert evargs.get('d') == 100
-
     def test_type_raw(self):
         evargs = EvArgs()
 
@@ -223,3 +208,22 @@ class TestRuleType:
         assert evargs.get('a2') == 8
         assert evargs.get('b1') == 256
         assert evargs.get('b2') == 1024
+
+    def test_type_expression(self):
+        evargs = EvArgs()
+
+        evargs.initialize({
+            'a': {'type': lambda v: ExpressionParser.parse(v)},
+            'b': {'type': lambda v: ExpressionParser.parse(v)},
+            'c': {'type': lambda v: ExpressionParser.parse(v)},
+            'd': {'type': lambda v: ExpressionParser.parse(v)},
+        })
+
+        assigns = 'a= 1 + 2 ;b= 2*4;c="1 * 4 + (10 - 4)/2";d=( (1 + 4) * (6 - 4))**2'
+
+        evargs.parse(assigns)
+
+        assert evargs.get('a') == 3
+        assert evargs.get('b') == 8
+        assert evargs.get('c') == 7
+        assert evargs.get('d') == 100

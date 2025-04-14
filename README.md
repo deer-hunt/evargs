@@ -13,7 +13,6 @@
 <a href="https://pypi.org/project/evargs/"><img alt="Newest PyPI version" src="https://img.shields.io/pypi/v/evargs.svg"></a>
 <a href="https://anaconda.org/conda-forge/evargs"> <img src="https://anaconda.org/conda-forge/evargs/badges/version.svg" /></a>
 <a href="https://pypi.org/project/evargs/"><img alt="Number of PyPI downloads" src="https://img.shields.io/pypi/dm/evargs.svg"></a>
-<img alt="GitHub code size in bytes" src="https://img.shields.io/github/languages/code-size/deer-hunt/evargs">
 <a href="https://pypi.org/project/evargs"><img alt="Supported Versions" src="https://img.shields.io/pypi/pyversions/evargs.svg"></a>
 
 </div>
@@ -105,13 +104,20 @@ Result:
 {'a': [25, 80, 443], 'b': [1, 6], 'c': 'TCP', 'd': 'X-Y-Z', 'e': 5}
 ```
 
+```
+evargs.initialize({
+  'a': {'type': ColorEnum, 'default': ColorEnum.RED},
+  'b': {'type': ('enum_value', ColorEnum), 'require': True}
+})
+```
+
 
 ## Features
 
 - It can specify the condition or value-assignment using a simple expression. e.g. `a=1;b>5`
 - Evaluate assigned values. e.g `evargs.evaluate('a', 1)`
 - Put values. It's available to using `put` is without parsing the expression.
-- Value casting - str, int, float, complex...
+- Value casting - str, int, float, complex, Enum class...
 - Value validation - unsigned, number range, alphabet, regex, any other...
 - Applying multiple validations.
 - Applying Pre-processing method and Post-processing method. 
@@ -208,19 +214,23 @@ evargs.set_rules({
 
 | **Type**         | **Description**                                                                   |
 |-------------------|-------------------------------------------------------------------------|
-| `int`, int            | Casting to int.                                   |
-| `float`, float          | Casting to float.                              |
-| `bool`, bool           | Casting to bool.                             |
-| `bool_strict`    | Casting to bool or None.                        |
-| `complex`, `"complex"`        | Casting to complex.          |
-|  `str`, `'str'`    | Casting to str.                                                                        |
-| `expression`     | Evaluating mathematical expressions. e.g., `2 * (3 + 4)`.            |
-| `raw`            | The casting process is not be executed.                                        |
-| `callable`       | Custom callable function for casting. e.g. lambda v: v.upper()        |
+| `int`, `'int'`               | Casting to int.                                |
+| `float`, `'float'`           | Casting to float.                              |
+| `bool`, `'bool'`           | Casting to bool.                              |
+| `'bool_strict'`    | Casting to bool or None.                           |
+| `complex`, `'complex'`        | Casting to complex.               |
+| `str`, `'str'`    | Casting to str.                                                                                    |
+| `Enum class`    | Casting to Enum class. The sample is [here](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type_enum.py).          |
+| `('enum', Enum class)`    | Casting to Enum class by Enum's name or Enum's value.           |
+| `('enum_value', Enum class)`    | Casting to Enum class by Enum's value.                          |
+| `('enum_name', Enum class)`    | Casting to Enum class by Enum's name.                         |
+| `'raw'`            | The casting process is not be executed.                                                  |
+| `callable`       | Custom callable function for casting. e.g. lambda v: v.upper()                    |
 
 **Related**
 
 - [test_rule_type.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type.py)
+- [test_rule_type_enum.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type_enum.py)
 - [ValueCaster class](https://deer-hunt.github.io/evargs/modules/value-helper.html#evargs.value_caster.ValueCaster)
 
 
@@ -354,7 +364,7 @@ help_formatter.set_columns({
 })
 ```
 
-Also `BaseHelpFormatter` class can also be used independently to adjust and display dict and list data. The example is [here](https://github.com/deer-hunt/evargs/tree/main/examples/show_list_data.py).
+Also `ListFormatter` class can also be used independently to adjust and display dict and list data. The example is [here](https://github.com/deer-hunt/evargs/tree/main/examples/show_list_data.py).
 
 ```
 # python3 show_list_data.py 
@@ -370,9 +380,9 @@ Also `BaseHelpFormatter` class can also be used independently to adjust and disp
 
 **Related**
 
-- [test_help.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_help.py)
+- [test_show_help.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_show_help.py)
 - [show_list_data.py](https://github.com/deer-hunt/evargs/tree/main/examples/show_list_data.py)
-- [HelpFormatter class](https://deer-hunt.github.io/evargs/modules/value-helper.html#module-evargs.help_formatter)
+- [ListFormatter class](https://deer-hunt.github.io/evargs/modules/value-helper.html#module-evargs.list_formatter)
 
 
 
@@ -399,16 +409,18 @@ There are many examples in `./tests/`.
 | [test_general.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_general.py) | General tests for `EvArgs`. |
 | [test_options.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_options.py) | Tests for options of `flexible`, `require_all`, `ignore_unknown`, and `set_options`. |
 | [test_get_put.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_get_put.py) | Tests for `get` and `put` methods. |
-| [test_help.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_help.py) | Tests for showing help. |
-| [test_help_formatter.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_help_formatter.py) | Tests for `HelpFormatter` class. |
+| [test_show_help.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_show_help.py) | Tests for showing help. |
+| [test_list_formatter.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_list_formatter.py) | Tests for `HelpFormatter`, `ListFormatter` class. |
 | [test_rule_validation.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) | Tests for rule validation, including `choices`, `validation`, and custom validation methods. |
 | [test_rule_type.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type.py) | Tests for type handling in rules, such as `int`, `float`, `bool`, `str`, `complex`, and custom types. |
+| [test_rule_type_enum.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type_enum.py) | Tests for Enum type in rules. |
 | [test_rule_require_default.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_require_default.py) | Tests for `require` and `default` options. |
 | [test_rule_pre_post.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_pre_post.py) | Tests for `pre_apply` and `post_apply` for value transformations. |
 | [test_rule_multiple.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_multiple.py) | Tests for `multiple` option in rules. |
 | [test_rule_evaluate.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_evaluate.py) | Tests for `evaluate` and `evaluate_param` options, including logical operations and custom evaluations. |
 | [test_value_caster.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_value_caster.py) | Tests for `ValueCaster` class. |
 | [test_validator.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_validator.py) | Tests for `Validator` class. |
+| [test_helper.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_helper.py) | Tests for ExpressionParser. |
 
 
 ## Class docs
@@ -416,8 +428,8 @@ There are many examples in `./tests/`.
 - [EvArgs class](https://deer-hunt.github.io/evargs/modules/evargs.html)
 - [Validator class](https://deer-hunt.github.io/evargs/modules/value-helper.html#module-evargs.validator)
 - [ValueCaster class](https://deer-hunt.github.io/evargs/modules/value-helper.html#evargs.value_caster.ValueCaster)
-- [HelpFormatter class](https://deer-hunt.github.io/evargs/modules/value-helper.html#evargs.help_formatter.HelpFormatter)
-- [BaseHelpFormatter class](https://deer-hunt.github.io/evargs/modules/value-helper.html#evargs.help_formatter.BaseHelpFormatter)
+- [HelpFormatter class](https://deer-hunt.github.io/evargs/modules/value-helper.html#evargs.list_formatter.HelpFormatter)
+- [ListFormatter class](https://deer-hunt.github.io/evargs/modules/value-helper.html#evargs.list_formatter.ListFormatter)
 - [EvArgsException class / EvValidateException class](https://deer-hunt.github.io/evargs/modules/evargs.html#module-evargs.exception)
 
 

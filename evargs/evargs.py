@@ -1,12 +1,14 @@
 import io
 import re
 import tokenize
+from enum import Enum
+from typing import Type
 
 from evargs.exception import EvArgsException, EvValidateException
+from evargs.list_formatter import HelpFormatter
 from evargs.modules import Param, ParamItem, Operator
 from evargs.validator import Validator
 from evargs.value_caster import ValueCaster
-from evargs.help_formatter import HelpFormatter
 
 '''
 [EvArgs]
@@ -71,10 +73,10 @@ class EvArgs:
     def set_validator(self, validator: Validator):
         self.validator = validator
 
-    def get_value_caster(self) -> type:
+    def get_value_caster(self) -> Type[ValueCaster]:
         return ValueCaster
 
-    def set_value_caster(self, value_caster: type):
+    def set_value_caster(self, value_caster: Type[ValueCaster]):
         self.value_caster = value_caster
 
     def get_help_formatter(self) -> HelpFormatter:
@@ -223,24 +225,26 @@ class EvArgs:
                 if value_type == int or value_type == 'int':
                     values = list(map(self.value_caster.to_int, values))
                 elif value_type == float or value_type == 'float':
-                    values = list(map(lambda v: float(v), values))
+                    values = list(map(self.value_caster.to_float, values))
                 elif value_type == complex or value_type == 'complex':
-                    values = list(map(lambda v: complex(v), values))
+                    values = list(map(self.value_caster.to_complex, values))
                 elif value_type == bool or value_type == 'bool':
                     values = list(map(self.value_caster.to_bool, values))
                 elif value_type == 'bool_strict':
                     values = list(map(self.value_caster.bool_strict, values))
                 elif value_type == str or value_type == 'str':
                     values = list(map(lambda v: str(v), values))
-                elif value_type == 'expression':
-                    values = list(map(self.value_caster.expression, values))
+                elif isinstance(value_type, Enum.__class__):
+                    values = self._apply_value_type_tuple(values, ('enum', value_type))
+                elif isinstance(value_type, tuple):
+                    values = self._apply_value_type_tuple(values, value_type)
                 elif callable(value_type):
                     values = list(map(value_type, values))
                 else:  # raw
-                    values = values
-            except Exception as e:
+                    pass
+            except Exception:
                 if not rule.get('prevent_error'):
-                    raise e
+                    raise EvValidateException(f'Value casting failed.({name})', EvValidateException.ERROR_CAST)
                 else:
                     values = [None]
 
@@ -273,6 +277,20 @@ class EvArgs:
             self._validate_value(rule, name, value)
 
         return self._build_param(name, rule, operator, value)
+
+    def _apply_value_type_tuple(self, values, value_type):
+        (value_type, param) = value_type
+
+        if value_type == 'enum':
+            fn = (lambda v: self.value_caster.to_enum_loose(param, v, is_value=True, is_name=True))
+        elif value_type == 'enum_value':
+            fn = (lambda v: self.value_caster.to_enum_loose(param, v, is_value=True, is_name=False))
+        elif value_type == 'enum_name':
+            fn = (lambda v: self.value_caster.to_enum_loose(param, v, is_value=False, is_name=True))
+        else:
+            fn = (lambda v: v)
+
+        return list(map(fn, values))
 
     def _validate_value(self, rule: dict, name: str, value: any):
         validation = rule.get('validation')

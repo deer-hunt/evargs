@@ -1,4 +1,4 @@
-from evargs.help_formatter import BaseHelpFormatter
+from evargs.list_formatter import ListFormatter
 
 '''
 python3 show_list_data.py
@@ -6,9 +6,9 @@ python3 show_list_data.py
 
 
 def main():
-    csv_help = ListDataHelpFormatter()
+    list_formatter = ListDataFormatter()
 
-    text = csv_help.make([
+    text = list_formatter.make([
         {'name': 'Aspirin', 'elements': ['Carbon (C)', 'Hydrogen (H)', 'Oxygen (O)'], 'molecular': 'C9H8O4', 'melting': '135°C', 'uses': 'Pain reliever'},
         {'name': 'Glucose', 'elements': ['Carbon (C)', 'Hydrogen (H)', 'Oxygen (O)'], 'molecular': 'C6H12O6', 'melting': '146°C', 'uses': 'Energy source'},
         {'name': 'Acetaminophen', 'elements': ['Carbon (C)', 'Hydrogen (H)', 'Nitrogen (N)', 'Oxygen (O)'], 'molecular': 'C8H9NO', 'melting': '169-172°C', 'uses': 'Pain reliever'},
@@ -21,7 +21,7 @@ def main():
     print(text)
 
 
-class ListDataHelpFormatter(BaseHelpFormatter):
+class ListDataFormatter(ListFormatter):
     def __init__(self):
         super().__init__()
 

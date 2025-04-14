@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.4](https://github.com/deer-hunt/evargs/releases/tag/v0.9.4) (2025-04-15)
+
+- Add Enum type support.
+- Changed minor updates.
+- Fixed bugs.
+
 ## [0.9.3](https://github.com/deer-hunt/evargs/releases/tag/v0.9.3) (2025-04-13)
 
 - Add "make help", "multiple validation".

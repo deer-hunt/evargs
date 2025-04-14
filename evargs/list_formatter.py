@@ -3,7 +3,7 @@ import textwrap
 from typing import Union
 
 
-class BaseHelpFormatter:
+class ListFormatter:
     def __init__(self):
         self.columns = {}
 
@@ -130,7 +130,7 @@ class BaseHelpFormatter:
         return v
 
 
-class HelpFormatter(BaseHelpFormatter):
+class HelpFormatter(ListFormatter):
     DEFAULT_COLUMNS = {
         'name': 'Parameter',
         'type': 'Type',

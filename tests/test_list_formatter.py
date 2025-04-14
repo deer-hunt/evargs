@@ -1,10 +1,12 @@
-from evargs.help_formatter import HelpFormatter, BaseHelpFormatter
-import pytest
 import re
+
+import pytest
+
+from evargs.list_formatter import HelpFormatter, ListFormatter
 
 
 # Document: https://github.com/deer-hunt/evargs/
-class TestHelpFormatter:
+class TestListFormatter:
     @pytest.fixture(autouse=True)
     def setup(self):
         pass
@@ -48,7 +50,7 @@ class TestHelpFormatter:
         assert re.search(r'C7H6O3', text)
 
 
-class ElectronMicroscopeOperation(BaseHelpFormatter):
+class ElectronMicroscopeOperation(ListFormatter):
     def __init__(self):
         super().__init__()
 
@@ -63,7 +65,7 @@ class ElectronMicroscopeOperation(BaseHelpFormatter):
         return f'"{v}"'
 
 
-class ChemistryListHelp(BaseHelpFormatter):
+class ChemistryListHelp(ListFormatter):
     def __init__(self):
         super().__init__()
 
