@@ -117,7 +117,7 @@ evargs.initialize({
 - It can specify the condition or value-assignment using a simple expression. e.g. `a=1;b>5`
 - Evaluate assigned values. e.g `evargs.evaluate('a', 1)`
 - Put values. It's available to using `put` is without parsing the expression.
-- Value casting - str, int, float, complex, Enum class...
+- Value casting - str, int, float, complex, Enum class, custom function...
 - Value validation - unsigned, number range, alphabet, regex, any other...
 - Applying multiple validations.
 - Applying Pre-processing method and Post-processing method. 
@@ -177,7 +177,7 @@ The following are the rule options.
 |--------------------|--------------------|-------------------------------------------------------------------------------------------------|
 | `list`            | `bool`            | Whether the parameter is a list value.                                                         |
 | `multiple`        | `bool`            | Allows multiple condition values.                                                              |
-| `type`            | `str`,`callable` | Set cast type (e.g., `int`, `str`, `bool`, `bool_strict`, `float`, ...). Refer to `Value casting`.            |
+| `type`            | `str`,`callable` | Value cast type (e.g., `int`, `str`, `bool`, `bool_strict`, `float`, `Enum class`, ...). Refer to `Value Casting`.            |
 | `require`         | `bool`            | Whether the parameter is required.                                                             |
 | `default`         | `any`             | Set the default value if the value is not provided.                                            |
 | `choices`         | `list`            | Restrict the parameter to a set of predefined values.                                          |
