@@ -180,7 +180,7 @@ The following are the rule options.
 | `type`            | `str`,`callable` | Value cast type (e.g., `int`, `str`, `bool`, `bool_strict`, `float`, `Enum class`, ...). Refer to `Value Casting`.            |
 | `require`         | `bool`            | Whether the parameter is required.                                                             |
 | `default`         | `any`             | Set the default value if the value is not provided.                                            |
-| `choices`         | `list`, `tuple`, `Enum class` | Restrict the parameter to a set of predefined values.                                          |
+| `choices`         | `list`, `tuple`, `Enum class` | Restrict the parameter to predefined values.                                          |
 | `validation`        | `str`,`list`,`callable` | Validation name, list of arguments, or a custom validation method. It also available for multiple validations.  Refer to `Value Validation`.        |
 | `pre_apply`       | `callable`        | Pre-processing method for the value before applying.                                   |
 | `post_apply`      | `callable`        | Post-processing method for the value after applying.                                   |
@@ -270,6 +270,13 @@ In the value validation, `require` option is available to checking for the value
 ```
 
 **e.g.**
+
+```
+evargs.initialize({
+  'a': {'type': int, 'choices': [1, 2, 3]},
+  'b': {'type': int, 'choices': EnumClass}
+})
+```
 
 ```
 evargs.initialize({
