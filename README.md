@@ -412,7 +412,7 @@ There are many examples in `./tests/`.
 | [test_show_help.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_show_help.py) | Tests for showing help. |
 | [test_list_formatter.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_list_formatter.py) | Tests for `HelpFormatter`, `ListFormatter` class. |
 | [test_rule_validation.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) | Tests for rule validation, including `choices`, `validation`, and custom validation methods. |
-| [test_rule_type.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type.py) | Tests for type handling in rules, such as `int`, `float`, `bool`, `str`, `complex`, and custom types. |
+| [test_rule_type.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type.py) | Tests for type handling in rules, such as `int`, `float`, `bool`, `str`, `complex`, `Enum class` and custom types. |
 | [test_rule_type_enum.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type_enum.py) | Tests for Enum type in rules. |
 | [test_rule_require_default.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_require_default.py) | Tests for `require` and `default` options. |
 | [test_rule_pre_post.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_pre_post.py) | Tests for `pre_apply` and `post_apply` for value transformations. |
