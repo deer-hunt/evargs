@@ -47,7 +47,22 @@
 <p>“EvArgs” is a lightweight python module for easy expression parsing and value-casting, validating by rules, and it provide flexible configuration and custom validation method.</p>
 <div class="section" id="github">
 <h2>Github<a class="headerlink" href="#github" title="Permalink to this headline">¶</a></h2>
-<p>The latest version and documentation may be found on GitHub. The Github URL is the following.</p>
+<div>
+
+<a href="https://github.com/deer-hunt/evargs/actions/workflows/unit-tests.yml"><img alt="CI - Test" src="https://github.com/deer-hunt/evargs/actions/workflows/unit-tests.yml/badge.svg"></a>
+<a href="https://github.com/deer-hunt/evargs/actions/workflows/unit-tests-windows.yml"><img alt="CI - Test" src="https://github.com/deer-hunt/evargs/actions/workflows/unit-tests-windows.yml/badge.svg"></a>
+<a href="https://github.com/deer-hunt/evargs/actions/workflows/unit-tests-macos.yml"><img alt="CI - Test" src="https://github.com/deer-hunt/evargs/actions/workflows/unit-tests-macos.yml/badge.svg"></a>
+<a href="https://github.com/deer-hunt/evargs/actions/workflows/lint.yml"><img alt="GitHub Actions build status (Lint)" src="https://github.com/deer-hunt/evargs/workflows/Lint/badge.svg"></a>
+<a href="https://anaconda.org/conda-forge/evargs"> <img src="https://anaconda.org/conda-forge/evargs/badges/platforms.svg" /> </a>
+<a href="https://codecov.io/gh/deer-hunt/evargs"><img alt="Coverage" src="https://codecov.io/github/deer-hunt/evargs/coverage.svg?branch=main"></a>
+<img alt="PyPI - Status" src="https://img.shields.io/pypi/status/evargs">
+<a href="https://github.com/deer-hunt/evargs/blob/main/LICENSE.md"><img alt="License - MIT" src="https://img.shields.io/pypi/l/evargs.svg"></a>
+<a href="https://pypi.org/project/evargs/"><img alt="Newest PyPI version" src="https://img.shields.io/pypi/v/evargs.svg"></a>
+<a href="https://anaconda.org/conda-forge/evargs"> <img src="https://anaconda.org/conda-forge/evargs/badges/version.svg" /></a>
+<a href="https://pypi.org/project/evargs/"><img alt="Number of PyPI downloads" src="https://img.shields.io/pypi/dm/evargs.svg"></a>
+<a href="https://pypi.org/project/evargs"><img alt="Supported Versions" src="https://img.shields.io/pypi/pyversions/evargs.svg"></a>
+
+</div><p>The latest version and documentation may be found on GitHub. The Github URL is the following.</p>
 <p><a class="reference external" href="https://github.com/deer-hunt/evargs/">EvArgs Github</a></p>
 </div>
 <div class="section" id="install">
@@ -65,7 +80,7 @@ $<span class="w"> </span>pip3<span class="w"> </span>install<span class="w"> </s
 <li><p>It can specify the condition or value-assignment using a simple expression. e.g. <cite>a=1;b&gt;5</cite></p></li>
 <li><p>Evaluate assigned values. e.g <cite>evargs.evaluate(‘a’, 1)</cite></p></li>
 <li><p>Put values. It’s available to using <cite>put</cite> is without parsing the expression.</p></li>
-<li><p>Value casting - str, int, float, complex…</p></li>
+<li><p>Value casting - str, int, float, complex, Enum class, custom function…</p></li>
 <li><p>Value validation - unsigned, number range, alphabet, regex, any other…</p></li>
 <li><p>Applying multiple validations.</p></li>
 <li><p>Applying Pre-processing method and Post-processing method.</p></li>
