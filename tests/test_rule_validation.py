@@ -1,10 +1,18 @@
 from evargs import EvArgs, EvArgsException, EvValidateException
 from evargs.validator import Validator
+from enum import Enum
 import pytest
 import re
 
 
 # Document: https://github.com/deer-hunt/evargs/
+class Color(Enum):
+    RED = 1
+    GREEN = 2
+    BLUE = 3
+    EMERALD_GREEN = 2.5
+
+
 class TestRuleValidate:
     @pytest.fixture(autouse=True)
     def setup(self):
@@ -15,7 +23,7 @@ class TestRuleValidate:
 
         evargs.initialize({
             'a': {'type': int, 'choices': [1, 2, 3]},
-            'b': {'type': str, 'choices': ['A', 'B', 'C']}
+            'b': {'type': str, 'choices': ('A', 'B', 'C')}
         }).parse('a=3;b=A')
 
         assert evargs.get('a') == 3
@@ -27,6 +35,21 @@ class TestRuleValidate:
 
         with pytest.raises(EvValidateException):
             evargs.parse('b=Z;')
+
+    def test_choices_enum(self):
+        evargs = EvArgs()
+
+        evargs.initialize({
+            'a': {'type': int, 'choices': Color},
+            'b': {'type': float, 'choices': Color}
+        }).parse('a=1;b=2.5')
+
+        assert evargs.get('a') == 1
+        assert evargs.get('b') == 2.5
+
+        # Exception
+        with pytest.raises(EvValidateException):
+            evargs.parse('a=5;')
 
     def test_validate_number(self):
         evargs = EvArgs()

@@ -1,6 +1,12 @@
 from evargs.exception import EvArgsException, EvValidateException
 import re
 
+"""
+Validator
+
+This class provides comprehensive validation functionality for parameter values.
+"""
+
 
 class Validator:
     # str

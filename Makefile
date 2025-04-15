@@ -14,3 +14,4 @@ tox:
 	tox
 
 all: clean test lint
+

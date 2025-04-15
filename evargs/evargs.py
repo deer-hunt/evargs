@@ -2,7 +2,7 @@ import io
 import re
 import tokenize
 from enum import Enum
-from typing import Type
+from typing import Type, Optional
 
 from evargs.exception import EvArgsException, EvValidateException
 from evargs.list_formatter import HelpFormatter
@@ -50,6 +50,7 @@ class EvArgs:
     }
 
     def __init__(self, validator: Validator = None):
+        """Initialize instance with default settings and an optional validator."""
         self.rules = {}
         self.default_rule = {}
         self.params = {}
@@ -68,27 +69,34 @@ class EvArgs:
         self.help_formatter = None
 
     def get_validator(self) -> Validator:
+        """Return Validator instance."""
         return Validator()
 
     def set_validator(self, validator: Validator):
+        """Set Validator instance."""
         self.validator = validator
 
     def get_value_caster(self) -> Type[ValueCaster]:
+        """Return ValueCaster class."""
         return ValueCaster
 
     def set_value_caster(self, value_caster: Type[ValueCaster]):
+        """Set ValueCaster class."""
         self.value_caster = value_caster
 
     def get_help_formatter(self) -> HelpFormatter:
+        """Return HelpFormatter instance."""
         if not self.help_formatter:
             self.help_formatter = HelpFormatter()
 
         return self.help_formatter
 
     def set_help_formatter(self, help_formatter: HelpFormatter):
+        """Set HelpFormatter instance."""
         self.help_formatter = help_formatter
 
     def initialize(self, rules: dict, default_rule: dict = None, flexible: bool = False, require_all: bool = False, ignore_unknown: bool = False):
+        """Initialize rules and options for the instance."""
         self.set_default(default_rule)
 
         self.set_options(flexible, require_all, ignore_unknown)
@@ -98,14 +106,17 @@ class EvArgs:
         return self
 
     def set_options(self, flexible: bool = False, require_all: bool = False, ignore_unknown: bool = False):
+        """Set options."""
         self.flexible = flexible
         self.require_all = require_all
         self.ignore_unknown = ignore_unknown
 
     def set_default(self, default_rule: dict = None):
+        """Set the default rule."""
         self.default_rule = default_rule
 
     def set_rules(self, rules: dict):
+        """Set rules."""
         self.rules = {}
 
         for name, rule in rules.items():
@@ -114,6 +125,7 @@ class EvArgs:
         return self
 
     def set_rule(self, name: str, rule: dict):
+        """Set rule."""
         if self.default_rule is None:
             self.rules[name] = rule
         else:
@@ -128,6 +140,7 @@ class EvArgs:
         return self
 
     def parse(self, assigns: str):
+        """Parse the expression of assigns."""
         self.reset_params()
 
         readline = io.StringIO(assigns).readline
@@ -207,7 +220,7 @@ class EvArgs:
             else:
                 self._raise_unknown_error(name)
 
-    def _add_param_by_rule(self, rule: dict, name: str, operator: int, values: list) -> Param:
+    def _add_param_by_rule(self, rule: dict, name: str, operator: Optional[int], values: list) -> Param:
         pre_apply_param = rule.get('pre_apply_param')
 
         if pre_apply_param:
@@ -235,9 +248,9 @@ class EvArgs:
                 elif value_type == str or value_type == 'str':
                     values = list(map(lambda v: str(v), values))
                 elif isinstance(value_type, Enum.__class__):
-                    values = self._apply_value_type_tuple(values, ('enum', value_type))
+                    values = self._apply_cast_tuple(values, 'enum', [value_type])
                 elif isinstance(value_type, tuple):
-                    values = self._apply_value_type_tuple(values, value_type)
+                    values = self._apply_cast_tuple(values, value_type[0], value_type[1:])
                 elif callable(value_type):
                     values = list(map(value_type, values))
                 else:  # raw
@@ -278,15 +291,13 @@ class EvArgs:
 
         return self._build_param(name, rule, operator, value)
 
-    def _apply_value_type_tuple(self, values, value_type):
-        (value_type, param) = value_type
-
-        if value_type == 'enum':
-            fn = (lambda v: self.value_caster.to_enum_loose(param, v, is_value=True, is_name=True))
-        elif value_type == 'enum_value':
-            fn = (lambda v: self.value_caster.to_enum_loose(param, v, is_value=True, is_name=False))
-        elif value_type == 'enum_name':
-            fn = (lambda v: self.value_caster.to_enum_loose(param, v, is_value=False, is_name=True))
+    def _apply_cast_tuple(self, values: list, cmd: str, args):
+        if cmd == 'enum':
+            fn = (lambda v: self.value_caster.to_enum_loose(args[0], v, is_value=True, is_name=True))
+        elif cmd == 'enum_value':
+            fn = (lambda v: self.value_caster.to_enum_loose(args[0], v, is_value=True, is_name=False))
+        elif cmd == 'enum_name':
+            fn = (lambda v: self.value_caster.to_enum_loose(args[0], v, is_value=False, is_name=True))
         else:
             fn = (lambda v: v)
 
@@ -301,8 +312,16 @@ class EvArgs:
         choices = rule.get('choices')
 
         if choices:
-            if value not in choices:
-                self.validator.raise_error('Out of choices.({}; {})'.format(name, value), EvValidateException.ERROR_OUT_CHOICES)
+            self._validate_choices(name, choices, value)
+
+    def _validate_choices(self, name: str, choices: any, value: any):
+        if not isinstance(choices, Enum.__class__):
+            values = choices
+        else:
+            values = [item.value for item in choices]
+
+        if value not in values:
+            self.validator.raise_error('Out of choices.({}; {})'.format(name, value), EvValidateException.ERROR_OUT_CHOICES)
 
     def _validate(self, validation: any, name: str, value: any):
         args = []
@@ -360,6 +379,7 @@ class EvArgs:
         return param
 
     def evaluate(self, name: str, v: any) -> bool:
+        """Evaluate a value against a rule and parameter configuration."""
         rule = self.get_rule(name)
 
         if rule is None:
@@ -422,6 +442,7 @@ class EvArgs:
         return success
 
     def get_rule(self, name: str) -> dict:
+        """Retrieve a rule by name, fallback to default or raise error if not found."""
         rule = self.rules.get(name)
 
         if rule is None and self.flexible:
@@ -433,6 +454,7 @@ class EvArgs:
         return rule
 
     def get(self, name: str, index: int = -1) -> any:
+        """Retrieve a parameter value by name and index."""
         rule = self.get_rule(name)
 
         if rule is None:
@@ -446,6 +468,7 @@ class EvArgs:
         return param.get(index)
 
     def get_values(self) -> dict:
+        """Retrieve a dict of values."""
         values = {}
 
         for name in self.params:
@@ -454,6 +477,7 @@ class EvArgs:
         return values
 
     def put(self, name: str, value: any, operator: int = Operator.EQUAL, reset: bool = False):
+        """Add or update a parameter."""
         if reset:
             self.reset(name)
 
@@ -467,19 +491,24 @@ class EvArgs:
         self._add_param_by_rule(rule, name, operator, values)
 
     def put_values(self, values: dict, operator: int = Operator.EQUAL, reset: bool = False):
+        """Update multiple parameters."""
         for name, value in values.items():
             self.put(name, value, operator, reset)
 
     def reset(self, name: str):
+        """Reset a parameter by name."""
         del self.params[name]
 
     def reset_params(self):
+        """Reset all parameters."""
         self.params = {}
 
     def has_param(self, name: str) -> bool:
+        """Check if a parameter with the given name exists."""
         return (name in self.params)
 
-    def get_param(self, name: str) -> Param:
+    def get_param(self, name: str) -> Optional[Param]:
+        """Get a parameter by name."""
         param = self.params.get(name)
 
         rule = self.get_rule(name)
@@ -493,12 +522,15 @@ class EvArgs:
         return param
 
     def get_params(self) -> dict:
+        """Get the parameters."""
         return self.params
 
     def count_params(self) -> int:
+        """Get the number of parameters."""
         return len(self.params)
 
     def make_help(self, params: list = None, append_example: bool = False, skip_headers: bool = False):
+        """Make a formatted help message based on rules."""
         help_formatter = self.get_help_formatter()
 
         if append_example:

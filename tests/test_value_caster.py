@@ -61,6 +61,7 @@ class TestValueCaster:
         assert ValueCaster.to_enum_loose(Color, '3.5') == Color.PURPLE
 
         assert ValueCaster.to_enum_loose(Color, '1', is_name=True, is_value=False) is None
+        assert ValueCaster.to_enum_loose(Color, 'BLUE', is_name=True, is_value=False) is Color.BLUE
         assert ValueCaster.to_enum_loose(Color, '100', illegal_value=Color.WHITE) == Color.WHITE
 
     def test_enum_illegal(self):

@@ -2,6 +2,12 @@ from distutils.util import strtobool
 from enum import Enum
 from typing import Optional, Type
 
+"""
+ValueCaster
+
+This class provides flexible type conversion capabilities for casting to `int`, `float`, `complex`, `bool`, `Enum class`.
+"""
+
 
 class ValueCaster:
     @classmethod

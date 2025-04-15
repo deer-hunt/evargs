@@ -45,6 +45,21 @@ $ conda install conda-forge::evargs
 - Python 3.6 or later version.
 
 
+## Features
+
+- It can specify the condition or value-assignment using a simple expression. e.g. `a=1;b>5`
+- Evaluate assigned values. e.g `evargs.evaluate('a', 1)`
+- Put values. It's available to using `put` is without parsing the expression.
+- Value casting - str, int, float, complex, Enum class, custom function...
+- Value validation - unsigned, number range, alphabet, regex, any other...
+- Applying multiple validations.
+- Applying Pre-processing method and Post-processing method. 
+- Get assigned values.
+- Set default rule.
+- Make parameter's description.
+- Other support methods for value-assignment.
+
+
 ## Usage
 
 **Basic**
@@ -112,21 +127,6 @@ evargs.initialize({
 ```
 
 
-## Features
-
-- It can specify the condition or value-assignment using a simple expression. e.g. `a=1;b>5`
-- Evaluate assigned values. e.g `evargs.evaluate('a', 1)`
-- Put values. It's available to using `put` is without parsing the expression.
-- Value casting - str, int, float, complex, Enum class, custom function...
-- Value validation - unsigned, number range, alphabet, regex, any other...
-- Applying multiple validations.
-- Applying Pre-processing method and Post-processing method. 
-- Get assigned values.
-- Set default rule.
-- Make parameter's description.
-- Other support methods for value-assignment.
-
-
 ## Overview
 
 There are 3 way usages in `EvArgs`. The behavior of "value-casting and validation" based on `rules` is common to 3 way.
@@ -180,8 +180,8 @@ The following are the rule options.
 | `type`            | `str`,`callable` | Value cast type (e.g., `int`, `str`, `bool`, `bool_strict`, `float`, `Enum class`, ...). Refer to `Value Casting`.            |
 | `require`         | `bool`            | Whether the parameter is required.                                                             |
 | `default`         | `any`             | Set the default value if the value is not provided.                                            |
-| `choices`         | `list`            | Restrict the parameter to a set of predefined values.                                          |
-| `validation`        | `str`,`list`,`callable` | Validation name, list of arguments, or a custom validation method. It also available for multiple validations.  Refer to `Value Validation`.                            |
+| `choices`         | `list`, `tuple`, `Enum class` | Restrict the parameter to a set of predefined values.                                          |
+| `validation`        | `str`,`list`,`callable` | Validation name, list of arguments, or a custom validation method. It also available for multiple validations.  Refer to `Value Validation`.        |
 | `pre_apply`       | `callable`        | Pre-processing method for the value before applying.                                   |
 | `post_apply`      | `callable`        | Post-processing method for the value after applying.                                   |
 | `pre_apply_param` | `callable`        | Pre-processing method for the parameter before applying.                                |
@@ -225,7 +225,7 @@ evargs.set_rules({
 | `('enum_value', Enum class)`    | Casting to Enum class by Enum's value.                          |
 | `('enum_name', Enum class)`    | Casting to Enum class by Enum's name.                         |
 | `'raw'`            | The casting process is not be executed.                                                  |
-| `callable`       | Custom callable function for casting. e.g. lambda v: v.upper()                    |
+| `callable`       | Custom callable function for casting. e.g. `lambda v: v.upper()`                    |
 
 **Related**
 
@@ -264,7 +264,7 @@ In the value validation, `require` option is available to checking for the value
 'validation': ('validation_name', param1, param2...) - tuple
 'validation': ['validation_name', param1, param2...] - list
 
-# Multiple validation
+# Multiple validations
 'validation': [('validation_name',), ('validation_name', 4)] - list -> tuple, tuple
 'validation': [tuple(['validation_name']), ('validation_name', 4)] - list -> tuple, tuple
 ```

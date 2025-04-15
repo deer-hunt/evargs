@@ -10,6 +10,18 @@ class TestValidator:
     def setup(self):
         self.validator = Validator()
 
+    def test_validate_size(self):
+        self.validator.validate_size('test1', 'abc', 3)
+
+        with pytest.raises(EvValidateException):
+            self.validator.validate_size('test2', 'abc', 5)
+
+    def test_validate_between(self):
+        self.validator.validate_between('test1', 'abc', 1, 10)
+
+        with pytest.raises(EvValidateException):
+            self.validator.validate_between('test2', 'abc', 10, 20)
+
     def test_validate_alphabet(self):
         self.validator.validate_alphabet('test1', 'abc')
 
