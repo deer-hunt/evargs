@@ -1,0 +1,12 @@
+evargs package |version|
+==============
+
+.. include:: top.rst
+
+helper module
+-----------------------
+
+.. automodule:: evargs.helper
+   :members:
+   :undoc-members:
+   :show-inheritance:

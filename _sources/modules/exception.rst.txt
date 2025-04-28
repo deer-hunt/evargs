@@ -1,0 +1,24 @@
+evargs package |version|
+==============
+
+.. include:: top.rst
+
+Github code
+---------------------------
+
+- `ParamValue, MultipleParam class <https://github.com/deer-hunt/evargs/blob/main/evargs/exception.py>`_
+
+Exception classes
+--------------------
+
+.. automodule:: evargs.exception
+
+.. autoclass:: evargs.EvArgsException
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: evargs.ValidateException
+   :members:
+   :undoc-members:
+   :show-inheritance:

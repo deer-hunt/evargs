@@ -1,4 +1,4 @@
-evargs package
+evargs package |version|
 ==============
 
 .. include:: top.rst
@@ -7,7 +7,7 @@ Github code
 ---------------------------
 
 - `EvArgs class <https://github.com/deer-hunt/evargs/blob/main/evargs/evargs.py>`_
-- `EvArgsException, EvValidateException class <https://github.com/deer-hunt/evargs/blob/main/evargs/exception.py>`_
+- `EvArgsException, ValidateException class <https://github.com/deer-hunt/evargs/blob/main/evargs/exception.py>`_
 
 Example code
 ---------------------------
@@ -19,9 +19,9 @@ Example code
    evargs = EvArgs()
 
    evargs.initialize({
-      'a': {'type': int},
-      'b': {'type': str},
-      'c': {'type': int, 'list': True},
+      'a': {'cast': int},
+      'b': {'cast': str},
+      'c': {'cast': int, 'list': True},
    })
 
    evargs.parse('a=1;b=abc;c=1,2,3;')
@@ -32,18 +32,23 @@ Example code
 
 More example codes are `here <https://github.com/deer-hunt/evargs/blob/main/tests/>`_ .
 
-evargs module
+EvArgs class
 --------------------
 
 .. automodule:: evargs.evargs
+
+.. autoclass:: evargs.EvArgs
    :members:
    :undoc-members:
    :show-inheritance:
 
-exception module
------------------------
+ExpEvArgs class
+--------------------
 
-.. automodule:: evargs.exception
+.. automodule:: evargs.exp_evargs
+
+.. autoclass:: evargs.ExpEvArgs
    :members:
    :undoc-members:
+   :exclude-members: get_param
    :show-inheritance:

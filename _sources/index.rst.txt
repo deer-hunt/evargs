@@ -5,10 +5,30 @@
 Welcome to EvArgs
 ==================================
 
-"EvArgs" is a lightweight python module for easy expression parsing and value-casting, validating by rules, and it provide flexible configuration and custom validation method.
+"EvArgs" is a Python module designed for value assignment, easy expression parsing, and type casting. It validates values based on defined rules and offers flexible configuration along with custom validation methods.
 
 Github
 ---------------------------------------
+
+.. raw:: html
+
+   <div>
+
+   <a href="https://github.com/deer-hunt/evargs/actions/workflows/unit-tests.yml"><img alt="CI - Test" src="https://github.com/deer-hunt/evargs/actions/workflows/unit-tests.yml/badge.svg"></a>
+   <a href="https://github.com/deer-hunt/evargs/actions/workflows/unit-tests-windows.yml"><img alt="CI - Test" src="https://github.com/deer-hunt/evargs/actions/workflows/unit-tests-windows.yml/badge.svg"></a>
+   <a href="https://github.com/deer-hunt/evargs/actions/workflows/unit-tests-macos.yml"><img alt="CI - Test" src="https://github.com/deer-hunt/evargs/actions/workflows/unit-tests-macos.yml/badge.svg"></a>
+   <a href="https://github.com/deer-hunt/evargs/actions/workflows/lint.yml"><img alt="GitHub Actions build status (Lint)" src="https://github.com/deer-hunt/evargs/workflows/Lint/badge.svg"></a>
+   <a href="https://anaconda.org/conda-forge/evargs"> <img src="https://anaconda.org/conda-forge/evargs/badges/platforms.svg" /> </a>
+   <a href="https://codecov.io/gh/deer-hunt/evargs"><img alt="Coverage" src="https://codecov.io/github/deer-hunt/evargs/coverage.svg?branch=main"></a>
+   <img alt="PyPI - Status" src="https://img.shields.io/pypi/status/evargs">
+   <a href="https://github.com/deer-hunt/evargs/blob/main/LICENSE.md"><img alt="License - MIT" src="https://img.shields.io/pypi/l/evargs.svg"></a>
+   <a href="https://pypi.org/project/evargs/"><img alt="Newest PyPI version" src="https://img.shields.io/pypi/v/evargs.svg"></a>
+   <a href="https://anaconda.org/conda-forge/evargs"> <img src="https://anaconda.org/conda-forge/evargs/badges/version.svg" /></a>
+   <a href="https://pypi.org/project/evargs/"><img alt="Number of PyPI downloads" src="https://img.shields.io/pypi/dm/evargs.svg"></a>
+   <a href="https://pypi.org/project/evargs"><img alt="Supported Versions" src="https://img.shields.io/pypi/pyversions/evargs.svg"></a>
+
+   </div>
+
 
 The latest version and documentation may be found on GitHub. The Github URL is the following.
 
@@ -32,11 +52,11 @@ Features and documentation
 - It can specify the condition or value-assignment using a simple expression. e.g. `a=1;b>5`
 - Evaluate assigned values. e.g `evargs.evaluate('a', 1)`
 - Put values. It's available to using `put` is without parsing the expression.
-- Value casting - str, int, float, complex...
+- Type cast - str, int, float, complex, Enum class, custom function...
 - Value validation - unsigned, number range, alphabet, regex, any other...
+- Applying multiple validations.
 - Applying Pre-processing method and Post-processing method.
 - Get assigned values.
-- Set default rule.
 - Make parameter's description.
 - Other support methods for value-assignment.
 
@@ -63,16 +83,49 @@ Usage
 
    from evargs import EvArgs
 
-   evargs = EvArgs()
+   v = evargs.assign(' 1 ', cast=str, trim=True)
+   v = evargs.assign('1', cast=int, validation=('range', 1, 10))
+
+   v = evargs.assign_values({'a': {'cast': int}, 'b': {'cast': int}}, {'a': '1', 'b': '2'})
+
+   evargs.assign('1.5', cast=float, name='var1')
+   print(evargs.get('var1'))
+
+.. code-block:: shell
+
+   from evargs import EvArgs
 
    evargs.initialize({
-     'a': {'type': bool},
-     'b': {'type': int},
-     'c': {'type': float, 'default': 3.14},
-     'e': {'type': str}
+      'a': {'cast': int},
+      'b': {'cast': int, 'list': True}
    })
 
-   evargs.parse('a=True;b=10;c=H2O')
+   evargs.put('a', 1)
+   evargs.put('b', [7, 8, 9])
+
+.. code-block:: shell
+
+   from evargs import ExpEvArgs
+
+   evargs = ExpEvArgs()
+
+   evargs.initialize({
+     'a': {'cast': bool},
+     'b': {'cast': int},
+     'c': {'cast': int},
+     'd': {'cast': float, 'default': 3.14},
+     'e': {'cast': str},
+     'f': {'cast': int, 'multiple': True},
+   })
+
+   evargs.parse('a=1;b>=5;c=10;d=;e=H2O;f>=5;f<100')
+
+   print(evargs.get('a'), evargs.evaluate('a', True))
+   print(evargs.get('b'), evargs.evaluate('b', 8))
+   print(evargs.get('c'), evargs.evaluate('c', 10))
+   print(evargs.get('d'), evargs.evaluate('d', 3.14))
+   print(evargs.get('e'), evargs.evaluate('e', 'H2O'))
+   print(evargs.evaluate('f', 50))
 
 
 

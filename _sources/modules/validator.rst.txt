@@ -1,0 +1,48 @@
+evargs package |version|
+==============
+
+.. include:: top.rst
+
+Github code
+---------------------------
+
+- `Validator class <https://github.com/deer-hunt/evargs/blob/main/evargs/validator.py>`_
+
+The example is `here <https://github.com/deer-hunt/evargs/tree/main/tests/test_validator.py>`_.
+
+.. code-block:: shell
+
+   from evargs import Validator
+
+   validator = Validator()
+
+   validator.validate_exist('abc', '123')
+   validator.validate_exist('abc', [1, 2, 3])
+
+   validator.validate_size('abc', 3)
+   validator.validate_size([1, 2], 2)
+
+   validator.validate_sizes('abc', 1, 10)
+   validator.validate_sizes([1, 2, 3], 1, 5)
+
+   validator.validate_ascii('abcdefg')
+   validator.validate_printable_ascii('abc123ñ')
+
+   validator.validate_regex('var1', r'^[a-z0-9]+$')
+   validator.validate_regex('ATGCGTACGTAGCTAGCTAGCTAGCATCGTAGCTAGCTAGC', r'^[ATGC]+$')
+
+   validator.validate_unsigned(123)
+   validator.validate_positive(10)
+
+   validator.validate_range(5, 1, 10)
+
+
+Validator class
+-----------------------
+
+.. automodule:: evargs.validator
+
+.. autoclass:: evargs.Validator
+   :members:
+   :undoc-members:
+   :show-inheritance:

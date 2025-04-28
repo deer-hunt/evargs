@@ -1,0 +1,39 @@
+evargs package |version|
+==============
+
+.. include:: top.rst
+
+Github code
+---------------------------
+
+- `HelpFormatter class <https://github.com/deer-hunt/evargs/blob/main/evargs/list_formatter.py>`_
+- `ListFormatter class <https://github.com/deer-hunt/evargs/blob/main/evargs/list_formatter.py>`_
+
+`ListFormatter` class can also be used independently to adjust and display dict and list data. The example is `here <https://github.com/deer-hunt/evargs/tree/main/examples/show_list_data.py>`_.
+
+.. code-block:: shell
+
+   # python3 show_list_data.py
+
+    Compound Name  | Elements                                           | Molecular Formula | Melting Point | Uses
+   --------------------------------------------------------------------------------------------------------------------------
+    Aspirin        | Carbon (C), Hydrogen (H), Oxygen (O)               | C9H8O4            | 135°C         | Pain reliever
+    Glucose        | Carbon (C), Hydrogen (H), Oxygen (O)               | C6H12O6           | 146°C         | Energy source
+    Acetaminophen  | Carbon (C), Hydrogen (H), Nitrogen (N), Oxygen (O) | C8H9NO            | 169-172°C     | Pain reliever
+    Niacin         | Carbon (C), Hydrogen (H), Nitrogen (N)             | C6H5NO2           | 234-236°C     | Nutrient
+    Salicylic Acid | Carbon (C), Hydrogen (H), Oxygen (O)               | C7H6O3            | 158-160°C     | Preservative
+
+list_formatter module
+---------------------------
+
+.. automodule:: evargs.list_formatter
+
+.. autoclass:: evargs.HelpFormatter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: evargs.ListFormatter
+   :members:
+   :undoc-members:
+   :show-inheritance:

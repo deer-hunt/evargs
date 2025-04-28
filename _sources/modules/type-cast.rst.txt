@@ -1,0 +1,62 @@
+evargs package |version|
+==============
+
+.. include:: top.rst
+
+Github code
+---------------------------
+
+- `TypeCast class <https://github.com/deer-hunt/evargs/blob/main/evargs/type_cast.py>`_
+
+The example is `here <https://github.com/deer-hunt/evargs/tree/main/tests/test_type_cast.py>`_.
+
+.. code-block:: shell
+
+   from evargs import TypeCast
+
+   TypeCast.to_int(' 1 ')
+   TypeCast.to_int(' aaa ', raise_error=0)
+   TypeCast.to_int('', nullable=1)
+   TypeCast.to_int('', default=123)
+
+   TypeCast.to_round_int('1.1')
+   TypeCast.to_round_int(' 1.2 ')
+   TypeCast.to_round_int('-10.1')
+
+   TypeCast.to_float(' aaa ')
+   TypeCast.to_float(' aaa ', raise_error=0)
+   TypeCast.to_float(None, nullable=1)
+   TypeCast.to_float('', default=1.23)
+
+   TypeCast.to_str('ABC')
+   TypeCast.to_str(None, default='ABC')
+
+   TypeCast.to_bool('1')
+   TypeCast.to_bool('1', default=True)
+   TypeCast.to_bool('True')
+
+   TypeCast.bool_strict(1)
+   TypeCast.bool_strict('1')
+
+   TypeCast.bool_loose('1')
+   TypeCast.bool_loose('True')
+
+   TypeCast.to_enum(Color, 1)
+   TypeCast.to_enum(Color, 99, default=Color.WHITE)
+   TypeCast.to_enum(Color, 'RED', is_name=True)
+   TypeCast.to_enum(Color, 'AAA', default=Color.WHITE)
+
+   TypeCast.to_enum_loose(Color, 1)
+   TypeCast.to_enum_loose(Color, '3.5')
+   TypeCast.to_enum_loose(Color, 'BLUE', is_name=True, is_value=False)
+
+
+TypeCast class
+---------------------------
+
+.. automodule:: evargs.type_cast
+
+.. autoclass:: evargs.TypeCast
+   :members:
+   :undoc-members:
+   :show-inheritance:

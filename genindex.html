@@ -51,7 +51,6 @@
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
- | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
@@ -69,7 +68,13 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/modules.html#evargs.Param.add">add() (Param method)</a>
+      <li><a href="modules/modules.html#evargs.MultipleParam.add">add() (MultipleParam method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/evargs.html#evargs.EvArgs.assign">assign() (EvArgs method)</a>
+</li>
+      <li><a href="modules/evargs.html#evargs.EvArgs.assign_values">assign_values() (EvArgs method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -77,7 +82,11 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/value-helper.html#evargs.value_caster.ValueCaster.bool_strict">bool_strict() (ValueCaster class method)</a>
+      <li><a href="modules/type-cast.html#evargs.TypeCast.bool_loose">bool_loose() (TypeCast class method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/type-cast.html#evargs.TypeCast.bool_strict">bool_strict() (TypeCast class method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -85,7 +94,7 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.count_params">count_params() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.create_rule">create_rule() (EvArgs method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -93,7 +102,11 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/value-helper.html#evargs.list_formatter.HelpFormatter.DEFAULT_COLUMNS">DEFAULT_COLUMNS (HelpFormatter attribute)</a>
+      <li><a href="modules/list-formatter.html#evargs.HelpFormatter.DEFAULT_COLUMNS">DEFAULT_COLUMNS (HelpFormatter attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/evargs.html#evargs.EvArgs.delete">delete() (EvArgs method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -101,35 +114,41 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/value-helper.html#evargs.list_formatter.HelpFormatter.enable_example">enable_example() (HelpFormatter method)</a>
+      <li><a href="modules/list-formatter.html#evargs.HelpFormatter.enable_example">enable_example() (HelpFormatter method)</a>
 </li>
       <li><a href="modules/modules.html#evargs.Operator.EQUAL">EQUAL (Operator attribute)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.exception.EvValidateException.ERROR_CAST">ERROR_CAST (EvValidateException attribute)</a>
+      <li><a href="modules/type-cast.html#evargs.TypeCast.ERROR_ALL">ERROR_ALL (TypeCast attribute)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.exception.EvArgsException.ERROR_GENERAL">ERROR_GENERAL (EvArgsException attribute)</a>
+      <li><a href="modules/type-cast.html#evargs.TypeCast.ERROR_CANCEL">ERROR_CANCEL (TypeCast attribute)</a>
+</li>
+      <li><a href="modules/exception.html#evargs.ValidateException.ERROR_CAST">ERROR_CAST (ValidateException attribute)</a>
+</li>
+      <li><a href="modules/type-cast.html#evargs.TypeCast.ERROR_DEFAULT_NONE">ERROR_DEFAULT_NONE (TypeCast attribute)</a>
+</li>
+      <li><a href="modules/exception.html#evargs.EvArgsException.ERROR_GENERAL">ERROR_GENERAL (EvArgsException attribute)</a>
 
       <ul>
-        <li><a href="modules/evargs.html#evargs.exception.EvValidateException.ERROR_GENERAL">(EvValidateException attribute)</a>
+        <li><a href="modules/exception.html#evargs.ValidateException.ERROR_GENERAL">(ValidateException attribute)</a>
 </li>
       </ul></li>
-      <li><a href="modules/evargs.html#evargs.exception.EvValidateException.ERROR_OUT_CHOICES">ERROR_OUT_CHOICES (EvValidateException attribute)</a>
+      <li><a href="modules/exception.html#evargs.ValidateException.ERROR_OUT_CHOICES">ERROR_OUT_CHOICES (ValidateException attribute)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.exception.EvArgsException.ERROR_PARSE">ERROR_PARSE (EvArgsException attribute)</a>
+      <li><a href="modules/exception.html#evargs.EvArgsException.ERROR_PARSE">ERROR_PARSE (EvArgsException attribute)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.exception.EvArgsException.ERROR_PROCESS">ERROR_PROCESS (EvArgsException attribute)</a>
+      <li><a href="modules/exception.html#evargs.EvArgsException.ERROR_PROCESS">ERROR_PROCESS (EvArgsException attribute)</a>
 
       <ul>
-        <li><a href="modules/evargs.html#evargs.exception.EvValidateException.ERROR_PROCESS">(EvValidateException attribute)</a>
+        <li><a href="modules/exception.html#evargs.ValidateException.ERROR_PROCESS">(ValidateException attribute)</a>
 </li>
       </ul></li>
-      <li><a href="modules/evargs.html#evargs.exception.EvValidateException.ERROR_REQUIRE">ERROR_REQUIRE (EvValidateException attribute)</a>
+      <li><a href="modules/exception.html#evargs.ValidateException.ERROR_REQUIRED">ERROR_REQUIRED (ValidateException attribute)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.exception.EvValidateException.ERROR_UNKNOWN_PARAM">ERROR_UNKNOWN_PARAM (EvValidateException attribute)</a>
+      <li><a href="modules/exception.html#evargs.ValidateException.ERROR_UNKNOWN_PARAM">ERROR_UNKNOWN_PARAM (ValidateException attribute)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.evaluate">evaluate() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.ExpEvArgs.evaluate">evaluate() (ExpEvArgs method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs">EvArgs (class in evargs.evargs)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs">EvArgs (class in evargs)</a>
 </li>
       <li>
     evargs.evargs
@@ -144,7 +163,14 @@
     evargs.exception
 
       <ul>
-        <li><a href="modules/evargs.html#module-evargs.exception">module</a>
+        <li><a href="modules/exception.html#module-evargs.exception">module</a>
+</li>
+      </ul></li>
+      <li>
+    evargs.exp_evargs
+
+      <ul>
+        <li><a href="modules/evargs.html#module-evargs.exp_evargs">module</a>
 </li>
       </ul></li>
       <li>
@@ -158,7 +184,7 @@
     evargs.list_formatter
 
       <ul>
-        <li><a href="modules/value-helper.html#module-evargs.list_formatter">module</a>
+        <li><a href="modules/list-formatter.html#module-evargs.list_formatter">module</a>
 </li>
       </ul></li>
       <li>
@@ -169,32 +195,26 @@
 </li>
       </ul></li>
       <li>
-    evargs.validator
+    evargs.type_cast
 
       <ul>
-        <li><a href="modules/value-helper.html#module-evargs.validator">module</a>
+        <li><a href="modules/type-cast.html#module-evargs.type_cast">module</a>
 </li>
       </ul></li>
       <li>
-    evargs.value_caster
+    evargs.validator
 
       <ul>
-        <li><a href="modules/value-helper.html#module-evargs.value_caster">module</a>
+        <li><a href="modules/validator.html#module-evargs.validator">module</a>
 </li>
       </ul></li>
-      <li><a href="modules/evargs.html#evargs.exception.EvArgsException">EvArgsException</a>
+      <li><a href="modules/exception.html#evargs.EvArgsException">EvArgsException (class in evargs)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.exception.EvValidateException">EvValidateException</a>
+      <li><a href="modules/evargs.html#evargs.ExpEvArgs">ExpEvArgs (class in evargs)</a>
+</li>
+      <li><a href="modules/modules.html#evargs.ExpParamValue">ExpParamValue (class in evargs)</a>
 </li>
       <li><a href="modules/helper.html#evargs.helper.ExpressionParser">ExpressionParser (class in evargs.helper)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="F">F</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/modules.html#evargs.Param.fill_value">fill_value() (Param method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -202,38 +222,42 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.get">get() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.get">get() (EvArgs method)</a>
 
       <ul>
-        <li><a href="modules/modules.html#evargs.Param.get">(Param method)</a>
+        <li><a href="modules/modules.html#evargs.MultipleParam.get">(MultipleParam method)</a>
 </li>
       </ul></li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.get_help_formatter">get_help_formatter() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.get_help_formatter">get_help_formatter() (EvArgs method)</a>
 </li>
-      <li><a href="modules/modules.html#evargs.Param.get_item">get_item() (Param method)</a>
+      <li><a href="modules/validator.html#evargs.Validator.get_length">get_length() (Validator method)</a>
 </li>
-      <li><a href="modules/modules.html#evargs.Param.get_items">get_items() (Param method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.get_param">get_param() (EvArgs method)</a>
 </li>
-      <li><a href="modules/modules.html#evargs.Param.get_length">get_length() (Param method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.get_params">get_params() (EvArgs method)</a>
 </li>
-      <li><a href="modules/modules.html#evargs.Param.get_list">get_list() (Param method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.get_rule">get_rule() (EvArgs method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.get_param">get_param() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.get_rule_options">get_rule_options() (EvArgs method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.get_params">get_params() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.get_size">get_size() (EvArgs method)</a>
+
+      <ul>
+        <li><a href="modules/modules.html#evargs.MultipleParam.get_size">(MultipleParam method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.get_rule">get_rule() (EvArgs method)</a>
+      </ul></li>
+      <li><a href="modules/evargs.html#evargs.EvArgs.get_type_cast">get_type_cast() (EvArgs method)</a>
 </li>
-      <li><a href="modules/modules.html#evargs.Param.get_size">get_size() (Param method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.get_validator">get_validator() (EvArgs method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.get_validator">get_validator() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.get_values">get_values() (EvArgs method)</a>
+
+      <ul>
+        <li><a href="modules/modules.html#evargs.MultipleParam.get_values">(MultipleParam method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.get_value_caster">get_value_caster() (EvArgs method)</a>
-</li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.get_values">get_values() (EvArgs method)</a>
-</li>
+      </ul></li>
       <li><a href="modules/modules.html#evargs.Operator.GREATER">GREATER (Operator attribute)</a>
 </li>
   </ul></td>
@@ -242,11 +266,11 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.has_param">has_param() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.has_param">has_param() (EvArgs method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/value-helper.html#evargs.list_formatter.HelpFormatter">HelpFormatter (class in evargs.list_formatter)</a>
+      <li><a href="modules/list-formatter.html#evargs.HelpFormatter">HelpFormatter (class in evargs)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -254,16 +278,12 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.initialize">initialize() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.initialize">initialize() (EvArgs method)</a>
 </li>
-      <li><a href="modules/modules.html#evargs.Param.is_empty">is_empty() (Param method)</a>
-
-      <ul>
-        <li><a href="modules/modules.html#evargs.ParamItem.is_empty">(ParamItem static method)</a>
-</li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/type-cast.html#evargs.TypeCast.is_empty">is_empty() (TypeCast class method)</a>
+</li>
       <li><a href="modules/modules.html#evargs.Operator.is_evaluate">is_evaluate() (Operator static method)</a>
 </li>
   </ul></td>
@@ -278,7 +298,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/modules.html#evargs.Operator.LIST_SPLIT">LIST_SPLIT (Operator attribute)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.list_formatter.ListFormatter">ListFormatter (class in evargs.list_formatter)</a>
+      <li><a href="modules/list-formatter.html#evargs.ListFormatter">ListFormatter (class in evargs)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -286,9 +306,11 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/value-helper.html#evargs.list_formatter.ListFormatter.make">make() (ListFormatter method)</a>
+      <li><a href="modules/list-formatter.html#evargs.ListFormatter.make">make() (ListFormatter method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.make_help">make_help() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.make_help">make_help() (EvArgs method)</a>
+</li>
+      <li><a href="modules/evargs.html#evargs.EvArgs.make_kwargs">make_kwargs() (EvArgs method)</a>
 </li>
       <li>
     module
@@ -296,24 +318,34 @@
       <ul>
         <li><a href="modules/evargs.html#module-evargs.evargs">evargs.evargs</a>
 </li>
-        <li><a href="modules/evargs.html#module-evargs.exception">evargs.exception</a>
+        <li><a href="modules/exception.html#module-evargs.exception">evargs.exception</a>
+</li>
+        <li><a href="modules/evargs.html#module-evargs.exp_evargs">evargs.exp_evargs</a>
 </li>
         <li><a href="modules/helper.html#module-evargs.helper">evargs.helper</a>
 </li>
-        <li><a href="modules/value-helper.html#module-evargs.list_formatter">evargs.list_formatter</a>
+        <li><a href="modules/list-formatter.html#module-evargs.list_formatter">evargs.list_formatter</a>
 </li>
         <li><a href="modules/modules.html#module-evargs.modules">evargs.modules</a>
 </li>
-        <li><a href="modules/value-helper.html#module-evargs.validator">evargs.validator</a>
+        <li><a href="modules/type-cast.html#module-evargs.type_cast">evargs.type_cast</a>
 </li>
-        <li><a href="modules/value-helper.html#module-evargs.value_caster">evargs.value_caster</a>
+        <li><a href="modules/validator.html#module-evargs.validator">evargs.validator</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/modules.html#evargs.MultipleParam">MultipleParam (class in evargs)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/type-cast.html#evargs.TypeCast.noop">noop() (TypeCast class method)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/modules.html#evargs.Operator.NOT_EQUAL">NOT_EQUAL (Operator attribute)</a>
 </li>
@@ -335,11 +367,9 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/modules.html#evargs.Param">Param (class in evargs)</a>
+      <li><a href="modules/modules.html#evargs.ParamValue">ParamValue (class in evargs)</a>
 </li>
-      <li><a href="modules/modules.html#evargs.ParamItem">ParamItem (class in evargs)</a>
-</li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.parse">parse() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.ExpEvArgs.parse">parse() (ExpEvArgs method)</a>
 
       <ul>
         <li><a href="modules/helper.html#evargs.helper.ExpressionParser.parse">(ExpressionParser class method)</a>
@@ -349,9 +379,9 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/modules.html#evargs.Operator.parse_operator">parse_operator() (Operator static method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.put">put() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.put">put() (EvArgs method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.put_values">put_values() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.put_values">put_values() (EvArgs method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -359,19 +389,11 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/value-helper.html#evargs.validator.Validator.raise_error">raise_error() (Validator method)</a>
+      <li><a href="modules/validator.html#evargs.Validator.raise_error">raise_error() (Validator method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.reset">reset() (EvArgs method)</a>
-
-      <ul>
-        <li><a href="modules/modules.html#evargs.Param.reset">(Param method)</a>
-</li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.reset_params">reset_params() (EvArgs method)</a>
-</li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.RULE">RULE (EvArgs attribute)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.reset">reset() (EvArgs method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -381,29 +403,33 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/helper.html#evargs.helper.ExpressionParser.safe_eval">safe_eval() (ExpressionParser class method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.list_formatter.ListFormatter.set_column">set_column() (ListFormatter method)</a>
+      <li><a href="modules/list-formatter.html#evargs.ListFormatter.set_column">set_column() (ListFormatter method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.list_formatter.ListFormatter.set_column_max_size">set_column_max_size() (ListFormatter method)</a>
+      <li><a href="modules/list-formatter.html#evargs.ListFormatter.set_column_max_size">set_column_max_size() (ListFormatter method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.list_formatter.ListFormatter.set_columns">set_columns() (ListFormatter method)</a>
+      <li><a href="modules/list-formatter.html#evargs.ListFormatter.set_columns">set_columns() (ListFormatter method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.set_default">set_default() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.set_default_rule">set_default_rule() (EvArgs method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.set_help_formatter">set_help_formatter() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.set_help_formatter">set_help_formatter() (EvArgs method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/modules.html#evargs.Param.set_item">set_item() (Param method)</a>
+      <li><a href="modules/exception.html#evargs.EvArgsException.set_name">set_name() (EvArgsException method)</a>
+
+      <ul>
+        <li><a href="modules/exception.html#evargs.ValidateException.set_name">(ValidateException method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.set_options">set_options() (EvArgs method)</a>
+      </ul></li>
+      <li><a href="modules/evargs.html#evargs.EvArgs.set_options">set_options() (EvArgs method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.set_rule">set_rule() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.set_rule">set_rule() (EvArgs method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.set_rules">set_rules() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.set_rules">set_rules() (EvArgs method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.set_validator">set_validator() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.set_type_cast">set_type_cast() (EvArgs method)</a>
 </li>
-      <li><a href="modules/evargs.html#evargs.evargs.EvArgs.set_value_caster">set_value_caster() (EvArgs method)</a>
+      <li><a href="modules/evargs.html#evargs.EvArgs.set_validator">set_validator() (EvArgs method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -411,19 +437,25 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/value-helper.html#evargs.value_caster.ValueCaster.to_bool">to_bool() (ValueCaster class method)</a>
+      <li><a href="modules/type-cast.html#evargs.TypeCast.to_bool">to_bool() (TypeCast class method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.value_caster.ValueCaster.to_complex">to_complex() (ValueCaster class method)</a>
+      <li><a href="modules/type-cast.html#evargs.TypeCast.to_complex">to_complex() (TypeCast class method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.value_caster.ValueCaster.to_enum">to_enum() (ValueCaster class method)</a>
+      <li><a href="modules/type-cast.html#evargs.TypeCast.to_enum">to_enum() (TypeCast class method)</a>
+</li>
+      <li><a href="modules/type-cast.html#evargs.TypeCast.to_enum_loose">to_enum_loose() (TypeCast class method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/value-helper.html#evargs.value_caster.ValueCaster.to_enum_loose">to_enum_loose() (ValueCaster class method)</a>
+      <li><a href="modules/type-cast.html#evargs.TypeCast.to_float">to_float() (TypeCast class method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.value_caster.ValueCaster.to_float">to_float() (ValueCaster class method)</a>
+      <li><a href="modules/type-cast.html#evargs.TypeCast.to_int">to_int() (TypeCast class method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.value_caster.ValueCaster.to_int">to_int() (ValueCaster class method)</a>
+      <li><a href="modules/type-cast.html#evargs.TypeCast.to_round_int">to_round_int() (TypeCast class method)</a>
+</li>
+      <li><a href="modules/type-cast.html#evargs.TypeCast.to_str">to_str() (TypeCast class method)</a>
+</li>
+      <li><a href="modules/type-cast.html#evargs.TypeCast">TypeCast (class in evargs)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -431,39 +463,47 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/value-helper.html#evargs.validator.Validator.validate_alphabet">validate_alphabet() (Validator method)</a>
+      <li><a href="modules/validator.html#evargs.Validator.validate_alphabet">validate_alphabet() (Validator method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.validator.Validator.validate_alphanumeric">validate_alphanumeric() (Validator method)</a>
+      <li><a href="modules/validator.html#evargs.Validator.validate_alphanumeric">validate_alphanumeric() (Validator method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.validator.Validator.validate_ascii">validate_ascii() (Validator method)</a>
+      <li><a href="modules/validator.html#evargs.Validator.validate_ascii">validate_ascii() (Validator method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.validator.Validator.validate_between">validate_between() (Validator method)</a>
+      <li><a href="modules/validator.html#evargs.Validator.validate_char_numeric">validate_char_numeric() (Validator method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.validator.Validator.validate_char_numeric">validate_char_numeric() (Validator method)</a>
+      <li><a href="modules/validator.html#evargs.Validator.validate_enum">validate_enum() (Validator method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.validator.Validator.validate_even">validate_even() (Validator method)</a>
+      <li><a href="modules/validator.html#evargs.Validator.validate_even">validate_even() (Validator method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.validator.Validator.validate_odd">validate_odd() (Validator method)</a>
+      <li><a href="modules/validator.html#evargs.Validator.validate_exist">validate_exist() (Validator method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.validator.Validator.validate_printable_ascii">validate_printable_ascii() (Validator method)</a>
+      <li><a href="modules/validator.html#evargs.Validator.validate_negative">validate_negative() (Validator method)</a>
+</li>
+      <li><a href="modules/validator.html#evargs.Validator.validate_odd">validate_odd() (Validator method)</a>
+</li>
+      <li><a href="modules/validator.html#evargs.Validator.validate_positive">validate_positive() (Validator method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/value-helper.html#evargs.validator.Validator.validate_range">validate_range() (Validator method)</a>
+      <li><a href="modules/validator.html#evargs.Validator.validate_printable_ascii">validate_printable_ascii() (Validator method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.validator.Validator.validate_regex">validate_regex() (Validator method)</a>
+      <li><a href="modules/validator.html#evargs.Validator.validate_range">validate_range() (Validator method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.validator.Validator.validate_size">validate_size() (Validator method)</a>
+      <li><a href="modules/validator.html#evargs.Validator.validate_regex">validate_regex() (Validator method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.validator.Validator.validate_standard_ascii">validate_standard_ascii() (Validator method)</a>
+      <li><a href="modules/validator.html#evargs.Validator.validate_size">validate_size() (Validator method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.validator.Validator.validate_unsigned">validate_unsigned() (Validator method)</a>
+      <li><a href="modules/validator.html#evargs.Validator.validate_sizes">validate_sizes() (Validator method)</a>
 </li>
-      <li><a href="modules/value-helper.html#evargs.validator.Validator">Validator (class in evargs.validator)</a>
+      <li><a href="modules/validator.html#evargs.Validator.validate_standard_ascii">validate_standard_ascii() (Validator method)</a>
+</li>
+      <li><a href="modules/validator.html#evargs.Validator.validate_unsigned">validate_unsigned() (Validator method)</a>
+</li>
+      <li><a href="modules/exception.html#evargs.ValidateException">ValidateException (class in evargs)</a>
+</li>
+      <li><a href="modules/validator.html#evargs.Validator">Validator (class in evargs)</a>
 </li>
       <li><a href="modules/modules.html#evargs.Operator.VALUE_SPLIT">VALUE_SPLIT (Operator attribute)</a>
-</li>
-      <li><a href="modules/value-helper.html#evargs.value_caster.ValueCaster">ValueCaster (class in evargs.value_caster)</a>
 </li>
   </ul></td>
 </tr></table>

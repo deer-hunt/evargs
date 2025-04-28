@@ -1,4 +1,4 @@
-evargs package
+evargs package |version|
 ==============
 
 .. include:: top.rst
@@ -6,19 +6,24 @@ evargs package
 Github code
 ---------------------------
 
-- `Param, ParamItem class <https://github.com/deer-hunt/evargs/blob/main/evargs/modules.py>`_
+- `ParamValue, MultipleParam class <https://github.com/deer-hunt/evargs/blob/main/evargs/modules.py>`_
 
 Modules
 --------------------
 
 .. automodule:: evargs.modules
 
-.. autoclass:: evargs.Param
+.. autoclass:: evargs.ParamValue
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. autoclass:: evargs.ParamItem
+.. autoclass:: evargs.ExpParamValue
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: evargs.MultipleParam
    :members:
    :undoc-members:
    :show-inheritance:
