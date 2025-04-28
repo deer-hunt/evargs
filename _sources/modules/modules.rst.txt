@@ -14,7 +14,7 @@ Modules
 .. automodule:: evargs.modules
 
 .. autoclass:: evargs.ParamValue
-   :members:
+   :members: value
    :undoc-members:
    :show-inheritance:
 
