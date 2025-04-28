@@ -3,18 +3,18 @@ import re
 
 class ParamValue:
     def __init__(self):
-        self.value = None #: any: None
+        self.value = None  #: any: None
 
 
 class ExpParamValue(ParamValue):
     def __init__(self):
-        self.value = None #: any: None
-        self.operator = None #: int: None
+        self.value = None  #: any: None
+        self.operator = None  #: int: None
 
 
 class MultipleParam:
     def __init__(self):
-        self.params = [] #: list: []
+        self.params = []  #: list: []
 
     def get(self, index: int) -> ParamValue:
         return self.params[index]
