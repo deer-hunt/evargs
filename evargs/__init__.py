@@ -1,10 +1,11 @@
-__version__ = '0.9.4'
+__version__ = '1.0.0b1'
 __author__ = 'deer-hunt'
 __licence__ = 'MIT'
 
 from .evargs import EvArgs
-from .exception import EvArgsException, EvValidateException
-from .modules import Operator, Param, ParamItem
-from .validator import Validator
-from .value_caster import ValueCaster
+from .exception import EvArgsException, ValidateException
 from .list_formatter import HelpFormatter, ListFormatter
+from .modules import ParamValue, MultipleParam, ExpParamValue, Operator
+from .exp_evargs import ExpEvArgs
+from .type_cast import TypeCast
+from .validator import Validator

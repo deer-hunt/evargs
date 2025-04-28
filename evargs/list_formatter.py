@@ -127,14 +127,16 @@ class ListFormatter:
         else:
             v = columns.get(cur, '')
 
+        v = v if v is not None else str(v)
+
         return v
 
 
 class HelpFormatter(ListFormatter):
     DEFAULT_COLUMNS = {
         'name': 'Parameter',
-        'type': 'Type',
-        'require': 'Require',
+        'cast': 'Cast-type',
+        'required': 'Required',
         'validation': 'Validation',
         'default': 'Default',
         'help': 'Description'
@@ -152,13 +154,13 @@ class HelpFormatter(ListFormatter):
         if label is not None:
             self.set_column('example', label)
 
-    def _get_col_require(self, v: any, key: any, columns: dict):
+    def _get_col_required(self, v: any, key: any, columns: dict):
         return 'yes' if v else ''
 
     def _get_col_multiple(self, v: any, key: any, columns: dict):
         return 'yes' if v else ''
 
-    def _get_col_type(self, v: any, key: any, columns: dict):
+    def _get_col_cast(self, v: any, key: any, columns: dict):
         r = ''
 
         if v == int:

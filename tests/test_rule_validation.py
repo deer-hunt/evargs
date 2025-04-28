@@ -1,4 +1,4 @@
-from evargs import EvArgs, EvArgsException, EvValidateException
+from evargs import EvArgs, EvArgsException, ValidateException
 from evargs.validator import Validator
 from enum import Enum
 import pytest
@@ -13,183 +13,200 @@ class Color(Enum):
     EMERALD_GREEN = 2.5
 
 
-class TestRuleValidate:
+class TestRuleValidation:
     @pytest.fixture(autouse=True)
     def setup(self):
         pass
 
-    def test_choices(self):
+    def test_required(self):
         evargs = EvArgs()
 
-        evargs.initialize({
-            'a': {'type': int, 'choices': [1, 2, 3]},
-            'b': {'type': str, 'choices': ('A', 'B', 'C')}
-        }).parse('a=3;b=A')
+        assert evargs.assign('1', cast=int, required=True) == 1
 
-        assert evargs.get('a') == 3
-        assert evargs.get('b') == 'A'
+        with pytest.raises(ValidateException):
+            assert evargs.assign('', cast=int, required=True)
 
-        # Exception
-        with pytest.raises(EvValidateException):
-            evargs.parse('a=5;')
-
-        with pytest.raises(EvValidateException):
-            evargs.parse('b=Z;')
-
-    def test_choices_enum(self):
+    def test_exist(self):
         evargs = EvArgs()
 
-        evargs.initialize({
-            'a': {'type': int, 'choices': Color},
-            'b': {'type': float, 'choices': Color}
-        }).parse('a=1;b=2.5')
+        assert evargs.assign('1', cast=str, validation='exist') == '1'
+        assert evargs.assign(0, cast=int, validation='exist') == 0
 
-        assert evargs.get('a') == 1
-        assert evargs.get('b') == 2.5
+        with pytest.raises(ValidateException):
+            assert evargs.assign('', cast=str, validation='exist')
 
-        # Exception
-        with pytest.raises(EvValidateException):
-            evargs.parse('a=5;')
+        assert evargs.assign(['1', '2', '3'], cast=int, list=True, post_apply='exist') == [1, 2, 3]
 
-    def test_validate_number(self):
+        with pytest.raises(ValidateException):
+            assert evargs.assign([], cast=int, validation='exist')
+
+    def test_size(self):
         evargs = EvArgs()
 
-        # unsigned
-        evargs.initialize({
-            'a': {'type': int, 'validation': 'unsigned'},
-        }).parse('a=1;')
+        evargs.assign('abc', cast=str, validation=('size', 3))
+        evargs.assign([1, 2, 3], validation=('size', 3))
+        evargs.assign(b'abc', validation=('size', 3))
 
-        assert evargs.get('a') == 1
+        with pytest.raises(ValidateException):
+            evargs.assign('abc', cast=str, validation=('size', 2))
 
-        # range
-        evargs.initialize({
-            'a': {'type': int, 'validation': ('range', None, 200)},
-            'b': {'type': int, 'validation': ['range', 100, None]},
-            'c': {'type': float, 'validation': [('unsigned',), ('range', 1, 200)]},
-        }).parse('a=123;b=200;c=199.9')
+        with pytest.raises(ValidateException):
+            evargs.assign([1, 2, 3], validation=('size', 2))
 
-        assert evargs.get('a') == 123
-        assert evargs.get('c') == 199.9
-
-    def test_validate_size(self):
+    def test_sizes(self):
         evargs = EvArgs()
 
-        # size
-        evargs.initialize({
-            'a': {'type': str, 'validation': ['size', 3]},
-        }).parse('a=ABC;')
+        evargs.assign('abc', cast=str, validation=('sizes', 1, 3))
+        evargs.assign([1, 2, 3], validation=('sizes', 1, 3))
+        evargs.assign('XYZ', validation=('sizes', None, 3))
+        evargs.assign('XYZ', validation=('sizes', 2, None))
 
-        # between
-        evargs.initialize({
-            'a': {'type': str, 'validation': ['between', 4, None]},
-            'b': {'type': str, 'validation': ['between', None, 10]},
-        }).parse('a=ABCD;b=ABCDEFGHI')
+        with pytest.raises(ValidateException):
+            evargs.assign('abc', cast=str, validation=('sizes', 0, 2))
 
-        assert evargs.get('a') == 'ABCD'
-        assert evargs.get('b') == 'ABCDEFGHI'
+        with pytest.raises(ValidateException):
+            evargs.assign([1, 2, 3], validation=('sizes', 0, 2))
+
+    def test_enum(self):
+        evargs = EvArgs()
+
+        assert evargs.assign(2, cast=int, validation=('enum', Color)) == 2
+
+        with pytest.raises(ValidateException):
+            assert evargs.assign(9, cast=int, validation=('enum', Color)) == 2
 
     def test_validate_str(self):
         evargs = EvArgs()
 
         # alphabet
-        evargs.initialize({
-            'a': {'type': str, 'validation': 'alphabet'},
-            'b': {'type': str, 'validation': [tuple(['alphabet']), ('between', 4, None)]},
-        }).parse('a=AbcD;')
+        assert evargs.assign('AbcD', cast=str, validation='alphabet') == 'AbcD'
+        assert evargs.assign('AbcDef', cast=str, validation=[tuple(['alphabet']), ('sizes', 4, None)]) == 'AbcDef'
+        assert evargs.assign('Abc123', cast=str, validation='alphanumeric') == 'Abc123'
 
-        assert evargs.get('a') == 'AbcD'
+        # ascii
+        assert evargs.assign('"Abc123"', cast=str, validation='ascii') == '"Abc123"'
+        assert evargs.assign('"Abc 123"', cast=str, validation='printable_ascii') == '"Abc 123"'
+        assert evargs.assign('"Abc-123"', cast=str, validation='standard_ascii') == '"Abc-123"'
 
-        evargs.initialize({
-            'a': {'type': str, 'validation': 'alphanumeric'},
-        }).parse('a=Abc123;')
+        # char_numeric
+        assert evargs.assign('1234', cast=str, validation='char_numeric') == '1234'
 
-        assert evargs.get('a') == 'Abc123'
-
-        # printable_ascii
-        evargs.initialize({
-            'a': {'type': str, 'validation': 'printable_ascii'},
-        }).parse('a="Abc 123";')
-
-        assert evargs.get('a') == 'Abc 123'
+        with pytest.raises(ValidateException):
+            assert evargs.assign('a1234', cast=str, validation='char_numeric') == 'a1234'
 
     def test_validate_regex(self):
         evargs = EvArgs()
 
         # regex
-        evargs.initialize({
-            'a': {'type': int, 'validation': ['regex', r'^\d{3}$']},
-            'b': {'type': str, 'validation': ['regex', r'^ABC\d{5,10}XYZ$', re.I]},
-        }).parse('a=123;b=AbC12345XyZ')
-
-        assert evargs.get('a') == 123
-        assert evargs.get('b') == 'AbC12345XyZ'
-
-        evargs.initialize({
-            'dna': {'type': str, 'validation': ['regex', r'^[ATGC]+$']},
-        }).parse('dna=ATGCGTACGTAGCTAGCTAGCTAGCATCGTAGCTAGCTAGC')
-
-        assert evargs.get('dna') == 'ATGCGTACGTAGCTAGCTAGCTAGCATCGTAGCTAGCTAGC'
+        assert evargs.assign('123', cast=int, validation=['regex', r'^\d{3}$']) == 123
+        assert evargs.assign('AbC12345XyZ', cast=str, validation=['regex', r'^ABC\d{5,10}XYZ$', re.I]) == 'AbC12345XyZ'
+        assert evargs.assign('ATGCGTACGTAGCTAGCTAGCTAGCATCGTAGCTAGCTAGC', cast=str, validation=['regex', r'^[ATGC]+$']) == 'ATGCGTACGTAGCTAGCTAGCTAGCATCGTAGCTAGCTAGC'
 
         # Exception
-        with pytest.raises(EvValidateException):
-            evargs.initialize({
-                'a': {'type': str, 'validation': ['regex', r'^XYZ.+$']},
-            }).parse('a=123XYZ')
+        with pytest.raises(ValidateException):
+            evargs.assign('123XYZ', cast=str, validation=['regex', r'^XYZ.+$'])
+
+    def test_validate_range(self):
+        evargs = EvArgs()
+
+        assert evargs.assign('123', cast=int, validation=('range', None, 200)) == 123
+        assert evargs.assign('200', cast=int, validation=['range', 100, None]) == 200
+        assert evargs.assign('199.9', cast=float, validation=[('unsigned',), ('range', 1, 200)]) == 199.9
+
+        with pytest.raises(ValidateException):
+            assert evargs.assign('201', cast=int, validation=('range', None, 200)) == 201
+
+    def test_validate_unsigned(self):
+        evargs = EvArgs()
+
+        assert evargs.assign('1', cast=int, validation='unsigned') == 1
+
+        with pytest.raises(ValidateException):
+            assert evargs.assign('-1', cast=int, validation='unsigned') == -1
+
+    def test_validate_positive(self):
+        evargs = EvArgs()
+
+        assert evargs.assign('1', cast=int, validation='positive') == 1
+
+        with pytest.raises(ValidateException):
+            assert evargs.assign('0', cast=int, validation='positive') == 0
+
+    def test_validate_negative(self):
+        evargs = EvArgs()
+
+        assert evargs.assign('-1', cast=int, validation='negative') == -1
+
+        with pytest.raises(ValidateException):
+            assert evargs.assign('0', cast=int, validation='negative') == 0
+
+    def test_validate_even_odd(self):
+        evargs = EvArgs()
+
+        assert evargs.assign('2', cast=int, validation='even') == 2
+        assert evargs.assign('1', cast=int, validation='odd') == 1
+
+    def test_validate_list(self):
+        evargs = EvArgs()
+
+        assert evargs.assign(['1', '2', '3'], cast='int', list=True, validation='unsigned') == [1, 2, 3]
+
+        with pytest.raises(ValidateException):
+            evargs.assign(['-1', '2', '3'], cast='int', list=True, validation='unsigned')
+
+        assert evargs.assign(['1', '2', '3'], cast='int', list=True, post_apply=('size', 3))
+
+        with pytest.raises(ValidateException):
+            assert evargs.assign(['1', '2'], cast='int', list=True, post_apply=('size', 3))
+
+        assert evargs.assign(['1', '2'], cast='int', list=True, post_apply='exist')
+
+        with pytest.raises(ValidateException):
+            assert evargs.assign([], cast='int', list=True, post_apply=('exist'))
 
     def test_multiple_validation(self):
         evargs = EvArgs()
 
-        evargs.initialize({
-            'a': {'type': str, 'validation': [('size', 4), ('alphabet',)]},
-            'b': {'type': int, 'validation': [('range', 1, 50), ('odd',)]},
-            'c': {'type': str, 'validation': [('between', 5, 10), tuple(['regex', '^[a-z]+$'])]},
-        }).parse('a=ABCD;b=3;c=acdefg')
+        result = evargs.assign_values({
+            'a': 'ABCD',
+            'b': '3',
+            'c': 'acdefg'
+        }, {
+            'a': {'cast': str, 'validation': [('size', 4), ('alphabet',)]},
+            'b': {'cast': int, 'validation': [('range', 1, 50), ('odd',)]},
+            'c': {'cast': str, 'validation': [('sizes', 5, 10), tuple(['regex', '^[a-z]+$'])]}
+        })
 
-        assert evargs.get('a') == 'ABCD'
-        assert evargs.get('b') == 3
-        assert evargs.get('c') == 'acdefg'
+        assert result['a'] == 'ABCD'
+        assert result['b'] == 3
+        assert result['c'] == 'acdefg'
 
         # Exception
-        with pytest.raises(EvValidateException):
-            evargs.parse('a=ABC;')
+        with pytest.raises(ValidateException):
+            evargs.assign('ABC', cast=str, validation=[('size', 4), ('alphabet',)])
 
     def test_validate_method(self):
         evargs = EvArgs()
 
         # method
-        evargs.initialize({
-            'a': {'type': int, 'validation': lambda n, v: True if v >= 0 else False},
-        }).parse('a=1;')
-
-        assert evargs.get('a') == 1
+        assert evargs.assign('1', cast=int, validation=lambda v: True if v >= 0 else False) == 1
 
         # Exception
-        with pytest.raises(EvValidateException):
-            evargs.initialize({
-                'a': {'type': int, 'validation': lambda n, v: True if v >= 0 else False},
-                'b': {'type': int, 'validation': lambda n, v: True if v >= 0 else False},
-            }).parse('a=1;b = - 8;')
+        with pytest.raises(ValidateException):
+            evargs.assign('-8', cast=int, validation=lambda v: True if v >= 0 else False)
 
 
 class MyValidator(Validator):
-    def validate_length_limit(self, name: str, v):
+    def validate_length_limit(self, v):
         if not (len(v) == 8 or len(v) == 24):
-            self.raise_error('Length is not 128,256.')
+            self.raise_error('Length is not 128,256.', v)
 
 
 class TestExtendValidator():
     def test1(self):
         validator = MyValidator()
-
         evargs = EvArgs()
-
         evargs.set_validator(validator)
 
         # length_limit = MyValidator::validate_length_limit
-        evargs.initialize({
-            'a': {'type': str, 'validation': 'length_limit'},
-        })
-
-        evargs.parse('a=12345678;')
-
-        assert evargs.get('a') == '12345678'
+        assert evargs.assign('12345678', cast=str, validation='length_limit') == '12345678'

@@ -1,4 +1,4 @@
-from evargs import EvArgs, EvArgsException, EvValidateException
+from evargs import EvArgs, EvArgsException, ValidateException
 import pytest
 import re
 
@@ -9,82 +9,130 @@ class TestGeneral:
     def setup(self):
         pass
 
-    def test_operator(self):
+    def test_default_rule(self):
         evargs = EvArgs()
 
-        evargs.initialize({
-            'a1': {'type': int},
-            'a2': {'type': int},
-            'b1': {'type': int},
-            'b2': {'type': int},
-            'c': {'type': int},
-            'd': {'type': int},
+        evargs.set_default_rule({
+            'validation': ['range', 1, 100]
         })
 
-        evargs.parse('a1>1;a2 >= 1;b1<1;b2<=3;c=3;d != 3;')
+        evargs.initialize({
+            'a': {'cast': int, 'list': True},
+            'b': {'cast': int},
+            'c': {'cast': int},
+        })
 
-    def test_operator_error(self):
+        assert evargs.get_rule('a')['nullable'] is True
+
+    def test_get_rule(self):
         evargs = EvArgs()
 
-        evargs.initialize({
-            'a': {'type': int}
+        evargs.set_default_rule({
+            'default': 1
         })
+
+        assert evargs.get_rule(rule={'cast': int, 'default': 2})['default'] == 2
+        assert evargs.get_rule(rule={'cast': int})['default'] == 1
+
+        rules = {
+            'a': {'cast': int, 'default': 3},
+            'b': {'cast': int},
+        }
+
+        assert evargs.get_rule('a', rules=rules)['default'] == 3
+        assert evargs.get_rule('b', rules=rules)['default'] == 1
+
+    def test_get_rule_options(self):
+        evargs = EvArgs()
+
+        evargs.set_default_rule({'default': 1})
+
+        rules = {
+            'a': {'cast': int, 'default': 1},
+            'b': {'cast': int, 'default': 2},
+            'c': {'cast': str},
+            'd': {'cast': str}
+        }
+
+        defaults = evargs.get_rule_options('default', rules)
+
+        assert defaults['b'] == 2
+        assert defaults['c'] == 1
+
+        evargs = EvArgs()
+
+        evargs.initialize(rules)
+
+        defaults = evargs.get_rule_options('default')
+
+        assert defaults['b'] == 2
+        assert defaults['c'] is None
+
+    def test_create_rule(self):
+        evargs = EvArgs()
+
+        evargs.set_default_rule({'required': True, 'validation': 'alphabet'})
+
+        rule = evargs.create_rule(required=False)
+
+        assert rule['required'] is False
+
+        rule = evargs.create_rule(required=True)
+
+        assert rule['required'] is True
+
+        rule = evargs.create_rule(raise_error=0)
+
+        assert rule['required'] is True
+        assert rule['raise_error'] == 0
+
+        rule = evargs.create_rule(validation=None)
+
+        assert rule['validation'] is None
 
         with pytest.raises(EvArgsException):
-            evargs.parse('a=>1;')
+            evargs.create_rule(unknown=False)
 
-        evargs.initialize({
-            'a': {'type': int}
-        })
+    def test_create_rule_args(self):
+        evargs = EvArgs()
+
+        rule = evargs.create_rule(int, True, 0, True, True, 'unsigned', None, None, None, None, 'exist', 1, True, False, {'help': 'Help!'})
+
+        assert rule['validation'] == 'unsigned'
+        assert rule['post_apply'] == 'exist'
+        assert rule['raise_error'] == 1
+        assert rule['list'] is True
+        assert rule['multiple'] is False
+        assert rule['help'] == 'Help!'
 
     def test_set_rule(self):
         evargs = EvArgs()
 
-        evargs.initialize({
-            'a': {'type': int},
-            'b': {'type': int}
-        })
+        evargs.set_rule('a', {'cast': int, 'default': 1})
+        evargs.set_rule('b', {'cast': int, 'default': 2})
+        evargs.set_rule('c', {'cast': str})
 
-        evargs.set_rule('c', {'type': int})
+        evargs.put('a', None)
+        evargs.put('b', 3)
+        evargs.put('c', 'ABC')
 
-        evargs.parse('c=3')
+        assert evargs.get('a') == 1
+        assert evargs.get('b') == 3
+        assert evargs.get('c') == 'ABC'
 
-        assert evargs.get('c') == 3
-
-    def test_methods(self):
+    def test_set_rules(self):
         evargs = EvArgs()
 
-        evargs.initialize({
-            'a': {'type': int, 'list': True},
-            'b': {'type': int},
-            'c': {'type': int},
+        evargs.set_rules({
+            'a': {'cast': int, 'default': 1},
+            'b': {'cast': int, 'default': 2},
+            'c': {'cast': str}
         })
 
-        assigns = 'a= 1,2,3 ; b=8; c=80,443;'
+        evargs.put('a', None)
+        evargs.put('b', 3)
+        evargs.put('c', 'ABC')
 
-        evargs.parse(assigns)
-
-        assert evargs.get('a') == [1, 2, 3]
-        assert evargs.has_param('d') is False
-        assert evargs.get_param('a').name == 'a'
-        assert len(evargs.get_params()) == 3
-        assert evargs.count_params() == 3
-        assert evargs.get_rule('a') is not None
-
-    def test_errors(self):
-        evargs = EvArgs()
-
-        with pytest.raises(EvArgsException):
-            evargs.initialize({
-                'a': {'type': int, 'unknown': True}
-            })
-
-        evargs.initialize({
-            'a': {'type': int}
-        })
-
-        with pytest.raises(EvArgsException):
-            evargs.parse('a>= 1 a< ; ')
-
-        with pytest.raises(EvValidateException):
-            evargs.parse('e1=8')
+        assert evargs.get('a') == 1
+        assert evargs.get('b') == 3
+        assert evargs.get('c') == 'ABC'

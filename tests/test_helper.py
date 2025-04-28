@@ -21,21 +21,17 @@ class TestHelper:
     def setup(self):
         pass
 
-    def test_type_expression(self):
+    def test_cast_expression(self):
         evargs = EvArgs()
 
         evargs.initialize({
-            'a': {'type': lambda v: ExpressionParser.parse(v)},
-            'b': {'type': lambda v: ExpressionParser.parse(v)},
-            'c': {'type': lambda v: ExpressionParser.parse(v)},
-            'd': {'type': lambda v: ExpressionParser.parse(v)},
+            'a': {'cast': lambda v: ExpressionParser.parse(v)},
+            'b': {'cast': lambda v: ExpressionParser.parse(v)},
+            'c': {'cast': lambda v: ExpressionParser.parse(v)},
+            'd': {'cast': lambda v: ExpressionParser.parse(v)},
         })
 
-        assigns = 'a= 1 + 2 ;b= 2*4;c="1 * 4 + (10 - 4)/2";d=( (1 + 4) * (6 - 4))**2'
-
-        evargs.parse(assigns)
-
-        assert evargs.get('a') == 3
-        assert evargs.get('b') == 8
-        assert evargs.get('c') == 7
-        assert evargs.get('d') == 100
+        assert evargs.assign('1 + 2', lambda v: ExpressionParser.parse(v)) == 3
+        assert evargs.assign('2 * 4 ', lambda v: ExpressionParser.parse(v)) == 8
+        assert evargs.assign('1 * 4 + (10 - 4)/2 ', lambda v: ExpressionParser.parse(v)) == 7
+        assert evargs.assign('( (1 + 4) * (6 - 4))**2 ', lambda v: ExpressionParser.parse(v)) == 100

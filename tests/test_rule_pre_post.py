@@ -1,4 +1,4 @@
-from evargs import EvArgs, EvArgsException, EvValidateException
+from evargs import EvArgs, EvArgsException, ValidateException
 import pytest
 import re
 
@@ -9,106 +9,71 @@ class TestRulePrePost:
     def setup(self):
         pass
 
+    def test_pre_cast(self):
+        evargs = EvArgs()
+
+        def pre_cast(v):
+            return v + '1'
+
+        assert evargs.assign('1', cast=int, pre_cast=pre_cast) == 11
+        assert evargs.assign('', cast=int, pre_cast=pre_cast, default=5) == 1
+        assert evargs.assign(['1', '2', '3'], cast=int, pre_cast=pre_cast, list=True) == [11, 21, 31]
+        assert evargs.assign('<33>', cast=int, pre_cast=lambda v: v.strip('<> ')) == 33
+
+    def test_post_cast(self):
+        evargs = EvArgs()
+
+        def post_cast(v):
+            return v + 1
+
+        assert evargs.assign('1', cast=int, post_cast=post_cast) == 2
+        assert evargs.assign('', cast=int, post_cast=post_cast, default=5, raise_error=False) == 6
+        assert evargs.assign(['1', '2', '3'], cast=int, post_cast=post_cast, list=True) == [2, 3, 4]
+        assert evargs.assign('Abc', cast=str, post_cast=str.upper) == 'ABC'
+
     def test_pre_apply(self):
         evargs = EvArgs()
 
-        def pre_apply(v):
-            return v + '1'
-
-        evargs.initialize({
-            'a': {'type': int, 'pre_apply': pre_apply},
-            'b': {'type': int, 'pre_apply': pre_apply, 'default': 5},
-            'c': {'type': int, 'pre_apply': pre_apply, 'list': True},
-            'd': {'type': int, 'pre_apply': pre_apply, 'multiple': True},
-            'e': {'type': int, 'pre_apply': lambda v: v.strip('<> ')},
-        })
-
-        assigns = 'a=1;b=;c=1,2,3;d=1;d=2;e="<33>"'
-
-        evargs.parse(assigns)
-
-        assert evargs.get('a') == 11
-        assert evargs.get('b') == 5
-        assert evargs.get('c') == [11, 21, 31]
-        assert evargs.get('d', 0) == 11
-        assert evargs.get('e') == 33
+        assert evargs.assign(['1', '2', '3'], cast=int, pre_apply=lambda values: values + ['4'], list=True) == [1, 2, 3, 4]
+        assert evargs.assign('', cast=int, pre_apply=lambda v: 4) == 4
+        assert evargs.assign(['1', '2', '3'], cast=int, pre_apply=lambda values: ''.join(values)) == 123
 
     def test_post_apply(self):
         evargs = EvArgs()
 
-        def post_apply(v):
-            return v + 1
+        assert evargs.assign(['1', '2', '3'], cast=int, post_apply=lambda values: values[:-1], list=True) == [1, 2]
+        assert evargs.assign('', cast=int, post_apply=lambda v: 5, raise_error=False) == 5
+        assert evargs.assign(['1', '2', '3'], cast=int, post_apply=lambda values: sum(values), list=True) == 6
+        assert evargs.assign(['1', '2', '3'], cast=int, post_apply=lambda values: [sum(values)], list=True) == [6]
+        assert evargs.assign(['4', '5', '6'], cast=int, post_apply=('size', 3), list=True) == [4, 5, 6]
 
-        evargs.initialize({
-            'a': {'type': int, 'post_apply': post_apply},
-            'b': {'type': int, 'post_apply': post_apply, 'default': 5},
-            'c': {'type': int, 'post_apply': post_apply, 'list': True},
-            'd': {'type': int, 'post_apply': post_apply, 'multiple': True},
-            'e': {'type': str, 'post_apply': str.upper},
-        })
+        assert evargs.assign('12345', validation=('size', 5)) == '12345'
+        assert evargs.assign([5, 6, 7], post_apply=('size', 3), list=True) == [5, 6, 7]
 
-        assigns = 'a=1;b=;c=1,2,3;d=1;d=2;e=Abc'
-
-        evargs.parse(assigns)
-
-        assert evargs.get('a') == 2
-        assert evargs.get('b') == 5
-        assert evargs.get('c') == [2, 3, 4]
-        assert evargs.get('d', 0) == 2
-        assert evargs.get('e') == 'ABC'
-
-    def test_pre_apply_param(self):
+    def test_post_apply_complex(self):
         evargs = EvArgs()
 
-        evargs.initialize({
-            'a': {'type': int, 'pre_apply_param': lambda values: values + ['4'], 'list': True},
-            'b': {'type': int, 'pre_apply_param': lambda values: values + ['4']},
-            'c': {'type': int, 'pre_apply_param': lambda values: [''.join(values)]},
-            'd': {'type': int, 'pre_apply_param': lambda values: [values[0] + '1'], 'multiple': True},
-        })
+        assert evargs.assign(['1', '2', '3'], cast=int, post_apply=[lambda values: values[:-1], lambda values: sum(values)], list=True) == 3
 
-        evargs.parse('a=1,2,3;b=;c=1,2,3;d=1;d=2')
+        assert evargs.assign(['1', '2', '3'], cast=int, post_apply=[lambda values: sum(values), ('range', 1, 10)], list=True) == 6
 
-        assert evargs.get('a') == [1, 2, 3, 4]
-        assert evargs.get('b') == 4
-        assert evargs.get('c') == 123
-        assert evargs.get('d', 0) == 11
-        assert evargs.get('d', 1) == 21
-
-    def test_post_apply_param(self):
-        evargs = EvArgs()
-
-        evargs.initialize({
-            'a': {'type': int, 'post_apply_param': lambda values: values[:-1], 'list': True},
-            'b': {'type': int, 'post_apply_param': lambda values: 5},
-            'c': {'type': int, 'post_apply_param': lambda values: sum(values)},
-            'd': {'type': int, 'post_apply_param': lambda values: values[0] * 2, 'multiple': True},
-            'e': {'type': int, 'post_apply_param': lambda values: [sum(values)], 'list': True},
-        })
-
-        assigns = 'a=1,2,3;b=;c=1,2,3;d=2;d=3;e=1,2,3'
-
-        evargs.parse(assigns)
-
-        assert evargs.get('a') == [1, 2]
-        assert evargs.get('b') == 5
-        assert evargs.get('c') == 6
-        assert evargs.get('d', 0) == 4
-        assert evargs.get('e') == [6]
+        assert evargs.assign('abcdefghi', cast=str, post_apply=[lambda v: v[:6], ('size', 6)]) == 'abcdef'
 
     def test_dynamic_value(self):
         evargs = EvArgs()
 
         evargs.initialize({
-            'a': {'type': int},
-            'b': {'type': int},
-            'dynamic1': {'type': int, 'post_apply_param': lambda v: evargs.get('a') + evargs.get('b')},
-            'dynamic2': {'type': int, 'post_apply_param': lambda v: v[0] + evargs.get('a') * evargs.get('b')},
+            'a': {'cast': int},
+            'b': {'cast': int},
+            'dynamic1': {'cast': int, 'post_apply': lambda v: evargs.get('a') + evargs.get('b')},
+            'dynamic2': {'cast': int, 'post_apply': lambda v: v + evargs.get('a') * evargs.get('b')},
         })
 
-        assigns = 'a=2;b=3;dynamic2=10;'
-
-        evargs.parse(assigns)
+        evargs.put_values({
+            'a': 2,
+            'b': '3',
+            'dynamic2': 10
+        })
 
         assert evargs.get('dynamic1') == 5
         assert evargs.get('dynamic2') == 16

@@ -15,11 +15,11 @@ class TestListFormatter:
         help_fomatter = HelpFormatter()
 
         desc = help_fomatter.make({
-            'planet_name': {'type': str, 'help': 'Name of the planet.', 'require': True},
-            'orbital_period': {'type': float, 'help': 'Time taken to complete one orbit around the Sun in Earth days.', 'validation': 'unsigned'},
-            'gravity': {'type': float, 'help': 'Surface gravity of the planet in m/s2.', 'validation': lambda v: v > 0, 'default': 1.0},
-            'color': {'type': str, 'help': 'Dominant color of the planet.'},
-            'has_life': {'type': bool, 'help': 'Indicates if there is life on the planet.'}
+            'planet_name': {'cast': str, 'help': 'Name of the planet.', 'required': True},
+            'orbital_period': {'cast': float, 'help': 'Time taken to complete one orbit around the Sun in Earth days.', 'validation': 'unsigned'},
+            'gravity': {'cast': float, 'help': 'Surface gravity of the planet in m/s2.', 'validation': lambda v: v > 0, 'default': 1.0},
+            'color': {'cast': str, 'help': 'Dominant color of the planet.'},
+            'has_life': {'cast': bool, 'help': 'Indicates if there is life on the planet.'}
         })
 
         assert re.search(r'Dominant color of the planet', desc)

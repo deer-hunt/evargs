@@ -1,4 +1,4 @@
-from evargs import EvArgs, EvArgsException, EvValidateException
+from evargs import EvArgs, EvArgsException, ValidateException
 import pytest
 import re
 
@@ -14,85 +14,71 @@ class TestOptions:
 
         evargs.initialize({}, {'default': 'B'}, flexible=True)
 
-        assigns = 'a=1;b= 2 ;c=A;d=;'
+        assert evargs.assign('1') == '1'
+        assert evargs.assign('2') == '2'
+        assert evargs.assign(None) == 'B'
 
-        evargs.parse(assigns)
+        evargs.initialize({}, {'cast': int, 'default': 3}, flexible=True)
 
-        assert evargs.get('a') == '1'
-        assert evargs.get('b') == '2'
-        assert evargs.get('c') == 'A'
-        assert evargs.get('d') == 'B'
+        assert evargs.assign('1') == 1
+        assert evargs.assign('2') == 2
+        assert evargs.assign('3.23') == 3
+        assert evargs.assign('') == 3
 
-        evargs.initialize({}, {'type': int, 'default': 3}, flexible=True)
+        evargs.initialize({}, {'cast': int, 'list': True}, flexible=True)
 
-        assigns = 'a=1;b= 2 ;c=3.23;'
+        assert evargs.assign([1, 2, 3]) == [1, 2, 3]
+        assert evargs.assign(['1', '2', '3']) == [1, 2, 3]
+        assert evargs.assign([1.2, 2.1, 3.3]) == [1, 2, 3]
 
-        evargs.parse(assigns)
-
-        assert evargs.get('a') == 1
-        assert evargs.get('b') == 2
-        assert evargs.get('c') == 3
-        assert evargs.get('d') == 3
-
-        evargs.initialize({}, {'type': int, 'list': True}, flexible=True)
-
-        assigns = 'a=1,2,3;b= 1,2,3 ;c= 1.2, 2.1, 3.3;'
-
-        evargs.parse(assigns)
-
-        assert evargs.get('a') == [1, 2, 3]
-        assert evargs.get('b') == [1, 2, 3]
-        assert evargs.get('c') == [1, 2, 3]
-
-    def test_require_all(self):
+    def test_required_all(self):
         evargs = EvArgs()
 
         evargs.initialize({
-            'a': {'type': int, 'default': 1},
-            'b': {'type': int, 'default': 1},
-            'c': {'type': str},
-            'd': {'type': str}
-        }, require_all=True)
+            'a': {'cast': int, 'default': 1},
+            'b': {'cast': int, 'default': 1},
+            'c': {'cast': str},
+            'd': {'cast': str}
+        }, required_all=True)
 
-        assigns = 'b= 2 ;d=;'
+        with pytest.raises(ValidateException):
+            evargs.assign('')
 
-        with pytest.raises(EvValidateException):
-            evargs.parse(assigns)
+        with pytest.raises(ValidateException):
+            evargs.assign(None)
 
     def test_ignore_unknown(self):
         evargs = EvArgs()
 
         evargs.initialize({
-            'a': {'type': int, 'default': 1},
-        }, ignore_unknown=True)
-
-        evargs.parse('b= 2 ;c=;')  # Exception does not raise.
-
-        assert evargs.get('a') == 1
-        assert evargs.get('b') is None
-
-        evargs.initialize({
-            'a': {'type': int, 'default': 1},
+            'a': {'cast': int, 'default': 1},
         })
 
-        with pytest.raises(EvValidateException):
-            evargs.parse('b= 2 ;c=;')  # Exception raise.
+        with pytest.raises(ValidateException):
+            assert evargs.get('z') is None
+
+        evargs.initialize({
+            'a': {'cast': int, 'default': 1},
+        }, ignore_unknown=True)
+
+        assert evargs.get('z') is None
 
     def test_set_options(self):
         evargs = EvArgs()
 
         evargs.initialize({
-            'a': {'type': int},
-            'b': {'type': int},
-            'c': {'type': int},
+            'a': {'cast': int},
+            'b': {'cast': int},
+            'c': {'cast': int},
         })
 
-        evargs.set_options(require_all=True, ignore_unknown=True)
+        evargs.set_options(required_all=True, ignore_unknown=True)
 
-        evargs.parse('a=1;b=2;c=3;d=3')
+        evargs.put('a', 1)
+        evargs.put('c', '3')
 
         assert evargs.get('a') == 1
         assert evargs.get('c') == 3
 
-        with pytest.raises(EvValidateException):
-            evargs.parse('a=1;b=2;')
+        with pytest.raises(ValidateException):
+            assert evargs.get('b') is None

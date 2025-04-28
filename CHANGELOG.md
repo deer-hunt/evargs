@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.0b](https://github.com/deer-hunt/evargs/releases/tag/v1.0.0b) (2025-04-26)
+
+- Enhanced the documentation.
+- Implemented significant changes to the specifications and improved specifications.
+- Fixed bugs.
+
 ## [0.9.4](https://github.com/deer-hunt/evargs/releases/tag/v0.9.4) (2025-04-15)
 
 - Add Enum type support.

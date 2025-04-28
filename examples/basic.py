@@ -1,4 +1,4 @@
-from evargs import EvArgs, EvArgsException, EvValidateException
+from evargs import EvArgs, EvArgsException, ValidateException
 import sys
 
 '''
@@ -10,11 +10,11 @@ def main():
     evargs = EvArgs()
 
     evargs.initialize({
-        'a': {'type': bool},
-        'b': {'type': 'bool'},  # 'bool' = bool
-        'c': {'type': int},
-        'd': {'type': float, 'default': 3.14},
-        'e': {'type': str},
+        'a': {'cast': bool},
+        'b': {'cast': 'bool'},  # 'bool' = bool
+        'c': {'cast': int},
+        'd': {'cast': float, 'default': 3.14},
+        'e': {'cast': str},
     })
 
     evargs.parse('a= 1 ;b=True;c=10;d=;e=H2O')

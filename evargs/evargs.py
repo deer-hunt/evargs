@@ -1,17 +1,14 @@
-import io
-import re
-import tokenize
 from enum import Enum
-from typing import Type, Optional
+from typing import Type, Optional, Union, overload
 
-from evargs.exception import EvArgsException, EvValidateException
+from evargs.exception import EvArgsException, ValidateException
 from evargs.list_formatter import HelpFormatter
-from evargs.modules import Param, ParamItem, Operator
+from evargs.modules import ParamValue, MultipleParam
 from evargs.validator import Validator
-from evargs.value_caster import ValueCaster
+from evargs.type_cast import TypeCast
 
 '''
-[EvArgs]
+EvArgs
 
 Document:
 https://github.com/deer-hunt/evargs/
@@ -23,40 +20,28 @@ Tests:
 https://github.com/deer-hunt/evargs/blob/main/tests/
 
 Rules description:
-https://github.com/deer-hunt/evargs/#rules
-
-Example:
-ev_parser = EvaluationParser({
-    'a': {'type': int, 'multiple': True},
-    'b': {'type': int, 'default': 2},
-})
-
-value = 'a>= 1; a<6 ; b=8; c=80,443; d=a,b; e=4.5'
-
-ev_parser.parse(value)
+https://github.com/deer-hunt/evargs/#rule-options
 '''
 
 
 class EvArgs:
-    RULE = {
-        'help': None,
-        'list': False, 'multiple': False,
-        'type': None, 'require': False, 'default': None,
-        'choices': None, 'validation': None,
-        'pre_apply': None, 'post_apply': None,
-        'pre_apply_param': None, 'post_apply_param': None,
-        'evaluate': None, 'evaluate_param': None, 'multiple_or': None, 'list_or': None,
-        'prevent_error': False,
-    }
-
     def __init__(self, validator: Validator = None):
         """Initialize instance with default settings and an optional validator."""
+        self.defined_rule = {
+            'cast': None, 'required': False, 'default': None, 'nullable': True, 'trim': None,
+            'validation': None, 'choices': None,
+            'pre_cast': None, 'post_cast': None, 'pre_apply': None, 'post_apply': None,
+            'raise_error': TypeCast.ERROR_DEFAULT_NONE,
+            'list': False, 'multiple': False,
+            'help': None
+        }
+
         self.rules = {}
         self.default_rule = {}
         self.params = {}
 
         self.flexible = False
-        self.require_all = False
+        self.required_all = False
         self.ignore_unknown = False
 
         if validator is not None:
@@ -64,7 +49,7 @@ class EvArgs:
         else:
             self.validator = self.get_validator()
 
-        self.value_caster = self.get_value_caster()
+        self.type_cast = self.get_type_cast()
 
         self.help_formatter = None
 
@@ -76,13 +61,13 @@ class EvArgs:
         """Set Validator instance."""
         self.validator = validator
 
-    def get_value_caster(self) -> Type[ValueCaster]:
-        """Return ValueCaster class."""
-        return ValueCaster
+    def get_type_cast(self) -> Type[TypeCast]:
+        """Return TypeCast class."""
+        return TypeCast
 
-    def set_value_caster(self, value_caster: Type[ValueCaster]):
-        """Set ValueCaster class."""
-        self.value_caster = value_caster
+    def set_type_cast(self, type_cast: Type[TypeCast]):
+        """Set TypeCast class."""
+        self.type_cast = type_cast
 
     def get_help_formatter(self) -> HelpFormatter:
         """Return HelpFormatter instance."""
@@ -95,25 +80,33 @@ class EvArgs:
         """Set HelpFormatter instance."""
         self.help_formatter = help_formatter
 
-    def initialize(self, rules: dict, default_rule: dict = None, flexible: bool = False, require_all: bool = False, ignore_unknown: bool = False):
+    def set_options(self, flexible: bool = False, required_all: bool = False, ignore_unknown: bool = False):
+        """Set options."""
+        self.flexible = flexible
+        self.required_all = required_all
+        self.ignore_unknown = ignore_unknown
+
+    def set_default_rule(self, default_rule: dict):
+        """Set the default rule."""
+        self.default_rule = {**self.defined_rule, **default_rule}
+
+    def initialize(self, rules: Optional[dict], default_rule: dict = None, flexible: bool = False, required_all: bool = False, ignore_unknown: bool = False):
         """Initialize rules and options for the instance."""
-        self.set_default(default_rule)
+        if default_rule:
+            self.set_default_rule(default_rule)
 
-        self.set_options(flexible, require_all, ignore_unknown)
+        self.set_options(flexible, required_all, ignore_unknown)
 
-        self.set_rules(rules)
+        if rules is not None:
+            self.set_rules(rules)
 
         return self
 
-    def set_options(self, flexible: bool = False, require_all: bool = False, ignore_unknown: bool = False):
-        """Set options."""
-        self.flexible = flexible
-        self.require_all = require_all
-        self.ignore_unknown = ignore_unknown
+    def set_rule(self, name: str, rule: dict):
+        """Set rule."""
+        self.rules[name] = self.create_rule(rule=rule)
 
-    def set_default(self, default_rule: dict = None):
-        """Set the default rule."""
-        self.default_rule = default_rule
+        return self
 
     def set_rules(self, rules: dict):
         """Set rules."""
@@ -124,338 +117,319 @@ class EvArgs:
 
         return self
 
-    def set_rule(self, name: str, rule: dict):
-        """Set rule."""
-        if self.default_rule is None:
-            self.rules[name] = rule
-        else:
-            item = self.default_rule.copy()
-            item.update(rule)
-            self.rules[name] = item
+    def make_kwargs(self, args: tuple, keys: list, kwargs: dict = None):
+        """Make kwargs from args."""
+        rkwargs = dict(zip(keys, args))
 
-        for key in rule:
-            if key not in self.RULE:
-                raise EvArgsException('Unknown rule option.({})'.format(key), EvArgsException.ERROR_GENERAL)
+        if kwargs is not None:
+            for k, v in kwargs.items():
+                rkwargs[k] = v
 
-        return self
+        return rkwargs
 
-    def parse(self, assigns: str):
-        """Parse the expression of assigns."""
-        self.reset_params()
+    @overload
+    def create_rule(self, cast: Union[str, callable] = None, required: bool = False, default: any = None, nullable: bool = True, trim: Union[bool, str] = None,
+                    validation: Union[str, list, tuple, callable] = None, choices: Union[list, tuple, Type[Enum]] = None, pre_cast: callable = None, post_cast: callable = None, pre_apply: callable = None, post_apply: Union[callable, str, list, tuple] = None,
+                    raise_error: int = TypeCast.ERROR_DEFAULT_NONE, list: bool = False, multiple: bool = False, rule: dict = None) -> dict:
+        """Create rule by arguments. The default value is reflected."""
+        ...
 
-        readline = io.StringIO(assigns).readline
-        tokens = tokenize.generate_tokens(readline)
+    def create_rule(self, *args, **kwargs) -> dict:
+        if len(args) > 0:
+            kwargs = self.make_kwargs(args, ['cast', 'required', 'default', 'nullable', 'trim', 'validation', 'choices', 'pre_cast', 'post_cast', 'pre_apply', 'post_apply', 'raise_error', 'list', 'multiple', 'rule'], kwargs)
 
-        name = None
-        operator = 0
-        values = []
-        value_list = False
+        default_rule = self.default_rule if len(self.default_rule) > 0 else self.defined_rule
 
-        for tok in tokens:
-            if tok.type == tokenize.NAME:
-                if name is None:
-                    name = tok.string
-                else:
-                    values.append(tok.string)
-            elif tok.type == tokenize.OP:
-                if Operator.is_evaluate(tok.string):
-                    if operator == 0:
-                        operator = Operator.parse_operator(tok.string)
-                    else:
-                        self._raise_parse_error('Illegal operator; {}'.format(name))
-                elif tok.string == Operator.LIST_SPLIT:
-                    value_list = True
-                elif tok.string == Operator.VALUE_SPLIT:
-                    self._add_param(name, operator, values, value_list)
-                    name = None
-                    operator = 0
-                    values = []
-                    value_list = False
-                else:
-                    values.append(tok.string)
-            elif tok.type == tokenize.NUMBER:
-                values.append(tok.string)
-            elif tok.type == tokenize.STRING:
-                m = re.search(r'^["\'](.+)["\']$', tok.string)
+        rule = kwargs.pop('rule', None)
+        rule = rule if rule is not None else {}
 
-                v = tok.string if m is None else m.group(1)
+        rule = {**default_rule, **rule, **kwargs}
 
-                values.append(v)
-            elif tok.type == tokenize.NEWLINE or tok.type == tokenize.ENDMARKER:
-                continue
+        for k, v in rule.items():
+            if k not in self.defined_rule:
+                raise EvArgsException(f'Unknown rule option.({k})', EvArgsException.ERROR_GENERAL)
 
-        if name and operator:
-            self._add_param(name, operator, values, value_list)
-            name = None
-            operator = 0
+        return rule
 
-        if name or operator:
-            self._raise_parse_error('End expression')
+    @overload
+    def assign(self, value: any, cast: Union[str, callable] = None, required: bool = False, default: any = None, nullable: bool = True, trim: Union[bool, str] = None,
+               validation: Union[str, list, tuple, callable] = None, choices: Union[list, tuple, Type[Enum]] = None, pre_cast: callable = None, post_cast: callable = None, pre_apply: callable = None, post_apply: callable = None,
+               raise_error: int = TypeCast.ERROR_DEFAULT_NONE, list: bool = False, multiple: bool = False, rule: dict = None, name: str = None) -> any:
+        """Assign value by rule options."""
+        ...
 
-        self._parse_not_assigned()
+    def assign(self, value: any, *args, **kwargs) -> any:
+        if len(args) > 0:
+            kwargs = self.make_kwargs(args, ['cast', 'required', 'default', 'nullable', 'trim', 'validation', 'choices', 'pre_cast', 'post_cast', 'pre_apply', 'post_apply', 'raise_error', 'list', 'multiple', 'rule', 'name'], kwargs)
 
-    def _parse_not_assigned(self):
-        for name in self.rules.keys():
-            rule = self.get_rule(name)
+        name = kwargs.pop('name', None)
 
-            param = self.params.get(name)
+        rule = self.create_rule(*args, **kwargs)
 
-            if param is None and rule is not None:
-                self._add_param_by_rule(rule, name, None, [])
+        v = self._apply_rule(rule, value)
 
-    def _add_param(self, name: str, operator: int, values: list, value_list: bool):
         if name is not None:
-            rule = self.get_rule(name)
+            self.rules[name] = rule
+            self.put(name, v)
 
-            if rule is not None:
-                if len(values) > 0 and not value_list:
-                    values = [''.join(values)]
+        return v
 
-                try:
-                    self._add_param_by_rule(rule, name, operator, values)
-                except (EvArgsException, EvValidateException) as e:
-                    raise e
-                except Exception:
-                    self._raise_parse_error('Near "{}"'.format(name))
-            else:
-                self._raise_unknown_error(name)
+    def assign_values(self, values: dict, rules: dict, store: bool = False) -> dict:
+        """Assign values by rule options."""
+        for name, rule in rules.items():
+            value = values.get(name)
 
-    def _add_param_by_rule(self, rule: dict, name: str, operator: Optional[int], values: list) -> Param:
-        pre_apply_param = rule.get('pre_apply_param')
+            store_name = name if store else None
 
-        if pre_apply_param:
-            values = pre_apply_param(values)
+            values[name] = self.assign(value, rule=rule, name=store_name)
 
-        pre_apply = rule.get('pre_apply')
+        return values
 
-        if pre_apply:
-            values = list(map(pre_apply, values))
-
-        value_type = rule.get('type')
-
-        if value_type:
-            try:
-                if value_type == int or value_type == 'int':
-                    values = list(map(self.value_caster.to_int, values))
-                elif value_type == float or value_type == 'float':
-                    values = list(map(self.value_caster.to_float, values))
-                elif value_type == complex or value_type == 'complex':
-                    values = list(map(self.value_caster.to_complex, values))
-                elif value_type == bool or value_type == 'bool':
-                    values = list(map(self.value_caster.to_bool, values))
-                elif value_type == 'bool_strict':
-                    values = list(map(self.value_caster.bool_strict, values))
-                elif value_type == str or value_type == 'str':
-                    values = list(map(lambda v: str(v), values))
-                elif isinstance(value_type, Enum.__class__):
-                    values = self._apply_cast_tuple(values, 'enum', [value_type])
-                elif isinstance(value_type, tuple):
-                    values = self._apply_cast_tuple(values, value_type[0], value_type[1:])
-                elif callable(value_type):
-                    values = list(map(value_type, values))
-                else:  # raw
-                    pass
-            except Exception:
-                if not rule.get('prevent_error'):
-                    raise EvValidateException(f'Value casting failed.({name})', EvValidateException.ERROR_CAST)
-                else:
-                    values = [None]
-
-        post_apply = rule.get('post_apply')
-
-        if post_apply:
-            values = list(map(post_apply, values))
-
-        post_apply_param = rule.get('post_apply_param')
-
-        if post_apply_param:
-            values = post_apply_param(values)
-
-        is_list = isinstance(values, list)
-
-        value = None
-
-        if rule.get('list'):
-            if not is_list:
-                raise Exception('The value is not list type.({})'.format(name))
-
-            value = values
-        else:
-            if not is_list:
-                value = values
-            elif len(values) >= 1:
-                value = values[0]
-
-        if value is not None:
-            self._validate_value(rule, name, value)
-
-        return self._build_param(name, rule, operator, value)
-
-    def _apply_cast_tuple(self, values: list, cmd: str, args):
-        if cmd == 'enum':
-            fn = (lambda v: self.value_caster.to_enum_loose(args[0], v, is_value=True, is_name=True))
-        elif cmd == 'enum_value':
-            fn = (lambda v: self.value_caster.to_enum_loose(args[0], v, is_value=True, is_name=False))
-        elif cmd == 'enum_name':
-            fn = (lambda v: self.value_caster.to_enum_loose(args[0], v, is_value=False, is_name=True))
-        else:
-            fn = (lambda v: v)
-
-        return list(map(fn, values))
-
-    def _validate_value(self, rule: dict, name: str, value: any):
-        validation = rule.get('validation')
-
-        if validation:
-            self._validate(validation, name, value)
-
-        choices = rule.get('choices')
-
-        if choices:
-            self._validate_choices(name, choices, value)
-
-    def _validate_choices(self, name: str, choices: any, value: any):
-        if not isinstance(choices, Enum.__class__):
-            values = choices
-        else:
-            values = [item.value for item in choices]
-
-        if value not in values:
-            self.validator.raise_error('Out of choices.({}; {})'.format(name, value), EvValidateException.ERROR_OUT_CHOICES)
-
-    def _validate(self, validation: any, name: str, value: any):
-        args = []
-
-        if isinstance(validation, (list, tuple)) and isinstance(validation[0], str):
-            [validation, *args] = validation
-
-        if isinstance(validation, str):
-            validation_fn = getattr(self.validator, 'validate_' + validation, None)
-
-            if not validation_fn:
-                raise EvArgsException('Validation method is not found.({})'.format(validation), EvArgsException.ERROR_PROCESS)
-
-            self._validate_exec(validation_fn, name, value, args)
-        elif isinstance(validation, list):
-            for v in validation:
-                self._validate(v, name, value)
-        else:
-            error = self._validate_exec(validation, name, value, args)
-
-            if not error:
-                self.validator.raise_error('Validation error.({})'.format(name))
-
-    def _validate_exec(self, fn: callable, name: str, value: any, args: list):
-        error = False
-
-        try:
-            error = fn(name, value, *args)
-        except EvValidateException as e:
-            raise e
-        except Exception:
-            self.validator.raise_error('Validation unknown error.({})'.format(name), EvValidateException.ERROR_PROCESS)
-
-        return error
-
-    def _build_param(self, name: str, rule: dict, operator: int, value: any) -> Param:
-        if not self.params.get(name):
-            item_multiple = True if rule.get('multiple') else False
-            value_list = True if rule.get('list') else False
-
-            param = Param(name, item_multiple, value_list)
-
-            self.params[name] = param
-        else:
-            param = self.params[name]
-
-        param.add(operator, value)
-
-        if param.is_empty():
-            if 'default' in rule:
-                param.fill_value(rule['default'])
-            elif rule.get('require') or self.require_all:
-                raise EvValidateException("Require parameter.({})".format(name), EvValidateException.ERROR_REQUIRE)
-
-        return param
-
-    def evaluate(self, name: str, v: any) -> bool:
-        """Evaluate a value against a rule and parameter configuration."""
-        rule = self.get_rule(name)
+    def get_rule(self, name: str = None, rule: dict = None, rules: dict = None) -> dict:
+        """Get a rule."""
+        if name is not None and rules is None:
+            return self._get_rule(name)
+        elif not rule:
+            rule = rules.get(name)
 
         if rule is None:
-            return False
+            self._raise_unknown_param(name)
 
-        param = self.get_param(name)
+        return self.create_rule(rule=rule)
 
-        evaluate_param = rule.get('evaluate_param')
+    def get_rule_options(self, option: str, rules: dict = None) -> dict:
+        """Get the rule's option values."""
+        if rules is None:
+            rules = self.rules
 
-        if evaluate_param:
-            pr = evaluate_param(rule, param, v)
+        values = {}
 
-            if pr is not None:
-                return pr
+        for name, rule in rules.items():
+            rule = self.get_rule(rule=rule)
 
-        if not param.multiple:
-            success = self._evaluate_value(rule, param.get_item(0), v)
-        else:
-            detect = any if rule.get('multiple_or') else all
+            values[name] = rule.get(option)
 
-            success = detect(self._evaluate_value(rule, item, v) for item in param.get_items())
+        return values
 
-        return success
-
-    def _evaluate_value(self, rule: dict, item: ParamItem, iv: any) -> bool:
-        evaluate = rule.get('evaluate')
-
-        if evaluate:
-            er = evaluate(item.value, item.operator, iv, rule)
-
-            if er is not None:
-                return er
-
-        if not rule.get('list'):
-            success = self._evaluate_operator_value(item.operator, item.value, iv)
-        else:
-            list_or = rule.get('list_or')
-
-            if list_or is None:
-                list_or = True if item.operator != Operator.NOT_EQUAL else False
-
-            detect = any if list_or else all
-
-            success = detect(self._evaluate_operator_value(item.operator, v, iv) for v in item.value)
-
-        return success
-
-    def _evaluate_operator_value(self, operator: int, v1: any, v2: any) -> bool:
-        success = False
-
-        if operator & Operator.NOT_EQUAL and (v1 != v2):
-            success = True
-        elif operator & Operator.EQUAL and (v1 == v2):
-            success = True
-        elif operator & Operator.GREATER and (v1 < v2):
-            success = True
-        elif operator & Operator.LESS and (v1 > v2):
-            success = True
-
-        return success
-
-    def get_rule(self, name: str) -> dict:
-        """Retrieve a rule by name, fallback to default or raise error if not found."""
+    def _get_rule(self, name: str) -> dict:
         rule = self.rules.get(name)
 
         if rule is None and self.flexible:
             rule = self.default_rule
 
         if rule is None:
-            self._raise_unknown_error(name)
+            self._raise_unknown_param(name)
 
         return rule
 
+    def _add_by_rule(self, rule: dict, name: str, v: any, keep_original: bool = False) -> ParamValue:
+        try:
+            if not keep_original:
+                v = self._apply_rule(rule, v)
+
+            param = self._build_param(name, rule)
+
+            param.value = v
+
+            if not rule.get('multiple'):
+                self.params[name] = param
+            else:
+                multiple_param = self.params.get(name)
+
+                if not multiple_param:
+                    multiple_param = MultipleParam()
+                    self.params[name] = multiple_param
+
+                multiple_param.add(param)
+        except (EvArgsException, ValidateException) as e:
+            e.set_name(name)
+            raise e
+        except Exception as e:
+            raise e
+
+        return param
+
+    def _build_param(self, name: str, rule: dict) -> ParamValue:
+        return ParamValue()
+
+    def _apply_rule(self, rule: dict, v: any) -> any:
+        try:
+            pre_apply = rule.get('pre_apply')
+
+            if pre_apply:
+                v = pre_apply(v)
+
+            if not rule.get('list'):
+                v = self._apply_cast_value(rule, v)
+            else:
+                v = v if v is not None else []
+                v = list(map(lambda t: self._apply_cast_value(rule, t), v))
+
+            post_apply = rule.get('post_apply')
+
+            if post_apply:
+                v = self._apply_regulation(post_apply, v)
+        except (EvArgsException, ValidateException) as e:
+            raise e
+        except Exception:
+            raise EvArgsException('Error occurred in applying a rule.')
+
+        return v
+
+    def _apply_cast_value(self, rule: dict, v: any):
+        trim = rule.get('trim')
+
+        if trim:
+            v = self._apply_trim(v, trim)
+
+        pre_cast = rule.get('pre_cast')
+
+        if pre_cast:
+            v = pre_cast(v)
+
+        type_cast = rule.get('cast')
+        default = rule.get('default')
+        nullable = rule.get('nullable', False)
+
+        raise_error = rule.get('raise_error')
+
+        try:
+            if type_cast == int or type_cast == 'int':
+                v = self.type_cast.to_int(v, default, nullable, raise_error)
+            elif type_cast == float or type_cast == 'float':
+                v = self.type_cast.to_float(v, default, nullable, raise_error)
+            elif type_cast == complex or type_cast == 'complex':
+                v = self.type_cast.to_complex(v, default, nullable, raise_error)
+            elif type_cast == str or type_cast == 'str':
+                v = self.type_cast.to_str(v, default, nullable, raise_error)
+            elif type_cast == bool or type_cast == 'bool':
+                v = self.type_cast.to_bool(v, default, nullable, raise_error)
+            elif type_cast == 'bool_strict':
+                v = self.type_cast.bool_strict(v, default, nullable, raise_error)
+            elif type_cast == 'bool_loose':
+                v = self.type_cast.bool_loose(v, default)
+            elif type_cast == 'round_int':
+                v = self.type_cast.to_round_int(v, default, nullable, raise_error)
+            elif isinstance(type_cast, Enum.__class__):
+                v = self._apply_cast_item(v, 'enum', [type_cast], default, nullable, raise_error)
+            elif isinstance(type_cast, tuple):
+                v = self._apply_cast_item(v, type_cast[0], type_cast[1:], default, nullable, raise_error)
+            elif callable(type_cast):
+                v = self.type_cast.noop(type_cast(v), default, nullable, raise_error)
+            else:  # raw
+                v = self.type_cast.noop(v, default, nullable, raise_error)
+        except ValueError as e:
+            if raise_error:
+                raise ValidateException(str(e), ValidateException.ERROR_CAST)
+            else:
+                v = None
+
+        post_cast = rule.get('post_cast')
+
+        if post_cast:
+            v = post_cast(v)
+
+        if TypeCast.is_empty(v):
+            if rule.get('required') or self.required_all:
+                raise ValidateException('Require parameter.', ValidateException.ERROR_REQUIRED)
+
+        if v is not None:
+            self._validate(rule, v)
+
+        return v
+
+    def _apply_trim(self, v: any, trim: Union[str, bool]):
+        if isinstance(v, str):
+            t = trim if trim is not True else ' '
+
+            v = v.strip(t)
+
+        return v
+
+    def _apply_cast_item(self, v: any, cmd: str, args: list, default: any, nullable: bool, raise_error: int):
+        if cmd == 'enum':
+            v = self.type_cast.to_enum_loose(args[0], v, is_value=True, is_name=True, default=default, nullable=nullable, raise_error=raise_error)
+        elif cmd == 'enum_value':
+            v = self.type_cast.to_enum_loose(args[0], v, is_value=True, is_name=False, default=default, nullable=nullable, raise_error=raise_error)
+        elif cmd == 'enum_name':
+            v = self.type_cast.to_enum_loose(args[0], v, is_value=False, is_name=True, default=default, nullable=nullable, raise_error=raise_error)
+        else:
+            raise ValueError('Unknown type cast.')
+
+        return v
+
+    def _validate(self, rule: dict, value: any):
+        validation = rule.get('validation')
+
+        if validation:
+            self._apply_validation(validation, value)
+
+        choices = rule.get('choices')
+
+        if choices:
+            self._validate_choices(choices, value)
+
+    def _apply_validation(self, validation: Union[str, list, tuple, callable], v: any):
+        args = []
+
+        try:
+            if isinstance(validation, (list, tuple)) and isinstance(validation[0], str):
+                [validation, *args] = validation
+
+            if isinstance(validation, str):
+                self._validate_exec(validation, v, args)
+            elif isinstance(validation, list):
+                for w in validation:
+                    self._apply_validation(w, v)
+            elif callable(validation):
+                success = validation(v, *args)
+
+                if not success:
+                    self.validator.raise_error('Validation error.', v)
+        except ValidateException as e:
+            raise e
+        except Exception:
+            self.validator.raise_error('Validation process error.', v, ValidateException.ERROR_PROCESS)
+
+    def _apply_regulation(self, regulation: Union[str, list, tuple, callable], v: any) -> any:
+        args = []
+
+        try:
+            if isinstance(regulation, (list, tuple)) and isinstance(regulation[0], str):
+                [regulation, *args] = regulation
+
+            if isinstance(regulation, str):
+                self._validate_exec(regulation, v, args)
+            elif isinstance(regulation, list):
+                for w in regulation:
+                    v = self._apply_regulation(w, v)
+            elif callable(regulation):
+                v = regulation(v, *args)
+        except ValidateException as e:
+            raise e
+        except Exception:
+            raise EvArgsException('Process error.', EvArgsException.ERROR_PROCESS)
+
+        return v
+
+    def _validate_exec(self, validation: str, v: any, args: list):
+        fn = getattr(self.validator, 'validate_' + validation, None)
+
+        if not fn:
+            raise EvArgsException(f'Validation method is not found.({validation})', EvArgsException.ERROR_PROCESS)
+
+        fn(v, *args)
+
+    def _validate_choices(self, choices: any, value: any):
+        if not isinstance(choices, Enum.__class__):
+            if value not in choices:
+                self.validator.raise_error('Out of choices.', value, ValidateException.ERROR_OUT_CHOICES)
+        else:
+            self.validator.validate_enum(value, choices)
+
     def get(self, name: str, index: int = -1) -> any:
-        """Retrieve a parameter value by name and index."""
-        rule = self.get_rule(name)
+        """Get a parameter value by name and index."""
+        rule = self._get_rule(name)
 
         if rule is None:
             return None
@@ -463,12 +437,18 @@ class EvArgs:
         param = self.get_param(name)
 
         if param is None:
-            param = self._add_param_by_rule(rule, name, 0, [])
+            param = self._add_by_rule(rule, name, None)
 
-        return param.get(index)
+        if isinstance(param, MultipleParam):
+            if index < 0:
+                return param.get_values()
+
+            return param.get(index).value
+
+        return param.value
 
     def get_values(self) -> dict:
-        """Retrieve a dict of values."""
+        """Get a dict of values."""
         values = {}
 
         for name in self.params:
@@ -476,48 +456,33 @@ class EvArgs:
 
         return values
 
-    def put(self, name: str, value: any, operator: int = Operator.EQUAL, reset: bool = False):
-        """Add or update a parameter."""
-        if reset:
-            self.reset(name)
+    def put(self, name: str, value: any, multiple_reset: bool = False, keep_original: bool = False):
+        """Add or update a parameter value."""
+        if multiple_reset:
+            self.delete(name)
 
-        rule = self.get_rule(name)
+        rule = self._get_rule(name)
 
-        if rule is None:
-            return None
+        if rule is not None:
+            self._add_by_rule(rule, name, value, keep_original)
 
-        values = value if rule.get('list') else [value]
-
-        self._add_param_by_rule(rule, name, operator, values)
-
-    def put_values(self, values: dict, operator: int = Operator.EQUAL, reset: bool = False):
-        """Update multiple parameters."""
+    def put_values(self, values: dict, multiple_reset: bool = False, keep_original: bool = False):
+        """Add or update parameter values."""
         for name, value in values.items():
-            self.put(name, value, operator, reset)
-
-    def reset(self, name: str):
-        """Reset a parameter by name."""
-        del self.params[name]
-
-    def reset_params(self):
-        """Reset all parameters."""
-        self.params = {}
+            self.put(name, value, multiple_reset, keep_original)
 
     def has_param(self, name: str) -> bool:
         """Check if a parameter with the given name exists."""
         return (name in self.params)
 
-    def get_param(self, name: str) -> Optional[Param]:
+    def get_param(self, name: str) -> Union[ParamValue, MultipleParam]:
         """Get a parameter by name."""
         param = self.params.get(name)
 
-        rule = self.get_rule(name)
+        rule = self._get_rule(name)
 
-        if rule is None:
-            return None
-
-        if param is None and self.flexible:
-            param = self._add_param_by_rule(rule, name, None, [])
+        if rule is not None and param is None and self.flexible:
+            param = self._add_by_rule(rule, name, None)
 
         return param
 
@@ -525,11 +490,19 @@ class EvArgs:
         """Get the parameters."""
         return self.params
 
-    def count_params(self) -> int:
+    def get_size(self) -> int:
         """Get the number of parameters."""
         return len(self.params)
 
-    def make_help(self, params: list = None, append_example: bool = False, skip_headers: bool = False):
+    def delete(self, name: str):
+        """Delete a parameter value."""
+        del self.params[name]
+
+    def reset(self):
+        """Delete all parameter values."""
+        self.params = {}
+
+    def make_help(self, params: list = None, append_example: bool = False, skip_headers: bool = False) -> str:
         """Make a formatted help message based on rules."""
         help_formatter = self.get_help_formatter()
 
@@ -538,9 +511,8 @@ class EvArgs:
 
         return help_formatter.make(self.rules, params, skip_headers)
 
-    def _raise_parse_error(self, msg: str):
-        raise EvArgsException("Parse error.({})".format(msg), EvArgsException.ERROR_PARSE)
-
-    def _raise_unknown_error(self, name: str):
+    def _raise_unknown_param(self, name: str):
         if not self.ignore_unknown:
-            raise EvValidateException("Unknown parameter.({})".format(name), EvValidateException.ERROR_UNKNOWN_PARAM)
+            name = name if name is not None else '-'
+
+            raise ValidateException(f'Unknown parameter.({name})', ValidateException.ERROR_UNKNOWN_PARAM)

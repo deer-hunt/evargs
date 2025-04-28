@@ -1,4 +1,4 @@
-from evargs import EvArgs, EvArgsException, EvValidateException, HelpFormatter
+from evargs import EvArgs, EvArgsException, ValidateException, HelpFormatter
 import pytest
 import re
 
@@ -13,12 +13,12 @@ class TestShowHelp:
         evargs = EvArgs()
 
         evargs.initialize({
-            'a': {'type': int, 'help': 'This parameter set the default value. Default value is 5.', 'default': 5},
-            'b': {'type': int, 'help': 'This parameter is required. Max int value is 5.', 'require': True, 'validation': ['range', None, 5]},
-            'c': {'type': str, 'help': 'This parameter accepts a list of strings. Length is 1 - 5.', 'list': True, 'validation': ['between', 1, 5]},
-            'd': {'type': int, 'help': 'This parameter can accept multiple parameters.', 'multiple': True, 'validation': lambda v: v * 2},
-            'e': {'type': int, 'help': 'This parameter allows only the value of choices [1, 2, 3, 4]. Default value is 3.\nThis is e parameter sample message.\nSample message.', 'default': 3, 'choices': [1, 2, 3, 4]},
-            'f': {'type': str, 'help': 'This parameter is validated by alphabet format.', 'require': True, 'validation': 'alphabet'},
+            'a': {'cast': int, 'help': 'This parameter set the default value. Default value is 5.', 'default': 5},
+            'b': {'cast': int, 'help': 'This parameter is required. Max int value is 5.', 'required': True, 'validation': ('range', None, 5)},
+            'c': {'cast': str, 'help': 'This parameter accepts a list of strings. Length is 1 - 5.', 'list': True, 'validation': ('sizes', 1, 5)},
+            'd': {'cast': int, 'help': 'This parameter can accept multiple parameters.', 'multiple': True, 'validation': lambda v: v * 2},
+            'e': {'cast': int, 'help': 'This parameter allows only the value of choices [1, 2, 3, 4]. Default value is 3.\nThis is e parameter sample message.\nSample message.', 'default': 3, 'choices': [1, 2, 3, 4]},
+            'f': {'cast': str, 'help': 'This parameter is validated by alphabet format.', 'required': True, 'validation': 'alphabet'},
         })
 
         desc = evargs.make_help()
@@ -29,12 +29,12 @@ class TestShowHelp:
         evargs = EvArgs()
 
         evargs.initialize({
-            'star_mass': {'type': float, 'help': ('Mass of the star in solar masses.', 'star_mass=1.5'), 'default': 1.0},
-            'planet_count': {'type': int, 'help': 'Number of planets orbiting the star.', 'require': True, 'validation': ['range', 0, 10]},
-            'galaxy_type': {'type': str, 'help': ('Type of galaxy.', 'spiral, elliptical'), 'choices': ['spiral', 'elliptical', 'irregular']},
-            'distance': {'type': float, 'help': 'Distance from Earth in light-years.', 'validation': lambda v: v > 0},
-            'constellation': {'type': str, 'help': ['Name of the constellation.', 'Centauri'], 'require': True, 'validation': 'alphabet'},
-            'redshift': {'type': float, 'help': 'Redshift value, indicating the expansion of the universe.', 'default': 0.0}
+            'star_mass': {'cast': float, 'help': ('Mass of the star in solar masses.', 'star_mass=1.5'), 'default': 1.0},
+            'planet_count': {'cast': int, 'help': 'Number of planets orbiting the star.', 'required': True, 'validation': ['range', 0, 10]},
+            'galaxy_type': {'cast': str, 'help': ('Type of galaxy.', 'spiral, elliptical'), 'choices': ['spiral', 'elliptical', 'irregular']},
+            'distance': {'cast': float, 'help': 'Distance from Earth in light-years.', 'validation': lambda v: v > 0},
+            'constellation': {'cast': str, 'help': ['Name of the constellation.', 'Centauri'], 'required': True, 'validation': 'alphabet'},
+            'redshift': {'cast': float, 'help': 'Redshift value, indicating the expansion of the universe.', 'default': 0.0}
         })
 
         desc = evargs.make_help(append_example=True)
@@ -45,10 +45,10 @@ class TestShowHelp:
         evargs = EvArgs()
 
         evargs.initialize({
-            'ethane': {'type': int, 'help': 'This parameter set the default value. Default value is 5.', 'default': 5},
-            'methanol': {'type': int, 'help': 'This parameter is required. Max int value is 5.', 'require': True, 'validation': ['range', None, 5]},
-            'butane': {'type': str, 'help': 'This parameter accepts a list of strings. Length is 1 - 5.', 'list': True, 'validation': ['between', 1, 5]},
-            'propane': {'type': int, 'help': 'This parameter can accept multiple parameters.', 'multiple': True, 'validation': lambda v: v * 2},
+            'ethane': {'cast': int, 'help': 'This parameter set the default value. Default value is 5.', 'default': 5},
+            'methanol': {'cast': int, 'help': 'This parameter is required. Max int value is 5.', 'required': True, 'validation': ('range', None, 5)},
+            'butane': {'cast': str, 'help': 'This parameter accepts a list of strings. Length is 1 - 5.', 'list': True, 'validation': ('sizes', 1, 5)},
+            'propane': {'cast': int, 'help': 'This parameter can accept multiple parameters.', 'multiple': True, 'validation': lambda v: v * 2},
         })
 
         desc = evargs.make_help(params=['methanol'])
@@ -60,10 +60,10 @@ class TestShowHelp:
         evargs = EvArgs()
 
         evargs.initialize({
-            'ethane': {'type': int, 'help': 'This parameter set the default value. Default value is 5.', 'default': 5},
-            'methanol': {'type': int, 'help': 'This parameter is required. Max int value is 5.', 'require': True, 'validation': ['range', None, 5]},
-            'butane': {'type': str, 'help': 'This parameter accepts a list of strings. Length is 1 - 5.', 'list': True, 'validation': ['between', 1, 5]},
-            'propane': {'type': int, 'help': 'This parameter can accept multiple parameters.', 'multiple': True, 'validation': lambda v: v * 2},
+            'ethane': {'cast': int, 'help': 'This parameter set the default value. Default value is 5.', 'default': 5},
+            'methanol': {'cast': int, 'help': 'This parameter is required. Max int value is 5.', 'required': True, 'validation': ['range', None, 5]},
+            'butane': {'cast': str, 'help': 'This parameter accepts a list of strings. Length is 1 - 5.', 'list': True, 'validation': ['sizes', 1, 5]},
+            'propane': {'cast': int, 'help': 'This parameter can accept multiple parameters.', 'multiple': True, 'validation': lambda v: v * 2},
         })
 
         desc = evargs.make_help(skip_headers=True)
@@ -74,9 +74,9 @@ class TestShowHelp:
         evargs = EvArgs()
 
         evargs.initialize({
-            'diamond': {'type': int, 'help': 'This parameter sets the maximum value. Default value is 10.', 'default': 10},
-            'ruby': {'type': int, 'help': 'This parameter is required. Max int value is 7.', 'require': True, 'validation': ['range', 1, 7]},
-            'emerald': {'type': str, 'help': 'This parameter accepts a list of strings.', 'list': True}
+            'diamond': {'cast': int, 'help': 'This parameter sets the maximum value. Default value is 10.', 'default': 10},
+            'ruby': {'cast': int, 'help': 'This parameter is required. Max int value is 7.', 'required': True, 'validation': ['range', 1, 7]},
+            'emerald': {'cast': str, 'help': 'This parameter accepts a list of strings.', 'list': True}
         })
 
         help_formatter = evargs.get_help_formatter()
@@ -91,17 +91,17 @@ class TestShowHelp:
         evargs = EvArgs()
 
         evargs.initialize({
-            'diamond': {'type': int, 'help': 'This parameter sets the maximum value. Default value is 10.', 'default': 10},
-            'ruby': {'type': int, 'help': 'This parameter is required. Max int value is 7.', 'require': True, 'validation': ['range', 1, 7]},
-            'emerald': {'type': str, 'help': 'This parameter accepts a list of strings.', 'list': True}
+            'diamond': {'cast': int, 'help': 'This parameter sets the maximum value. Default value is 10.', 'default': 10},
+            'ruby': {'cast': int, 'help': 'This parameter is required. Max int value is 7.', 'required': True, 'validation': ['range', 1, 7]},
+            'emerald': {'cast': str, 'help': 'This parameter accepts a list of strings.', 'list': True}
         })
 
         help_formatter = evargs.get_help_formatter()
 
         help_formatter.set_columns({
             'name': 'Name',
-            'require': '*',
-            'type': 'Type',
+            'required': '*',
+            'cast': 'Cast-type',
             'help': 'Desc'
         })
 
@@ -113,16 +113,16 @@ class TestShowHelp:
         evargs = EvArgs()
 
         evargs.initialize({
-            'diamond': {'type': int, 'help': ('This parameter sets the maximum value. Default value is 10.', 20), 'default': 10},
-            'ruby': {'type': int, 'help': ('This parameter is required. Max int value is 7.', 5), 'require': True, 'validation': ['range', 1, 7]},
-            'emerald': {'type': str, 'help': ('This parameter accepts a list of strings.', '1, 3, 4'), 'list': True}
+            'diamond': {'cast': int, 'help': ('This parameter sets the maximum value. Default value is 10.', 20), 'default': 10},
+            'ruby': {'cast': int, 'help': ('This parameter is required. Max int value is 7.', 5), 'required': True, 'validation': ['range', 1, 7]},
+            'emerald': {'cast': str, 'help': ('This parameter accepts a list of strings.', '1, 3, 4'), 'list': True}
         })
 
         help_formatter = evargs.get_help_formatter()
 
         help_formatter.set_columns({
             'name': 'Name',
-            'require': '*',
+            'required': '*',
             'example': 'e.g.',
             'help': 'Desc'
         })
@@ -136,9 +136,9 @@ class TestShowHelp:
         evargs = EvArgs()
 
         evargs.initialize({
-            'diamond': {'type': int, 'help': ('This parameter sets the maximum value. Default value is 10.', 20), 'default': 10},
-            'ruby': {'type': int, 'help': ('This parameter is required. Max int value is 7.', 5), 'require': True, 'validation': ['range', 1, 7]},
-            'emerald': {'type': str, 'help': ('This parameter accepts a list of strings.', '1, 3, 4'), 'list': True}
+            'diamond': {'cast': int, 'help': ('This parameter sets the maximum value. Default value is 10.', 20), 'default': 10},
+            'ruby': {'cast': int, 'help': ('This parameter is required. Max int value is 7.', 5), 'required': True, 'validation': ['range', 1, 7]},
+            'emerald': {'cast': str, 'help': ('This parameter accepts a list of strings.', '1, 3, 4'), 'list': True}
         })
 
         evargs.get_help_formatter().set_column_max_size(30)
@@ -151,9 +151,9 @@ class TestShowHelp:
         evargs = EvArgs()
 
         evargs.initialize({
-            'diamond': {'type': bool, 'help': 'This parameter sets bool value.', 'default': True},
-            'ruby': {'type': bool, 'help': 'This parameter is required.', 'require': True},
-            'emerald': {'type': str, 'help': 'This parameter accepts a list of strings.', 'list': True}
+            'diamond': {'cast': bool, 'help': 'This parameter sets bool value.', 'default': True},
+            'ruby': {'cast': bool, 'help': 'This parameter is required.', 'required': True},
+            'emerald': {'cast': str, 'help': 'This parameter accepts a list of strings.', 'list': True}
         })
 
         help_formatter = MyHelpFormatter()
@@ -166,5 +166,5 @@ class TestShowHelp:
 
 
 class MyHelpFormatter(HelpFormatter):
-    def _get_col_require(self, v: any, key: any, columns: dict):
+    def _get_col_required(self, v: any, key: any, columns: dict):
         return 'Y' if v else 'N'

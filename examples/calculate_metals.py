@@ -1,4 +1,4 @@
-from evargs import EvArgs, EvArgsException, EvValidateException
+from evargs import EvArgs, EvArgsException, ValidateException
 import sys
 
 '''
@@ -14,17 +14,17 @@ def main():
     evargs = EvArgs()
 
     evargs.initialize({
-        'silver': {'type': int, 'default': 1, 'validation': ['range', 1, 100]},
-        'gold': {'type': int, 'default': 2, 'validation': ['range', 0, 100]},
-        'platinum': {'type': int, 'default': 0, 'validation': ['range', 0, 100]},
-        'msg': {'type': str, 'default': 'Total Metals'}
+        'silver': {'cast': int, 'default': 1, 'validation': ['range', 1, 100]},
+        'gold': {'cast': int, 'default': 2, 'validation': ['range', 0, 100]},
+        'platinum': {'cast': int, 'default': 0, 'validation': ['range', 0, 100]},
+        'msg': {'cast': str, 'default': 'Total Metals'}
     })
 
     argument = sys.argv[1]
 
     try:
         evargs.parse(argument)
-    except EvValidateException as e:
+    except ValidateException as e:
         print(str(e))
         sys.exit(1)
 

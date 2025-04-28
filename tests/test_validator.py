@@ -1,5 +1,5 @@
 from evargs.validator import Validator
-from evargs.exception import EvValidateException
+from evargs.exception import ValidateException
 import pytest
 import re
 
@@ -10,87 +10,119 @@ class TestValidator:
     def setup(self):
         self.validator = Validator()
 
+    def test_validate_exist(self):
+        self.validator.validate_exist([1, 2])
+
+        with pytest.raises(ValidateException):
+            self.validator.validate_exist([])
+
     def test_validate_size(self):
-        self.validator.validate_size('test1', 'abc', 3)
+        self.validator.validate_size('abc', 3)
 
-        with pytest.raises(EvValidateException):
-            self.validator.validate_size('test2', 'abc', 5)
+        with pytest.raises(ValidateException):
+            self.validator.validate_size('abc', 5)
 
-    def test_validate_between(self):
-        self.validator.validate_between('test1', 'abc', 1, 10)
+        self.validator.validate_size([1, 2], 2)
 
-        with pytest.raises(EvValidateException):
-            self.validator.validate_between('test2', 'abc', 10, 20)
+    def test_validate_sizes(self):
+        self.validator.validate_sizes('abc', 1, 10)
+
+        with pytest.raises(ValidateException):
+            self.validator.validate_sizes('abc', 10, 20)
+
+        self.validator.validate_sizes([1, 2], 1, 2)
+        self.validator.validate_sizes([1, 2], None, 2)
+        self.validator.validate_sizes([1, 2], 1, None)
 
     def test_validate_alphabet(self):
-        self.validator.validate_alphabet('test1', 'abc')
+        self.validator.validate_alphabet('abc')
 
-        with pytest.raises(EvValidateException):
-            self.validator.validate_alphabet('test2', '123')
+        with pytest.raises(ValidateException):
+            self.validator.validate_alphabet('123')
 
     def test_validate_alphanumeric(self):
-        self.validator.validate_alphanumeric('test1', 'abc123')
+        self.validator.validate_alphanumeric('abc123')
 
-        with pytest.raises(EvValidateException):
-            self.validator.validate_alphanumeric('test2', 'abc#123')
+        with pytest.raises(ValidateException):
+            self.validator.validate_alphanumeric('abc#123')
 
     def test_validate_ascii(self):
-        self.validator.validate_ascii('test1', 'abc123')
+        self.validator.validate_ascii('abc123')
 
-        with pytest.raises(EvValidateException):
-            self.validator.validate_ascii('test2', 'abc123ñ')
+        with pytest.raises(ValidateException):
+            self.validator.validate_ascii('abc123ñ')
 
     def test_validate_printable_ascii(self):
-        self.validator.validate_printable_ascii('test1', 'abc123')
+        self.validator.validate_printable_ascii('abc123')
 
-        with pytest.raises(EvValidateException):
-            self.validator.validate_printable_ascii('test2', 'abc123ñ')
+        with pytest.raises(ValidateException):
+            self.validator.validate_printable_ascii('abc123ñ')
 
     def test_validate_standard_ascii(self):
-        self.validator.validate_standard_ascii('test1', 'abc123\t')
+        self.validator.validate_standard_ascii('abc123\t')
 
-        with pytest.raises(EvValidateException):
-            self.validator.validate_standard_ascii('test2', 'abc123ñ')
+        with pytest.raises(ValidateException):
+            self.validator.validate_standard_ascii('abc123ñ')
 
     def test_validate_char_numeric(self):
-        self.validator.validate_char_numeric('test1', '123')
+        self.validator.validate_char_numeric('123')
 
-        with pytest.raises(EvValidateException):
-            self.validator.validate_char_numeric('test2', 'abc123')
+        with pytest.raises(ValidateException):
+            self.validator.validate_char_numeric('abc123')
 
     def test_validate_regex(self):
-        self.validator.validate_regex('test1', 'abc123', r'^[a-z0-9]+$')
+        self.validator.validate_regex('abc123', r'^[a-z0-9]+$')
 
-        self.validator.validate_regex('dna', 'ATGCGTACGTAGCTAGCTAGCTAGCATCGTAGCTAGCTAGC', r'^[ATGC]+$')
+        # dna
+        self.validator.validate_regex('ATGCGTACGTAGCTAGCTAGCTAGCATCGTAGCTAGCTAGC', r'^[ATGC]+$')
 
-        self.validator.validate_regex('base64', 'SGVsbG8gd29ybGQhMTIzNDU2', r'^[A-Za-z0-9+/=]+$')
+        # base64
+        self.validator.validate_regex('SGVsbG8gd29ybGQhMTIzNDU2', r'^[A-Za-z0-9+/=]+$')
 
-        with pytest.raises(EvValidateException):
-            self.validator.validate_regex('error1', 'abc#123', r'^[a-z0-9]+$')
+        with pytest.raises(ValidateException):
+            self.validator.validate_regex('abc#123', r'^[a-z0-9]+$')
 
-        with pytest.raises(EvValidateException):
-            self.validator.validate_regex('error2', 'ABC', r'^XYZ.+$')
+        with pytest.raises(ValidateException):
+            self.validator.validate_regex('ABC', r'^XYZ.+$')
 
     def test_validate_unsigned(self):
-        self.validator.validate_unsigned('test1', 123)
+        self.validator.validate_unsigned(123)
 
-        with pytest.raises(EvValidateException):
-            self.validator.validate_unsigned('test2', -123)
+        with pytest.raises(ValidateException):
+            self.validator.validate_unsigned(-123)
+
+    def test_validate_positive(self):
+        self.validator.validate_positive(1)
+
+        with pytest.raises(ValidateException):
+            self.validator.validate_positive(0)
+
+        with pytest.raises(ValidateException):
+            self.validator.validate_positive(-1)
+
+    def test_validate_negative(self):
+        self.validator.validate_negative(-1)
+
+        with pytest.raises(ValidateException):
+            self.validator.validate_negative(0)
+
+        with pytest.raises(ValidateException):
+            self.validator.validate_negative(1)
 
     def test_validate_even(self):
-        self.validator.validate_even('test1', 2)
+        self.validator.validate_even(2)
 
-        with pytest.raises(EvValidateException):
-            self.validator.validate_even('test2', 3)
+        with pytest.raises(ValidateException):
+            self.validator.validate_even(3)
 
     def test_validate_odd(self):
-        self.validator.validate_odd('test1', 3)
+        self.validator.validate_odd(3)
 
-        with pytest.raises(EvValidateException):
-            self.validator.validate_odd('test2', 2)
+        with pytest.raises(ValidateException):
+            self.validator.validate_odd(2)
 
     def test_validate_range(self):
-        self.validator.validate_range('test1', 5, 1, 10)
+        self.validator.validate_range(5, 1, 10)
 
-        with pytest.raises(EvValidateException):
-            self.validator.validate_range('test2', 11, 1, 10)
+        with pytest.raises(ValidateException):
+            self.validator.validate_range(11, 1, 10)

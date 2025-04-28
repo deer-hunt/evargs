@@ -30,4 +30,4 @@ class ExpressionParser:
         elif isinstance(node, ast.UnaryOp):
             return cls.OPERATORS[type(node.op)](cls.safe_eval(node.operand))
         else:
-            raise TypeError(f"Unsupported type: {type(node)}")
+            raise TypeError(f"Unsupported cast-type: {type(node)}")

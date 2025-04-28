@@ -18,7 +18,7 @@
 </div>
 
 <div>
-"EvArgs" is a lightweight python module for easy expression parsing and value-casting, validating by rules, and it provides flexible configuration and custom validation method.
+"EvArgs" is a Python module designed for value assignment, easy expression parsing, and type casting. It validates values based on defined rules and offers flexible configuration along with custom validation methods.
 </div>
 
 
@@ -50,12 +50,11 @@ $ conda install conda-forge::evargs
 - It can specify the condition or value-assignment using a simple expression. e.g. `a=1;b>5`
 - Evaluate assigned values. e.g `evargs.evaluate('a', 1)`
 - Put values. It's available to using `put` is without parsing the expression.
-- Value casting - str, int, float, complex, Enum class, custom function...
-- Value validation - unsigned, number range, alphabet, regex, any other...
+- Type cast - str, int, round_int, float, bool, complex, Enum class, custom function...
+- Type validation - unsigned, number range, alphabet, regex, any other...
 - Applying multiple validations.
 - Applying Pre-processing method and Post-processing method. 
 - Get assigned values.
-- Set default rule.
 - Make parameter's description.
 - Other support methods for value-assignment.
 
@@ -69,21 +68,42 @@ from evargs import EvArgs
 
 evargs = EvArgs()
 
+v = evargs.assign(' 1 ', cast=str, trim=True)
+v = evargs.assign('1', cast=int, validation=('range', 1, 10))
+
+rules = {'a': {'cast': int}, 'b': {'cast': float}}
+values = {'a': '1', 'b': '2.2'}
+
+values = evargs.assign_values(values, rules)
+print(values)
+
+evargs.assign('123', cast=int, validation=('range', 1, 150), name='a')
+print(evargs.get('a'))
+```
+
+
+```
+from evargs import ExpEvArgs
+
+evargs = ExpEvArgs()
+
 evargs.initialize({
-  'a': {'type': bool},
-  'b': {'type': 'bool'},  # 'bool' = bool
-  'c': {'type': int},
-  'd': {'type': float, 'default': 3.14},
-  'e': {'type': str}
+  'a': {'cast': bool},
+  'b': {'cast': int},
+  'c': {'cast': int},
+  'd': {'cast': float, 'default': 3.14},
+  'e': {'cast': str},
+  'f': {'cast': int, 'multiple': True},
 }) 
 
-evargs.parse('a=1;b=True;c=10;d=;e=H2O')
+evargs.parse('a=1;b>=5;c=10;d=;e=H2O;f>=5;f<100')
 
 print(evargs.get('a'), evargs.evaluate('a', True))
-print(evargs.get('b'), evargs.evaluate('b', True))
+print(evargs.get('b'), evargs.evaluate('b', 8))
 print(evargs.get('c'), evargs.evaluate('c', 10))
 print(evargs.get('d'), evargs.evaluate('d', 3.14))
 print(evargs.get('e'), evargs.evaluate('e', 'H2O'))
+print(evargs.evaluate('f', 50))
 
 
 Result:
@@ -103,14 +123,14 @@ from evargs import EvArgs
 evargs = EvArgs()
 
 evargs.initialize({
-  'a': {'type': int, 'list': True},
-  'b': {'type': int, 'multiple': True},
-  'c': {'type': lambda v: v.upper()},
-  'd': {'type': lambda v: v.upper(), 'post_apply_param': lambda vals: '-'.join(vals)},
-  'e': {'type': int, 'validation': ['range', 1, 10]}
+  'a': {'cast': int, 'list': True},
+  'b': {'cast': int, 'multiple': True},
+  'c': {'cast': lambda v: v.upper()},
+  'd': {'cast': lambda v: v.upper(), 'post_apply': lambda vals: '-'.join(vals)},
+  'e': {'cast': int, 'validation': ['range', 1, 10]}
 })
 
-evargs.parse('a=25,80,443; b>= 1; b<6; c=tcp; d=X,Y,z ;e=5;')
+~ ... ~
 
 print(print(evargs.get_values())
 
@@ -120,205 +140,269 @@ Result:
 ```
 
 ```
-evargs.initialize({
-  'a': {'type': ColorEnum, 'default': ColorEnum.RED},
-  'b': {'type': ('enum_value', ColorEnum), 'require': True}
-})
+evargs.assign(v, cast=ColorEnum, default=ColorEnum.RED)
+evargs.assign(v, cast=('enum_value', ColorEnum), required=True)
+evargs.assign(1, cast=int, choices=ColorEnum)
 ```
 
 
 ## Overview
 
-There are 3 way usages in `EvArgs`. The behavior of "value-casting and validation" based on `rules` is common to 3 way.
+There are 4 way methods in `EvArgs`. In each 4 way methods, it's available for "type-cast and validation" on `rule` option.
 
-### a. Parsing expression & Evaluation
+### a. Assign the value
 
-Parsing the expression, and evaluate the value.
-
-```
-[Expression]
-"a >= 1; a<=10"
-
-[Evaluation]
-evargs.evaluate('a', 4) --> True
-evargs.evaluate('a', 100) --> False
-```
-
-### b. Parsing expression & Get the value
-
-Parsing the expression, and get the value.
+Assigning the value. assign method's arguments is rule options. It's available to use type-cast, validation, any other features.
 
 ```
-[Expression]
-"a = 1;"
+v = evargs.assign(' 1 ', cast=str, trim=True)
+v = evargs.assign('1', cast=int, validation=('range', 1, 10))
 
-[Get]
-a = evargs.get('a')
+v = evargs.assign_values({'a': {'cast': int}, 'b': {'cast': int}}, {'a': '1', 'b': '2'})
+
+evargs.assign('1.5', cast=float, name='var1')
+print(evargs.get('var1'))
 ```
 
-### c. Putting the value & Get the value
+### b. Put the value & Get the value
 
 Putting the value, and get the value. The value is processed by rules, therefore it is not a simple setting.
 
 ```
-[Put]
+evargs.initialize({
+  'a': {'cast': int, validation='unsigned'},
+  'b': {'cast': float, 'validation': ('range', 1, 10)}
+});
+  
 evargs.put('a', 1)
+evargs.put_values({...})
+
+a = evargs.get('a')
+```
+
+### c. Parse the expression & Get the value [ExpEvArgs]
+
+Parsing the expression, and get the value. This feature provides for dynamic value assign.
+
+```
+[Expression]
+evargs.parse('a = 1;')
 
 [Get]
 a = evargs.get('a')
 ```
 
+### d. Parse the expression & Evaluate [ExpEvArgs]
 
-## Rules
+Parsing the expression, and evaluate the value. This feature provides for dynamic value assign and value evaluation.
+
+```
+[Expression]
+evargs.parse('a >= 1; a<=10')
+
+[Evaluate]
+evargs.evaluate('a', 4) --> True
+evargs.evaluate('a', 100) --> False
+```
+
+## Primary methods of EvArgs
+
+| **Method**            | **Description**                                                                | **Doc/Code**                                                                                      |
+|-----------------------|--------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| `initialize`          | Initializes rules, default rule, and set options.                            | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs.initialize) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_general.py) |
+| `set_options`         | Set options.                                                                   | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs.set_options) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_options.py) |
+| `set_default_rule`    | Set the default rule.                                                          | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs.set_default_rule) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_general.py) |
+| `create_rule`         | Create rule by arguments. The default value is reflected.                     | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs.create_rule) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_general.py) |
+| `set_rule`            | Set a rule.                                                                    | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs.set_rule) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_general.py) |
+| `set_rules`           | Set the rules.                                                                 | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs.set_rules) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_general.py) |
+| `assign`              | Assign a value. If specifying `name`, the value is stored.                   | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs.assign) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_assign.py) |
+| `assign_values`       | Assign the values.                                                            | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs.assign_values) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_assign.py) |
+| `get_rule`            | Get the rule by each argument.                                                | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs.get_rule) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_general.py) |
+| `get_rule_options`    | Get the rule's option values.                                                | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs.get_rule_options) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_general.py) |
+| `get`                 | Get the value of a parameter by name and index.                              | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs.get) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_get_put.py) |
+| `get_values`          | Get the values of parameters.                                                | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs.get_values) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_get_put.py) |
+| `put`                 | Put the value.                                                               | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs.put) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_get_put.py) |
+| `put_values`          | Put the values of parameters.                                               | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs.put_values) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_get_put.py) |
+| `make_help`          | Make parameter's description. Refer to `Make help`.                        | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs.make_help) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_show_help.py) |
+| Other methods         | `has_param`, `get_param`, `get_size`, `delete`, `reset` ...               | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/) |
+
+**ExpEvArgs**
+
+| **Method**        | **Description**                                                                 | **Doc/Code** |
+|------------------------|--------------------------------------------------------------------------------------|-----------------|
+| `parse`                | Parse the expression.                              | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.ExpEvArgs.parse) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_general.py) |
+| `evaluate`            | Evaluate a parameter.                            | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.ExpEvArgs.evaluate) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_evaluate.py) |
+
+**Related**
+
+- [EvArgs class's doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.EvArgs)
+- [ExpEvArgs class's doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.ExpEvArgs)
+
+
+## Rule options
 
 The following are the rule options.
 
-| Option name             | Type               | Description                                                                                     |
-|--------------------|--------------------|-------------------------------------------------------------------------------------------------|
-| `list`            | `bool`            | Whether the parameter is a list value.                                                         |
-| `multiple`        | `bool`            | Allows multiple condition values.                                                              |
-| `type`            | `str`,`callable` | Value cast type (e.g., `int`, `str`, `bool`, `bool_strict`, `float`, `Enum class`, ...). Refer to `Value Casting`.            |
-| `require`         | `bool`            | Whether the parameter is required.                                                             |
-| `default`         | `any`             | Set the default value if the value is not provided.                                            |
-| `choices`         | `list`, `tuple`, `Enum class` | Restrict the parameter to predefined values.                                          |
-| `validation`        | `str`,`list`,`callable` | Validation name, list of arguments, or a custom validation method. It also available for multiple validations.  Refer to `Value Validation`.        |
-| `pre_apply`       | `callable`        | Pre-processing method for the value before applying.                                   |
-| `post_apply`      | `callable`        | Post-processing method for the value after applying.                                   |
-| `pre_apply_param` | `callable`        | Pre-processing method for the parameter before applying.                                |
-| `post_apply_param`| `callable`        | Post-processing method for the parameter after applying.                                |
-| `evaluate`        | `callable`        | Evaluation method for the value.                                                      |
-| `evaluate_param`  | `callable`        | Evaluation method for the parameter.                                                   |
-| `multiple_or`  | `bool`            | Whether to use logical OR for multiple condition values.                                       |
-| `list_or`      | `bool`            | Whether to use logical OR for list values. Adjusts automatically by operator if the value is None. |
-| `prevent_error`   | `bool`            | Prevent errors during processing.                                                              |
+| Option name       | Type                         | Default       | Description                                                                                     | Code                                                                                     |
+|--------------------|------------------------------|---------------|-------------------------------------------------------------------------------------------------|-----------------|
+| `cast`            | `str`, `callable`           | `None`        | Cast-type (e.g., `int`, `str`, `bool`, `float`, `Enum class`, ...). Refer to `Type cast`.       | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_cast.py) |
+| `required`        | `bool`                      | `False`       | Whether the parameter is required.                                                               | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_required_default.py) |
+| `default`         | `any`                       | `None`        | Set the default value if the value is not provided.                                             | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_required_default.py) |
+| `nullable`         | `bool`                       | `True`        | Allow `None` value. Also, when casting to `int` or `float`, an empty string value is converted to `None`. | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_assign.py) |
+| `trim`            | `bool`, `str`               | `None`        | Trim the value if it is enabled. bool or str value for trim process.                           | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_assign.py) |
+| `validation`      | `str`, `tuple`, `list`, `callable` | `None`        | Validation name, list of arguments, or a custom validation method. And it's possible to specify multiple validations with tuple. Refer to `Value validation`. | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `choices`         | `list`, `tuple`, `Enum class` | `None`        | Restrict the value to predefined values.                                                   | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_choices.py) |
+| `pre_cast`        | `callable`                  | `None`        | Pre-casting method for the value.                                                               | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_pre_post.py) |
+| `post_cast`       | `callable`                  | `None`        | Post-casting method for the value.                                                              | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_pre_post.py) |
+| `pre_apply`       | `callable`                  | `None`        | Pre-processing method for the parameter before applying.                                       | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_pre_post.py) |
+| `post_apply`      | `callable`, `str`, `tuple`, `list`  | `None`        | Post-processing method for the parameter after applying. Validation method can also be specified. And it's possible to specify multiple regulations with tuple. | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_pre_post.py) |
+| `raise_error`     | `int [0, 1, 2]`            | `1`           | Raise an error during casting.<br> `0: Cancel error`<br> `1: Raise error if default is none`<br> `2: Raise all error `    | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_error.py) |
+| `list`            | `bool`                      | `False`       | The value is list value if it is enabled.                                                      | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_assign.py) |
+| `multiple`        | `bool`                      | `False`       | Allow multiple values.                                                                           | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_multiple.py) |
+| `help`            | `str`, `tuple/list`         | `None`        | Description for the value.                                                                       | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_show_help.py) |
+
+> There is also a description about `The order of value processing` in a later section.
+
+**ExpEvArgs**
+
+| Option name       | Type                         | Default       | Description                                                                                     | Code                |
+|--------------------|------------------------------|---------------|-------------------------------------------------------------------------------------------------|-----------------|
+| `evaluation`        | `callable`                  | `None`        | Evaluation method for the value.                                                                   | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_evaluate.py) |
+| `evaluation_apply`  | `callable`               | `None`        | Evaluation method for the parameter.                                                           | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_multiple.py) |
+| `multiple_or`     | `bool`                      | `False`        | Whether to use logical OR for multiple condition values.                                       | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_multiple.py) |
+| `list_or`         | `bool`                      | `None`        | Whether to use logical OR for list values. Adjusts automatically by operator if the value is None. | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_evaluate.py) |
 
 **Example**
 
 ```
+evargs.assign(v, cast=str, list=True)
+evargs.assign(v, cast=int, multiple=True)
+evargs.assign(v, pre_cast=lambda v: v.upper())
+```
+
+```
 evargs.initialize({
-  'a': {'type': str, 'list': True},
-  'b': {'type': int, 'multiple': True},
-  'c': {'pre_apply': lambda v: v.upper()},
+  'a': {'cast': str, 'list': True},
+  'b': {'cast': int, 'multiple': True},
+  'c': {'pre_cast': lambda v: v.upper()},
 })
 ```
 
 ```
 evargs.set_rules({
-  'a': {'type': str, 'list': True},
-  'b': {'type': int, 'multiple': True},
-  'c': {'pre_apply': lambda v: v.upper()},
+  'a': {'cast': str, 'list': True},
+  'b': {'cast': int, 'multiple': True},
+  'c': {'pre_cast': lambda v: v.upper()},
 })
 ```
 
-## Value Casting
+## Type cast
 
-| **Type**         | **Description**                                                                   |
-|-------------------|-------------------------------------------------------------------------|
-| `int`, `'int'`               | Casting to int.                                |
-| `float`, `'float'`           | Casting to float.                              |
-| `bool`, `'bool'`           | Casting to bool.                              |
-| `'bool_strict'`    | Casting to bool or None.                           |
-| `complex`, `'complex'`        | Casting to complex.               |
-| `str`, `'str'`    | Casting to str.                                                                                    |
-| `Enum class`    | Casting to Enum class. The sample is [here](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type_enum.py).          |
-| `('enum', Enum class)`    | Casting to Enum class by Enum's name or Enum's value.           |
-| `('enum_value', Enum class)`    | Casting to Enum class by Enum's value.                          |
-| `('enum_name', Enum class)`    | Casting to Enum class by Enum's name.                         |
-| `'raw'`            | The casting process is not be executed.                                                  |
-| `callable`       | Custom callable function for casting. e.g. `lambda v: v.upper()`                    |
+| **Type cast**         | **Description**                                                                   | **Doc/Code** |
+|-------------------|-------------------------------------------------------------------------|-----------------|
+| `int`, `'int'`               | Casting to int.                                | [doc](https://deer-hunt.github.io/evargs/modules/type-cast.html#evargs.TypeCast.to_int) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_type_cast.py) |
+| `'round_int'`               | Casting to int with round.                | [doc](https://deer-hunt.github.io/evargs/modules/type-cast.html#evargs.TypeCast.to_round_int) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_type_cast.py) |
+| `float`, `'float'`           | Casting to float.                              | [doc](https://deer-hunt.github.io/evargs/modules/type-cast.html#evargs.TypeCast.to_float) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_type_cast.py) |
+| `complex`, `'complex'`        | Casting to complex.               | [doc](https://deer-hunt.github.io/evargs/modules/type-cast.html#evargs.TypeCast.to_complex) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_type_cast.py) |
+| `bool`, `'bool'`           | Casting to bool.                              | [doc](https://deer-hunt.github.io/evargs/modules/type-cast.html#evargs.TypeCast.to_bool) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_type_cast.py) |
+| `'bool_strict'`    | Casting to bool strictly.                           | [doc](https://deer-hunt.github.io/evargs/modules/type-cast.html#evargs.TypeCast.bool_strict) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_type_cast.py) |
+| `'bool_loose'`    | Casting to bool loosely.                           | [doc](https://deer-hunt.github.io/evargs/modules/type-cast.html#evargs.TypeCast.bool_loose) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_type_cast.py) |
+| `str`, `'str'`    | Casting to str.                                                                                    | [doc](https://deer-hunt.github.io/evargs/modules/type-cast.html#evargs.TypeCast.to_str) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_type_cast.py) |
+| `Enum class`    | Casting to Enum class.                            | [doc](https://deer-hunt.github.io/evargs/modules/type-cast.html#evargs.TypeCast.to_enum) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_cast_enum.py) |
+| `('enum', Enum class)`    | Casting to Enum class by Enum's name or Enum's value.           | [doc](https://deer-hunt.github.io/evargs/modules/type-cast.html#evargs.TypeCast.to_enum) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_cast_enum.py) |
+| `('enum_value', Enum class)`    | Casting to Enum class by Enum's value.                          | [doc](https://deer-hunt.github.io/evargs/modules/type-cast.html#evargs.TypeCast.to_enum) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_cast_enum.py) |
+| `('enum_name', Enum class)`    | Casting to Enum class by Enum's name.                         | [doc](https://deer-hunt.github.io/evargs/modules/type-cast.html#evargs.TypeCast.to_enum) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_cast_enum.py) |
+| `'raw'`            | The casting process is not be executed.                                                  | - |
+| `callable`       | Custom callable function for casting. e.g. `lambda v: v.upper()`                    | - |
 
 **Related**
 
-- [test_rule_type.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type.py)
-- [test_rule_type_enum.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type_enum.py)
-- [ValueCaster class](https://deer-hunt.github.io/evargs/modules/value-helper.html#evargs.value_caster.ValueCaster)
+- [test_rule_cast.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_cast.py)
+- [test_rule_cast_enum.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_cast_enum.py)
+- [TypeCast class](https://deer-hunt.github.io/evargs/modules/type-cast.html)
 
 
-## Value Validation
+## Value validation
 
-In the value validation, `require` option is available to checking for the value existence and `choices` option is available to restricting the value. Additionally, you can use the following validation rules or custom function in `validation` option.
+In the value validation, `required` option is available to checking for the value existence and `choices` option is available to restricting the value. Additionally, you can use the following validation rules or custom function in `validation` option.
 
 **Validations**
 
-| **name**    | **Value Type**       | **Arguments**                                                                                     | **Description**                                                                                     |
-|-------------------------|----------------------|--------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
-| `size`         | `str`               | `size: int`                                                                   | The string length is exactly `size`.                                                       |
-| `between`      | `str`               | `min_size: int, max_size: int`                                     | The string length is between `min_size` and `max_size`.                                     |
-| `alphabet`     | `str`               | -                                                                             | Alphabetic characters.                                             |
-| `alphanumeric` | `str`               | -                                                                             | Alphanumeric characters.                                           |
-| `ascii`        | `str`               | -                                                                             　　| ASCII characters.                                                  |
-| `printable_ascii` | `str`            | -                                                                             | Printable ASCII characters.                                        |
-| `standard_ascii` | `str`             | -                                                                             | Standard ASCII characters. |
-| `char_numeric` | `str`              | -                                                                             | Numeric characters.                                          |
-| `regex`        | `str`               | `regex: str, [regex option]`                                             | The string matches the regular expression. |
-| `range`        | `int`, `float`      | `min_v, max_v`                                                           | The numeric value is within range `min_v` to `max_v`.                                   |
-| `unsigned`     | `int`, `float`      | -                                                                              | Unsigned number.                                                         |
-| `even`         | `int`               | -                                                                              　　|  Even int.                                                              |
-| `odd`          | `int`               | -                                                                              　　| Odd int.                                                             |
+| **Name**          | **Value Type**       | **Description**                                                                                     | **Doc/Code**                                                                                              |
+|-------------------|----------------------|-----------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
+| `exist`           | `any`                | The value is exist.                                                                                 | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_exist) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `size`            | `any`                | The value length is exactly `size`.                                                                  | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_size) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `sizes`           | `any`                | The value length is sizes `min_size` and `max_size`.                                               | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_sizes) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `enum`             | `any`                | The value is enum class's value.                                                                          | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_enum) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `alphabet`        | `str`                | Alphabetic characters.                                                                                | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_alphabet) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `alphanumeric`    | `str`                | Alphanumeric characters.                                                                              | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_alphanumeric) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `ascii`           | `str`                | ASCII characters.                                                                                     | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_ascii) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `printable_ascii` | `str`                | Printable ASCII characters.                                                                            | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_printable_ascii) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `standard_ascii`  | `str`                | Standard ASCII characters.                                                                             | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_standard_ascii) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `char_numeric`    | `str`                | Numeric characters.                                                                                    | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_char_numeric) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `regex`           | `str`                | The string matches the regular expression.                                                            | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_regex) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `range`           | `int`, `float`      | The numeric value is within range `min_v` to `max_v`.                                               | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_range) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `unsigned`        | `int`, `float`      | Unsigned number.                                                                                     | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_unsigned) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `positive`        | `int`, `float`      | Positive number.                                                                                     | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_positive) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `negative`        | `int`, `float`      | Negative number.                                                                                     | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_negative) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `even`            | `int`                | Even int.                                                                                            | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_even) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
+| `odd`             | `int`                | Odd int.                                                                                             | [doc](https://deer-hunt.github.io/evargs/modules/validator.html#evargs.Validator.validate_odd) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) |
 
-**Format**
+**Format of `validation` and `post_apply`**
 
 ```
 # Single validation
 'validation': 'validation_name'  # No parameter - str
+'validation': function  # callable
 'validation': ('validation_name', param1, param2...) - tuple
 'validation': ['validation_name', param1, param2...] - list
 
 # Multiple validations
 'validation': [('validation_name',), ('validation_name', 4)] - list -> tuple, tuple
-'validation': [tuple(['validation_name']), ('validation_name', 4)] - list -> tuple, tuple
+'validation': [tuple(['validation_name']), ('validation_name', 4), function] - list -> tuple, tuple, callable
 ```
 
 **e.g.**
 
 ```
-evargs.initialize({
-  'a': {'type': int, 'choices': [1, 2, 3]},
-  'b': {'type': int, 'choices': EnumClass}
-})
+evargs.assign(v, cast=int, choices=[1, 2, 3])
+evargs.assign(v, cast=int, choices=EnumClass)
 ```
 
 ```
-evargs.initialize({
-  'a': {'type': str, 'validation': ['size', 3]},
-  'b': {'type': str, 'validation': ['between', 4, 10]},
-  'c': {'type': str, 'validation': 'alphabet'},
-  'd': {'type': int, 'validation': ['range', None, 100]},
-  'e': {'type': str, 'validation': ['regex', r'^ABC\d+XYZ$', re.I]},
-  'f': {'type': int, 'validation': lambda n, v: True if v >= 0 else False},
-  'g': {'type': str, 'validation': [('size', 4), ('alphabet',)]}
-})
+evargs.assign(v, cast=str, validation=('size', 3))
+evargs.assign(v, cast=str, validation=('sizes', 4, 10))
+evargs.assign(v, cast=str, validation='alphabet')
+evargs.assign(v, cast=int, validation=('range', None, 100))
+evargs.assign(v, cast=str, validation=('regex', r'^ABC\d+XYZ$', re.I))
+evargs.assign(v, cast=int, validation=lambda n, v: True if v >= 0 else False)
+evargs.assign(v, cast=str, validation=[('size', 4), ('alphabet',)])
+
+# Validation in post_apply
+evargs.assign(['1', '2', '3'], cast=int, list=True, post_apply='exist')
 ```
 
 **Related**
 
 - [test_rule_validation.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py)
-- [Validator class](https://deer-hunt.github.io/evargs/modules/value-helper.html#module-evargs.validator)
+- [Validator class](https://deer-hunt.github.io/evargs/modules/validator.html)
 
 
-## Primary methods
+## The order of value processing
 
-| **Method**       | **Arguments**                                            | **Description**                                                                 |
-|------------------------|---------------------------------------------------|--------------------------------------------------------------------------------------|
-| `initialize`          | `(rules, default_rule=None, flexible=False, require_all=False, ignore_unknown=False)`  | Initializes rules, default rule, and set options.                 |
-| `set_options`         | `(flexible=False, require_all=False, ignore_unknown=False)`                | Set options.              |
-| `set_default`         | `(default_rule=None)`                                                                      | Set the default rule.       |
-| `set_rules`           | `(rules)`                                                                                   | Set the rules.                                                 |
-| `set_rule`            | `(name, rule)`                                                                          | Set a rule.                                                    |
-| `parse`               | `(assigns)`                                                                                   | Parse the expression.                                   |
-| `evaluate`            | `(name, v)`                                                                              | Evaluate a parameter.                                  |
-| `get`                 | `(name, index=-1)`                                                                     | Get the value of a parameter by name and index.        |
-| `get_values`          | -                                                                                             | Get the values of parameters.                                |
-| `put`                 | `(name, value, operator=Operator.EQUAL, reset=False)`                     | Put the value.                                             |
-| `put_values`          | `(values, operator=Operator.EQUAL, reset=False)`                              | Put the values of parameters.                  |
-| `reset`                | `(name)`                                                                                      | Reset the value.                                       |
-| `reset_params`    | -                                                                                      | Reset the values of parameters.                 |
-| `count_params`     | -                                                                                      | Get parameter's length.                 |
-| `make_help`     | `(params=None, append_example=False, skip_headers=False)`     | Make parameter's description. `Refer to Make help`                |
+This is description of "The order of value processing - Internal specification".
 
-**Related**
+1. `pre_apply` : Pre applying. Processing to whole value.
+2. `trim` : Trim if the value is str.
+3. `pre_cast` : Pre casting.
+4. `cast` : Casting.
+5. `post_cast` : Post casting.
+6. `required` : Validating the value exists.
+7. `validation` : Validation.
+8. `choices` : Validating choices.
+9. `post_apply` : Post applying. If validation in post_apply is set, validating whole value.
 
-- [EvArgs class's doc](https://deer-hunt.github.io/evargs/modules/evargs.html)
+> If list mode is enabled in the rule options, processing for "each value" in [trim - choices].
 
 
 ## Description of options
@@ -329,9 +413,9 @@ It can be operated even if the rule is not defined.
 
 e.g. specifying `flexible=True` and `default_rule={...}`. 
 
-### `require_all=True`
+### `required_all=True`
 
-All parameters defined in rules must have values assigned. The behavior is equivalent to specifying 'require=True' for each rule.
+All parameters defined in rules must have values assigned. The behavior is equivalent to specifying 'required=True' for each rule.
 
 ### `ignore_unknown=True`
 
@@ -339,7 +423,7 @@ Ignoring and excluding the unknown parameter. The error does not occur if the un
 
 ### `default_rule={...}`
 
-Default rule for all parameters. e.g. `{'type': int, 'default': -1}`
+Default rule for all parameters. e.g. `{'cast': int, 'default': -1}`
 
 
 ## Make help
@@ -365,8 +449,8 @@ help_formatter = evargs.get_help_formatter()
 
 help_formatter.set_columns({
   'name': 'Name',
-  'require': '*',
-  'type': 'Type',
+  'required': '*',
+  'cast': 'Type cast',
   'help': 'Desc'
 })
 ```
@@ -389,7 +473,7 @@ Also `ListFormatter` class can also be used independently to adjust and display 
 
 - [test_show_help.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_show_help.py)
 - [show_list_data.py](https://github.com/deer-hunt/evargs/tree/main/examples/show_list_data.py)
-- [ListFormatter class](https://deer-hunt.github.io/evargs/modules/value-helper.html#module-evargs.list_formatter)
+- [ListFormatter class](https://deer-hunt.github.io/evargs/modules/list-formatter.html)
 
 
 
@@ -413,19 +497,25 @@ There are many examples in `./tests/`.
 
 | File | Description |
 |-----------|-------------|
+| [test_assign.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_assign.py) | Tests for assigning parameters and parsing values. |
 | [test_general.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_general.py) | General tests for `EvArgs`. |
-| [test_options.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_options.py) | Tests for options of `flexible`, `require_all`, `ignore_unknown`, and `set_options`. |
+| [test_options.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_options.py) | Tests for options of `flexible`, `required_all`, `ignore_unknown`, and `set_options`. |
+| [test_error.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_error.py) | Tests for error handling in `EvArgs`. |
+| [test_exception.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_exception.py) | Tests specific exceptions raised by invalid inputs in `EvArgs`. |
 | [test_get_put.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_get_put.py) | Tests for `get` and `put` methods. |
+| [test_rule_validation.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) | Tests for rule validation, including `validation`, and custom validation methods. |
+| [test_rule_choices.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) | Tests for `choices`. |
+| [test_rule_cast.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_cast.py) | Tests for type handling in rules, such as `int`, `float`, `bool`, `str`, `complex`, `Enum class` and custom types. |
+| [test_rule_cast_enum.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_cast_enum.py) | Tests for Enum type in rules. |
+| [test_rule_required_default.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_required_default.py) | Tests for `required` and `default` options. |
+| [test_rule_pre_post.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_pre_post.py) | Tests for `pre_cast` and `post_cast` for value transformations. |
+| [test_rule_multiple.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_multiple.py) | Tests for `multiple` option in rules. |
+| [test_exp_general.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_general.py) | Tests for `ExpEvArgs` including general usages. |
+| [test_exp_evaluate.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_evaluate.py) | Tests for `ExpEvArgs` and including `evaluate`. |
+| [test_exp_multiple.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_multiple.py) | Tests for `ExpEvArgs` including `evaluate` and `multiple`. |
 | [test_show_help.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_show_help.py) | Tests for showing help. |
 | [test_list_formatter.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_list_formatter.py) | Tests for `HelpFormatter`, `ListFormatter` class. |
-| [test_rule_validation.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_validation.py) | Tests for rule validation, including `choices`, `validation`, and custom validation methods. |
-| [test_rule_type.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type.py) | Tests for type handling in rules, such as `int`, `float`, `bool`, `str`, `complex`, `Enum class` and custom types. |
-| [test_rule_type_enum.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_type_enum.py) | Tests for Enum type in rules. |
-| [test_rule_require_default.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_require_default.py) | Tests for `require` and `default` options. |
-| [test_rule_pre_post.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_pre_post.py) | Tests for `pre_apply` and `post_apply` for value transformations. |
-| [test_rule_multiple.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_multiple.py) | Tests for `multiple` option in rules. |
-| [test_rule_evaluate.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_rule_evaluate.py) | Tests for `evaluate` and `evaluate_param` options, including logical operations and custom evaluations. |
-| [test_value_caster.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_value_caster.py) | Tests for `ValueCaster` class. |
+| [test_type_cast.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_type_cast.py) | Tests for `TypeCast` class. |
 | [test_validator.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_validator.py) | Tests for `Validator` class. |
 | [test_helper.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_helper.py) | Tests for ExpressionParser. |
 
@@ -433,11 +523,11 @@ There are many examples in `./tests/`.
 ## Class docs
 
 - [EvArgs class](https://deer-hunt.github.io/evargs/modules/evargs.html)
-- [Validator class](https://deer-hunt.github.io/evargs/modules/value-helper.html#module-evargs.validator)
-- [ValueCaster class](https://deer-hunt.github.io/evargs/modules/value-helper.html#evargs.value_caster.ValueCaster)
-- [HelpFormatter class](https://deer-hunt.github.io/evargs/modules/value-helper.html#evargs.list_formatter.HelpFormatter)
-- [ListFormatter class](https://deer-hunt.github.io/evargs/modules/value-helper.html#evargs.list_formatter.ListFormatter)
-- [EvArgsException class / EvValidateException class](https://deer-hunt.github.io/evargs/modules/evargs.html#module-evargs.exception)
+- [Validator class](https://deer-hunt.github.io/evargs/modules/validator.html)
+- [TypeCast class](https://deer-hunt.github.io/evargs/modules/type-cast.html)
+- [HelpFormatter class](https://deer-hunt.github.io/evargs/modules/list-formatter.html#evargs.HelpFormatter)
+- [ListFormatter class](https://deer-hunt.github.io/evargs/modules/list-formatter.html#evargs.ListFormatter)
+- [EvArgsException class / ValidateException class](https://deer-hunt.github.io/evargs/modules/exception.html)
 
 
 ## Dependencies
