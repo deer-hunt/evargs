@@ -131,6 +131,8 @@ class TestAssign:
         assert evargs.assign('   123 .;  ', cast=str, trim=' .;') == '123'
         assert evargs.assign(' a ', cast=str, trim=True) == 'a'
 
+        assert evargs.assign([' a ', ' b', ' c      '], trim=True, cast=str, list=True) == ['a', 'b', 'c']
+
     def test_nullable(self):
         evargs = EvArgs()
 

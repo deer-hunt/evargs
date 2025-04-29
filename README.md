@@ -278,7 +278,7 @@ The following are the rule options.
 ```
 evargs.assign(v, cast=str, list=True)
 evargs.assign(v, cast=int, multiple=True)
-evargs.assign(v, pre_cast=lambda v: v.upper())
+evargs.(v, pre_cast=lambda v: v.upper())
 ```
 
 ```

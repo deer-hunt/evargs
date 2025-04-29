@@ -22,6 +22,10 @@ class TestRuleCastEnum:
     def test_cast_enum(self):
         evargs = EvArgs()
 
+        assert evargs.assign('RED', cast=Color) == Color.RED
+        assert evargs.assign(3, cast=Color) == Color.BLUE
+        assert evargs.assign('3', cast=Color) == Color.BLUE
+
         evargs.initialize({
             'a': {'cast': Color},
             'b': {'cast': Color, 'required': True},
