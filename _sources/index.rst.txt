@@ -49,11 +49,11 @@ Features and documentation
 
 "EvArgs" provides the following features.
 
-- It can specify the condition or value-assignment using a simple expression. e.g. `a=1;b>5`
+- It can specify the condition or value-assignment using a simple expression. e.g. `a=1;b>5;c=>1;c<10;`
 - Evaluate assigned values. e.g `evargs.evaluate('a', 1)`
-- Put values. It's available to using `put` is without parsing the expression.
 - Type cast - str, int, float, complex, Enum class, custom function...
 - Value validation - unsigned, number range, alphabet, regex, any other...
+- Put values. It's available to using `put` is without parsing the expression.
 - Applying multiple validations.
 - Applying Pre-processing method and Post-processing method.
 - Get assigned values.
