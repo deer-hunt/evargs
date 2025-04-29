@@ -19,12 +19,15 @@ class ExpEvArgs(EvArgs):
         super().__init__(validator)
 
         self.defined_rule.update({
-            'evaluation': None, 'evaluation_apply': None, 'multiple_or': False, 'list_or': None
+            'evaluation': None, 'evaluation_apply': None, 'allowed_operator': -1,
+            'multiple_or': False, 'list_or': None
         })
 
-    def parse(self, expression: str):
+    def parse(self, expression: str, reset: bool = True):
         """Parse the expression."""
-        self.reset()
+
+        if reset:
+            self.reset()
 
         readline = io.StringIO(expression).readline
         tokens = tokenize.generate_tokens(readline)
@@ -56,6 +59,12 @@ class ExpEvArgs(EvArgs):
             rule = self._get_rule(name)
 
             if rule is not None:
+                allowed_operator = rule.get('allowed_operator')
+
+                if allowed_operator > -1:
+                    if not ((operator & ~allowed_operator) == 0):
+                        raise EvArgsException('Not allowed operator.', EvArgsException.ERROR_PARSE)
+
                 if not rule.get('list'):
                     v = ''.join(v)
 

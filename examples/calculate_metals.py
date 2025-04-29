@@ -1,4 +1,4 @@
-from evargs import EvArgs, EvArgsException, ValidateException
+from evargs import ExpEvArgs, EvArgsException, ValidateException
 import sys
 
 '''
@@ -11,7 +11,7 @@ def main():
         print('Usage: python3 calculate_metals.py "silver=1;gold=1;platinum=1;"')
         sys.exit(1)
 
-    evargs = EvArgs()
+    evargs = ExpEvArgs()
 
     evargs.initialize({
         'silver': {'cast': int, 'default': 1, 'validation': ['range', 1, 100]},

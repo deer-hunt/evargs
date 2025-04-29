@@ -1,4 +1,4 @@
-from evargs import EvArgs, Validator, ValidateException
+from evargs import ExpEvArgs, Validator, ValidateException
 import json
 
 '''
@@ -15,7 +15,7 @@ class MyValidator(Validator):
 def main():
     validator = MyValidator()
 
-    evargs = EvArgs(validator)
+    evargs = ExpEvArgs(validator)
 
     evargs.initialize({
         'a': {'cast': str, 'validation': 'length248'},

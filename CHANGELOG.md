@@ -1,6 +1,12 @@
 # Changelog
 
-## [1.0.0b](https://github.com/deer-hunt/evargs/releases/tag/v1.0.0b) (2025-04-26)
+## [1.0.0](https://github.com/deer-hunt/evargs/releases/tag/v1.0.0) (2025-04-29)
+
+- Enhanced the documentation.
+- Changed minor updates.
+- Fixed bugs.
+
+## [1.0.0b](https://github.com/deer-hunt/evargs/releases/tag/v1.0.0b) (2025-04-27)
 
 - Enhanced the documentation.
 - Implemented significant changes to the specifications and improved specifications.

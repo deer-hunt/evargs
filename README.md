@@ -47,11 +47,11 @@ $ conda install conda-forge::evargs
 
 ## Features
 
-- It can specify the condition or value-assignment using a simple expression. e.g. `a=1;b>5`
+- It can specify the condition or value-assignment using a simple expression. e.g. `a=1;b>5;c=>1;c<10;`
 - Evaluate assigned values. e.g `evargs.evaluate('a', 1)`
-- Put values. It's available to using `put` is without parsing the expression.
 - Type cast - str, int, round_int, float, bool, complex, Enum class, custom function...
 - Type validation - unsigned, number range, alphabet, regex, any other...
+- Put values. It's available to using `put` is without parsing the expression.
 - Applying multiple validations.
 - Applying Pre-processing method and Post-processing method. 
 - Get assigned values.
@@ -130,7 +130,7 @@ evargs.initialize({
   'e': {'cast': int, 'validation': ['range', 1, 10]}
 })
 
-~ ... ~
+~~~~
 
 print(print(evargs.get_values())
 
@@ -230,8 +230,8 @@ evargs.evaluate('a', 100) --> False
 
 | **Method**        | **Description**                                                                 | **Doc/Code** |
 |------------------------|--------------------------------------------------------------------------------------|-----------------|
-| `parse`                | Parse the expression.                              | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.ExpEvArgs.parse) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_general.py) |
-| `evaluate`            | Evaluate a parameter.                            | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.ExpEvArgs.evaluate) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_evaluate.py) |
+| `parse`                | Parse the expression based on rule option. e.g. `a=1; b>5; c=>1;c<10;`                    | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.ExpEvArgs.parse) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_general.py) |
+| `evaluate`            | Evaluate a parameter. Using `evaluate` after executing `parse`.                           | [doc](https://deer-hunt.github.io/evargs/modules/evargs.html#evargs.ExpEvArgs.evaluate) / [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_evaluate.py) |
 
 **Related**
 
@@ -269,6 +269,7 @@ The following are the rule options.
 |--------------------|------------------------------|---------------|-------------------------------------------------------------------------------------------------|-----------------|
 | `evaluation`        | `callable`                  | `None`        | Evaluation method for the value.                                                                   | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_evaluate.py) |
 | `evaluation_apply`  | `callable`               | `None`        | Evaluation method for the parameter.                                                           | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_multiple.py) |
+| `allowed_operator`   | `int`                  | `-1`        | Set allowed operators using a bitmask value. `-1` is all operators. e.g. `Operator.EQUAL│Operator.GREATER` Related: [Operator class](https://deer-hunt.github.io/evargs/modules/modules.html#evargs.Operator)           | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_evaluate.py) |
 | `multiple_or`     | `bool`                      | `False`        | Whether to use logical OR for multiple condition values.                                       | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_multiple.py) |
 | `list_or`         | `bool`                      | `None`        | Whether to use logical OR for list values. Adjusts automatically by operator if the value is None. | [code](https://github.com/deer-hunt/evargs/blob/main/tests/test_exp_evaluate.py) |
 
@@ -390,7 +391,7 @@ evargs.assign(['1', '2', '3'], cast=int, list=True, post_apply='exist')
 
 ## The order of value processing
 
-This is description of "The order of value processing - Internal specification".
+This is description of the order of value processing, internal specification.
 
 1. `pre_apply` : Pre applying. Processing to whole value.
 2. `trim` : Trim if the value is str.
@@ -400,9 +401,9 @@ This is description of "The order of value processing - Internal specification".
 6. `required` : Validating the value exists.
 7. `validation` : Validation.
 8. `choices` : Validating choices.
-9. `post_apply` : Post applying. If validation in post_apply is set, validating whole value.
+9. `post_apply` : Post applying. This is last phase. It's possible for validation and value modification..
 
-> If list mode is enabled in the rule options, processing for "each value" in [trim - choices].
+> If "list" mode is enabled in the rule options, processing for "each value" in [trim - choices].
 
 
 ## Description of options
@@ -483,12 +484,16 @@ Also `ListFormatter` class can also be used independently to adjust and display 
 
 There are some examples in `./examples/`.
 
-- [basic.py](https://github.com/deer-hunt/evargs/tree/main/examples/basic.py)
-- [calculate_metals.py](https://github.com/deer-hunt/evargs/tree/main/examples/calculate_metals.py)
-- [various_rules.py](https://github.com/deer-hunt/evargs/tree/main/examples/various_rules.py)
-- [customize_validator.py](https://github.com/deer-hunt/evargs/tree/main/examples/customize_validator.py)
-- [show_help.py](https://github.com/deer-hunt/evargs/tree/main/examples/show_help.py)
-- [show_list_data.py](https://github.com/deer-hunt/evargs/tree/main/examples/show_list_data.py)
+| Program Name | Description |
+|--------------|-------------|
+| [basic.py](https://github.com/deer-hunt/evargs/tree/main/examples/basic.py) | Demonstrates basic usage of `EvArgs`, including parameter initialization, parsing, and evaluation. |
+| [calculate_metals.py](https://github.com/deer-hunt/evargs/tree/main/examples/calculate_metals.py) | Using`ExpEvArgs`, validation, cast, range, default. |
+| [convert_chemical_cho.py](https://github.com/deer-hunt/evargs/tree/main/examples/convert_chemical_cho.py) | Convert values from `argparse.ArgumentParser`. Using trim, post_cast, choices, post_apply. |
+| [rules_evaluate.py](https://github.com/deer-hunt/evargs/tree/main/examples/rules_evaluate.py) | Simple rules and evaluate examples. |
+| [customize_validator.py](https://github.com/deer-hunt/evargs/tree/main/examples/customize_validator.py) |Extending `Validator` class, using `ExpEvArgs`. |
+| [simple_type_cast_validator.py](https://github.com/deer-hunt/evargs/tree/main/examples/simple_type_cast_validator.py) | Simple type casting and validation without `EvArgs class`. |
+| [show_help.py](https://github.com/deer-hunt/evargs/tree/main/examples/show_help.py) | Show help using`HelpFormatter` |
+| [show_list_data.py](https://github.com/deer-hunt/evargs/tree/main/examples/show_list_data.py) | Display list-based parameter data using `ListDataFormatter`. |
 
 
 ###  Test code
@@ -520,11 +525,13 @@ There are many examples in `./tests/`.
 | [test_helper.py](https://github.com/deer-hunt/evargs/blob/main/tests/test_helper.py) | Tests for ExpressionParser. |
 
 
-## Class docs
+## Class documentation
+
+Class documentation's top page is [here](https://deer-hunt.github.io/evargs/py-modindex.html).
 
 - [EvArgs class](https://deer-hunt.github.io/evargs/modules/evargs.html)
-- [Validator class](https://deer-hunt.github.io/evargs/modules/validator.html)
 - [TypeCast class](https://deer-hunt.github.io/evargs/modules/type-cast.html)
+- [Validator class](https://deer-hunt.github.io/evargs/modules/validator.html)
 - [HelpFormatter class](https://deer-hunt.github.io/evargs/modules/list-formatter.html#evargs.HelpFormatter)
 - [ListFormatter class](https://deer-hunt.github.io/evargs/modules/list-formatter.html#evargs.ListFormatter)
 - [EvArgsException class / ValidateException class](https://deer-hunt.github.io/evargs/modules/exception.html)

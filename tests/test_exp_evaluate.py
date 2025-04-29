@@ -1,4 +1,4 @@
-from evargs import ExpEvArgs, EvArgsException, ValidateException
+from evargs import ExpEvArgs, EvArgsException, ValidateException, Operator
 import pytest
 import re
 
@@ -51,6 +51,9 @@ class TestExpEvaluate:
 
         assert evargs.evaluate('str1', 'TGC') is False
         assert evargs.evaluate('str1', '') is True
+
+        evargs.parse('str1!=TGC', reset=False)
+        assert evargs.evaluate('str1', 'TGX') is True
 
     def test_default(self):
         evargs = ExpEvArgs()
@@ -131,6 +134,29 @@ class TestExpEvaluate:
         assert evargs.evaluate('c', 20) is True
         assert evargs.evaluate('c', 1) is False
         assert evargs.evaluate('c', 10) is False
+
+    def test_restrict_operator(self):
+        evargs = ExpEvArgs()
+
+        evargs.initialize({
+            'a': {'cast': int, 'allowed_operator': Operator.EQUAL},
+            'b': {'cast': int, 'allowed_operator': (Operator.EQUAL | Operator.GREATER)},
+            'c': {'cast': int, 'allowed_operator': Operator.NOT_EQUAL}
+        })
+
+        evargs.parse('a=1; b>=2; c!=4')
+
+        with pytest.raises(EvArgsException):
+            evargs.parse('a!=1')
+
+        with pytest.raises(EvArgsException):
+            evargs.parse('a>1')
+
+        with pytest.raises(EvArgsException):
+            evargs.parse('b<=1')
+
+        with pytest.raises(EvArgsException):
+            evargs.parse('c=1')
 
     def test_cast_fn(self):
         evargs = ExpEvArgs()

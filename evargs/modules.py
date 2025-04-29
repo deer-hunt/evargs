@@ -31,9 +31,9 @@ class MultipleParam:
 
 class Operator:
     EQUAL = 1
-    NOT_EQUAL = 2
-    GREATER = 4
-    LESS = 8
+    GREATER = 2
+    LESS = 4
+    NOT_EQUAL = 8
 
     LIST_SPLIT = ','
     VALUE_SPLIT = ';'

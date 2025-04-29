@@ -1,4 +1,4 @@
-from evargs import EvArgs, EvArgsException, ValidateException
+from evargs import ExpEvArgs, EvArgsException, ValidateException
 import sys
 
 '''
@@ -7,7 +7,7 @@ python3 basic.py
 
 
 def main():
-    evargs = EvArgs()
+    evargs = ExpEvArgs()
 
     evargs.initialize({
         'a': {'cast': bool},

@@ -42,12 +42,16 @@ class TestRulePrePost:
         evargs = EvArgs()
 
         assert evargs.assign(['1', '2', '3'], cast=int, post_apply=lambda values: values[:-1], list=True) == [1, 2]
+
         assert evargs.assign('', cast=int, post_apply=lambda v: 5, raise_error=False) == 5
+
         assert evargs.assign(['1', '2', '3'], cast=int, post_apply=lambda values: sum(values), list=True) == 6
         assert evargs.assign(['1', '2', '3'], cast=int, post_apply=lambda values: [sum(values)], list=True) == [6]
+
         assert evargs.assign(['4', '5', '6'], cast=int, post_apply=('size', 3), list=True) == [4, 5, 6]
 
         assert evargs.assign('12345', validation=('size', 5)) == '12345'
+
         assert evargs.assign([5, 6, 7], post_apply=('size', 3), list=True) == [5, 6, 7]
 
     def test_post_apply_complex(self):
